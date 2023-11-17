@@ -1,11 +1,11 @@
 # ts-qqbot
 ## 安装依赖
 ```shell
-npm i ts-qqbot # or yarn add ts-qqbot
+npm i qq-group-bot # or yarn add qq-group-bot
 ```
 ## 使用
 ```js
-const { Bot,Plugin } = require('ts-qqbot')
+const { Bot,Plugin } = require('qq-group-bot')
 // 创建机器人
 const bot=new Bot({
 	appid: '', // qq机器人的appID (必填)
@@ -32,7 +32,7 @@ bot.start()
 ```
 ## 发送消息
 ```javascript
-const {Bot} = require('ts-qqbot')
+const {Bot} = require('qq-group-bot')
 const bot=new Bot({
     // ...
 })
