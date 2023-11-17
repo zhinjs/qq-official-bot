@@ -1,0 +1,46 @@
+{
+    "name": "qq-group-bot",
+    "version": "0.0.4",
+    "description": "qq机器人开发SDK",
+    "main": "lib/index.js",
+    "scripts": {
+        "start": "node .",
+        "compile": "tsc --project tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+        "dtsc": "dtsc --project tsconfig.dtsc.json",
+        "clean": "rm -rf ./lib",
+        "build": "npm run clean && npm run compile && npm run dtsc",
+        "dev": "ts-node-dev -r tsconfig-paths/register ./src/test.ts",
+        "pub": "rm -rf ./lib/test.js && npm publish --access public",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "files": [
+        "lib",
+        "LICENSE",
+        "README.md"
+    ],
+    "repository": {
+        "url": "https://github.com/lc-cn/qq-group-bot.git",
+        "type": "git"
+    },
+    "keywords": [
+        "qq",
+        "group",
+        "bot"
+    ],
+    "author": "凉菜",
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^1.6.1",
+        "log4js": "^6.9.1",
+        "ws": "^8.14.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.5.9",
+        "@types/ws": "^8.5.5",
+        "dtsc": "^2.3.0",
+        "ts-node-dev": "^2.0.0",
+        "tsc-alias": "^1.8.8",
+        "tsconfig-paths": "^4.2.0",
+        "typescript": "^5.2.2"
+    }
+}
