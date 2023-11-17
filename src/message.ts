@@ -1,7 +1,7 @@
 import {MessageElem, Quotable, Sendable} from "@/elements";
 import {QQBot} from "@/qqBot";
 import {Dict} from "@/types";
-import { trimQuote} from "@/utils";
+import {trimQuote} from "@/utils";
 import {randomInt} from "crypto";
 import {Bot} from "./bot";
 import {User} from "@/entries/user";
@@ -103,11 +103,11 @@ export class GuildMessageEvent extends Message implements MessageEvent {
     }
 
     async asAnnounce() {
-        return this.bot.setChannelAnnounce(this.guild_id,this.channel_id,this.message_id)
+        return this.bot.setChannelAnnounce(this.guild_id, this.channel_id, this.message_id)
     }
 
     async pin() {
-        return this.bot.pinChannelMessage(this.channel_id,this.message_id)
+        return this.bot.pinChannelMessage(this.channel_id, this.message_id)
     }
 
     async reply(message: Sendable) {
@@ -170,6 +170,14 @@ export namespace Message {
                     }))
                 })
                 brief += `<${type}:${attrs.join(',')}>`
+            } else {
+                result.push({
+                    type: "text",
+                    data: {
+                        text: match
+                    }
+                });
+                brief += match;
             }
         }
         if (template) {
