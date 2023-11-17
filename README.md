@@ -1,4 +1,4 @@
-# ts-qqbot
+# qq-group-bot
 
 ## 安装依赖
 
