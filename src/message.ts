@@ -173,9 +173,7 @@ export namespace Message {
             } else {
                 result.push({
                     type: "text",
-                    data: {
-                        text: match
-                    }
+                    text: match
                 });
                 brief += match;
             }
