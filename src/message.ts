@@ -244,6 +244,7 @@ export namespace Message {
                         messages.content = `<@${elem.id || 'everyone'}>`
                     }
                     brief += `<$at,user=${elem.id || 'everyone'}>`
+                    hasMessages = true
                     break;
                 case 'link':
                     if (messages.content) {
@@ -252,6 +253,7 @@ export namespace Message {
                         messages.content = `<#${elem.channel_id}>`
                     }
                     brief += `<$link,channel=${elem.channel_id}>`
+                    hasMessages = true
                     break;
                 case 'text':
                     if (messages.content) {

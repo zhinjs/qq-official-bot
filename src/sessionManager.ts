@@ -59,6 +59,9 @@ export class SessionManager extends EventEmitter {
                 default:
             }
         });
+        this.on(SessionEvents.ERROR, (e) => {
+            this.bot.logger.error(`[CLIENT] 发生错误：${e}`);
+        })
     }
 
     async getAccessToken(): Promise<QQBot.Token> {
@@ -260,8 +263,5 @@ export class SessionManager extends EventEmitter {
                 this.bot.dispatchEvent(wsRes.t, wsRes);
             }
         });
-        this.on(SessionEvents.ERROR, (e) => {
-            this.bot.logger.error(`[CLIENT] 发生错误：${e}`);
-        })
     }
 }
