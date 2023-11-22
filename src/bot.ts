@@ -265,25 +265,25 @@ export class Bot extends QQBot {
     }
     async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable) {
         const sender=new Sender(this,`/v2/users/${user_id}`,message,source)
-        const result= sender.sendMsg()
+        const result= await sender.sendMsg()
         this.logger.info(`send to User(${user_id}): ${sender.brief}`)
         return result
     }
     async sendDirectMessage(guild_id:string,message:Sendable,source?:Quotable){
         const sender=new Sender(this,`/dms/${guild_id}`,message,source)
-        const result= sender.sendMsg()
+        const result= await sender.sendMsg()
         this.logger.info(`send to Direct(${guild_id}): ${sender.brief}`)
         return result
     }
     async sendGuildMessage(channel_id: string, message: Sendable, source?: Quotable) {
         const sender=new Sender(this,`/channels/${channel_id}`,message,source)
-        const result= sender.sendMsg()
+        const result= await sender.sendMsg()
         this.logger.info(`send to Channel(${channel_id}): ${sender.brief}`)
         return result
     }
     async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable) {
         const sender=new Sender(this,`/v2/groups/${group_id}`,message,source)
-        const result= sender.sendMsg()
+        const result= await sender.sendMsg()
         this.logger.info(`send to Group(${group_id}): ${sender.brief}`)
         return result
     }

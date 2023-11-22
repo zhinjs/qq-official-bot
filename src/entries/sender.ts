@@ -1,9 +1,12 @@
 import {Dict, QQBot, Quotable, Sendable} from "@";
+import { randomInt } from "crypto";
 
 export class Sender {
     brief: string = ''
     private isFile=false
-    private messagePayload:Dict={}
+    private messagePayload:Dict={
+        msg_seq:randomInt(1,1000000)
+    }
     private buttons:Dict[]=[]
     private filePayload:Dict={
         srv_send_msg:true
