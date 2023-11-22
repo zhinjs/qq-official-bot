@@ -97,28 +97,28 @@ export class Sender {
                     if(this.messagePayload.msg_id){
                         this.messagePayload.content=this.messagePayload.content||' '
                         if(!this.baseUrl.startsWith('/v2')){
-                            this.messagePayload.image=!elem.url?.startsWith('http')?`http://${elem.url}`:elem.url
+                            this.messagePayload.image=!elem.file?.startsWith('http')?`http://${elem.file}`:elem.file
                         }else{
                             this.messagePayload.msg_type=7
-                            const result= await this.sendFile(elem.url,this.getType(elem.type))
-                            this.messagePayload.media.file_info=result.file_info
+                            const result= await this.sendFile(elem.file,this.getType(elem.type))
+                            this.messagePayload.media = { file_info: result.file_info }
                         }
                     }else{
                         if(!this.baseUrl.startsWith('/v2')){
-                            this.messagePayload.image=!elem.url?.startsWith('http')?`http://${elem.url}`:elem.url
+                            this.messagePayload.image=!elem.file?.startsWith('http')?`http://${elem.file}`:elem.file
                         }else{
                             this.filePayload.file_type = this.getType(elem.type)
-                            this.filePayload.url = !elem.url?.startsWith('http')?`http://${elem.url}`:elem.url
+                            this.filePayload.file = !elem.file?.startsWith('http')?`http://${elem.file}`:elem.file
                             this.isFile = true
                         }
                     }
-                    this.brief += `<${elem.type},url=${elem.url}>`
+                    this.brief += `<${elem.type},url=${elem.file}>`
                     break;
                 case 'audio':
                 case 'video':
                     if(this.baseUrl.startsWith('/v2')){
                         this.filePayload.file_type = this.getType(elem.type)
-                        this.filePayload.url = elem.url
+                        this.filePayload.file = elem.file
                         this.isFile = true
                     }
                     break;
