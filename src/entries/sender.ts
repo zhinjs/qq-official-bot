@@ -108,7 +108,7 @@ export class Sender {
                             this.messagePayload.image=!elem.file?.startsWith('http')?`http://${elem.file}`:elem.file
                         }else{
                             this.filePayload.file_type = this.getType(elem.type)
-                            this.filePayload.file = !elem.file?.startsWith('http')?`http://${elem.file}`:elem.file
+                            this.filePayload.url = !elem.file?.startsWith('http')?`http://${elem.file}`:elem.file
                             this.isFile = true
                         }
                     }
@@ -118,7 +118,7 @@ export class Sender {
                 case 'video':
                     if(this.baseUrl.startsWith('/v2')){
                         this.filePayload.file_type = this.getType(elem.type)
-                        this.filePayload.file = elem.file
+                        this.filePayload.url = elem.file
                         this.isFile = true
                     }
                     break;
