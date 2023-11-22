@@ -4,12 +4,10 @@ export enum MusicPlatform {
     qq = "qq",
     netease = "163",
 }
-
-export interface Quotable {
-    event_id?: string;
-    message_id?: string
+export interface Quotable{
+    event_id?:string;
+    message_id?:string
 }
-
 export interface MessageElemMap {
     text: {
         text: string;
@@ -37,14 +35,12 @@ export interface MessageElemMap {
          * @type {string} 本地图片文件路径，例如`"/tmp/1.jpg"`
          * @type {Buffer} 图片`Buffer`
          */
-        file: string | Buffer
+        url: string
         /** 网络图片是否使用缓存 */
         cache?: boolean
         /** 流的超时时间，默认60(秒) */
         timeout?: number
         headers?: import("http").OutgoingHttpHeaders
-        /** 图片url地址，接收时有效 */
-        url?: string
         /** 是否作为表情发送 */
         asface?: boolean
         /** 是否显示下载原图按钮 */
@@ -55,7 +51,7 @@ export interface MessageElemMap {
          * 需要`ffmpeg`和`ffprobe`
          * @type {string} 本地视频文件路径，例如`"/tmp/1.mp4"`
          */
-        file: string
+        url: string
         /** 视频名，接收时有效 */
         name?: string
         /** 作为文件的文件id，接收时有效 */
@@ -72,9 +68,7 @@ export interface MessageElemMap {
          * @type {string} 本地语音文件路径，例如`"/tmp/1.slk"`
          * @type {Buffer} ptt buffer (silk or amr)
          */
-        file: string | Buffer
-        /** 语言url地址，接收时有效 */
-        url?: string
+        url: string
         md5?: string
         /** 文件大小，接收时有效 */
         size?: number
@@ -82,15 +76,15 @@ export interface MessageElemMap {
         seconds?: number
     };
     xml: {
-        id?: number
+        id?:number
         data: string;
     };
     json: {
-        res_id?: string
-        data: string | Record<string, any>;
+        res_id?:string
+        data: string|Record<string, any>;
     };
-    markdown: {
-        content: string
+    markdown:{
+        content:string
     }
     // app: {
     //     app: string;
@@ -100,11 +94,11 @@ export interface MessageElemMap {
         platform: MusicPlatform;
     };
     reply: Quotable;
-    link: {
-        channel_id: string
+    link:{
+        channel_id:string
     };
-    button: {
-        data: Dict
+    button:{
+        data:Dict
     }
 }
 
@@ -123,13 +117,13 @@ export type AudioElem = MessageElem<"audio">;
 export type LinkElem = MessageElem<'link'>
 export type XmlElem = MessageElem<"xml">;
 export type JsonElem = MessageElem<"json">;
-export type MDElem = MessageElem<'markdown'>
+export type MDElem=MessageElem<'markdown'>
 export type MusicElem = MessageElem<"music">;
 export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
 
 // 重复组合的消息元素
-type RepeatableCombineElem = TextElem | FaceElem | ImageElem | AtElem | ButtonElem;
+type RepeatableCombineElem = TextElem | FaceElem | ImageElem | AtElem| ButtonElem;
 // 带回复的消息元素
 type WithReply<T extends MessageElem> =
     | T
@@ -140,7 +134,7 @@ type WithReply<T extends MessageElem> =
 export type Sendable =
     | string // 文本
     | RepeatableCombineElem
-    | (RepeatableCombineElem | string)[] // 可重复组合的消息元素
+    | (RepeatableCombineElem|string)[] // 可重复组合的消息元素
     | WithReply<
     | MDElem
     | LinkElem // 链接元素
