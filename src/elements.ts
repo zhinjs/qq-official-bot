@@ -35,7 +35,7 @@ export interface MessageElemMap {
          * @type {string} 本地图片文件路径，例如`"/tmp/1.jpg"`
          * @type {Buffer} 图片`Buffer`
          */
-        url: string
+        file: string
         /** 网络图片是否使用缓存 */
         cache?: boolean
         /** 流的超时时间，默认60(秒) */
@@ -51,7 +51,7 @@ export interface MessageElemMap {
          * 需要`ffmpeg`和`ffprobe`
          * @type {string} 本地视频文件路径，例如`"/tmp/1.mp4"`
          */
-        url: string
+        file: string
         /** 视频名，接收时有效 */
         name?: string
         /** 作为文件的文件id，接收时有效 */
@@ -68,7 +68,7 @@ export interface MessageElemMap {
          * @type {string} 本地语音文件路径，例如`"/tmp/1.slk"`
          * @type {Buffer} ptt buffer (silk or amr)
          */
-        url: string
+        file: string
         md5?: string
         /** 文件大小，接收时有效 */
         size?: number
