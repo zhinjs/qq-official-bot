@@ -143,7 +143,8 @@ export class Sender {
                             buttons: row
                         }
                     })
-                }
+                },
+                bot_appid:this.bot.config.appid
             }
         }
     }
