@@ -34,7 +34,11 @@ export class Sender {
             const [type, ...attrArr] = match.slice(1, -1).split(',')
             const attrs = Object.fromEntries(attrArr.map((attr: string) => {
                 const [key, value] = attr.split('=')
-                return [key, value]
+                try{
+                    return [key,JSON.parse(value)]
+                }catch{
+                    return [key, value]
+                }
             }))
             result.push({
                 type,
