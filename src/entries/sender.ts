@@ -58,6 +58,7 @@ export class Sender {
                 this.message.splice(index,0,...this.parseFromTemplate(elem))
                 continue
             }
+            const {type,...data}=elem
             switch (elem.type) {
                 case 'reply':
                     this.messagePayload.msg_id = elem.message_id
@@ -126,15 +127,13 @@ export class Sender {
                     }
                     break;
                 case 'markdown':
-                    this.messagePayload.markdown = {
-                        content: elem.content
-                    }
+                    this.messagePayload.markdown = data
                     this.messagePayload.msg_type = 2
                     this.brief += `<#markdown,content=${elem.content}>`
                     break;
                 case 'button':
-                    this.buttons.push(elem.data)
-                    this.brief += `<$button,data=${JSON.stringify(elem.data)}>`
+                    this.buttons.push(data)
+                    this.brief += `<$button,data=${JSON.stringify(data)}>`
                     break;
             }
         }
