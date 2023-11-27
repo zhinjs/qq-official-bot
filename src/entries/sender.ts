@@ -98,6 +98,8 @@ export class Sender {
                     this.brief += `<$face,id=${elem.id}>`
                     break;
                 case 'image':
+                case 'audio':
+                case 'video':
                     if(this.messagePayload.msg_id){
                         this.messagePayload.content=this.messagePayload.content||' '
                         if(!this.baseUrl.startsWith('/v2')){
@@ -117,14 +119,6 @@ export class Sender {
                         }
                     }
                     this.brief += `<${elem.type},url=${elem.file}>`
-                    break;
-                case 'audio':
-                case 'video':
-                    if(this.baseUrl.startsWith('/v2')){
-                        this.filePayload.file_type = this.getType(elem.type)
-                        this.filePayload.url = elem.file
-                        this.isFile = true
-                    }
                     break;
                 case 'markdown':
                     this.messagePayload.markdown = data

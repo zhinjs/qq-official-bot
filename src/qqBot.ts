@@ -23,7 +23,7 @@ export class QQBot extends EventEmitter {
         this.sessionManager = new SessionManager(this)
         this.request = axios.create({
             baseURL: this.config.sandbox ? 'https://sandbox.api.sgroup.qq.com' : `https://api.sgroup.qq.com`,
-            timeout: 5000,
+            timeout: config.timeout||5000,
             headers: {
                 'User-Agent': `BotNodeSDK/0.0.1`
             }
@@ -179,6 +179,7 @@ export namespace QQBot {
         secret: string
         token?: string
         sandbox?: boolean
+        timeout?:number
         maxRetry?: number
         /**
          * 是否移除第一个@
