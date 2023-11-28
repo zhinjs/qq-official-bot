@@ -5,14 +5,15 @@ export class Sender {
     brief: string = ''
     private isFile=false
     private messagePayload:Dict={
-        msg_seq:randomInt(1,1000000)
+        msg_seq:randomInt(1,1000000),
+        content:''
     }
     private buttons:Dict[]=[]
     private filePayload:Dict={
         srv_send_msg:true
     }
     constructor(private bot: QQBot, private baseUrl: string,  private message: Sendable, private source: Quotable = {}) {
-        this.messagePayload.msg_id=source.message_id
+        this.messagePayload.msg_id=source.id
     }
 
     private getType(type: string):1|2|3 {
@@ -65,40 +66,24 @@ export class Sender {
             const {type,...data}=elem
             switch (elem.type) {
                 case 'reply':
-                    this.messagePayload.msg_id = elem.message_id
-                    this.filePayload.msg_id = elem.message_id
-                    this.brief += `<$reply,message_id=${elem.message_id}>`
+                    this.messagePayload.msg_id = elem.id
+                    this.filePayload.msg_id = elem.id
+                    this.brief += `<$reply,msg_id=${elem.id}>`
                     break;
                 case "at":
-                    if (this.messagePayload.content) {
-                        this.messagePayload.content += `<@${elem.id || 'everyone'}>`
-                    } else {
-                        this.messagePayload.content = `<@${elem.id || 'everyone'}>`
-                    }
-                    this.brief += `<$at,user=${elem.id || 'everyone'}>`
+                    this.messagePayload.content += `<@${elem.user_id==='all'?'everyone':elem.user_id}>`
+                    this.brief += `<$at,user=${elem.user_id==='all'?'everyone':elem.user_id}>`
                     break;
                 case 'link':
-                    if (this.messagePayload.content) {
-                        this.messagePayload.content += `<#${elem.channel_id}>`
-                    } else {
-                        this.messagePayload.content = `<#${elem.channel_id}>`
-                    }
+                    this.messagePayload.content += `<#${elem.channel_id}>`
                     this.brief += `<$link,channel=${elem.channel_id}>`
                     break;
                 case 'text':
-                    if (this.messagePayload.content) {
-                        this.messagePayload.content += elem.text
-                    } else {
-                        this.messagePayload.content = elem.text
-                    }
+                    this.messagePayload.content += elem.text
                     this.brief += elem.text
                     break;
                 case 'face':
-                    if (this.messagePayload.content) {
-                        this.messagePayload.content += `<emoji:${elem.id}>`
-                    } else {
-                        this.messagePayload.content = `<emoji:${elem.id}>`
-                    }
+                    this.messagePayload.content += `<emoji:${elem.id}>`
                     this.brief += `<$face,id=${elem.id}>`
                     break;
                 case 'image':

@@ -15,7 +15,8 @@ export class Message {
     guild_id?: string
     channel_id?: string
     group_id?: string
-    message_id: string
+    id: string
+    message_id:string
     sender: Message.Sender
     user_id: string
 
@@ -103,11 +104,11 @@ export class GuildMessageEvent extends Message implements MessageEvent {
     }
 
     async asAnnounce() {
-        return this.bot.setChannelAnnounce(this.guild_id, this.channel_id, this.message_id)
+        return this.bot.setChannelAnnounce(this.guild_id, this.channel_id, this.id)
     }
 
     async pin() {
-        return this.bot.pinChannelMessage(this.channel_id, this.message_id)
+        return this.bot.pinChannelMessage(this.channel_id, this.id)
     }
 
     async reply(message: Sendable) {
@@ -130,6 +131,13 @@ export namespace Message {
         let brief: string = ''
         // 1. 处理文字表情混排
         const regex = /("[^"]*?"|'[^']*?'|`[^`]*?`|“[^”]*?”|‘[^’]*?’|<[^>]+?>)/;
+        if(payload.message_reference){
+            result.push({
+                type:'reply',
+                id:payload.message_reference.message_id
+            })
+            brief+=`<reply,id=${payload.message_reference.message_id}>`
+        }
         while (template.length) {
             const [match] = template.match(regex) || [];
             if (!match) break;
@@ -150,13 +158,13 @@ export namespace Message {
                     attrs = attrs.map((attr: string) => attr.replace('faceId', 'id'))
                 } else if (type.startsWith('@')) {
                     if (type.startsWith('@!')) {
-                        const id = type.slice(2,)
+                        const id = type.slice(2)
                         type = 'at'
                         attrs = Object.entries(payload.mentions.find((u: Dict) => u.id === id) || {})
-                            .map(([key, value]) => `${key}=${value}`)
+                            .map(([key, value]) => `${key==='id'?'user_id':key}=${value}`)
                     } else if (type === '@everyone') {
                         type = 'at'
-                        attrs = [['all', true]]
+                        attrs = ['user_id=all']
                     }
                 } else if (/^[a-z]+:[0-9]+$/.test(type)) {
                     attrs = ['id=' + type.split(':')[1]]
