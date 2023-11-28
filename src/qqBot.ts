@@ -45,8 +45,9 @@ export class QQBot extends EventEmitter {
     }
 
     removeAt(payload: Dict) {
+        if(this.config.removeAt===false) return;
         const reg = new RegExp(`<@!${this.self_id}>`)
-        const isAtMe = reg.test(payload.content) && payload.mentions.some(mention => mention.id === this.self_id)
+        const isAtMe = reg.test(payload.content) && payload.mentions.some((mention:Dict) => mention.id === this.self_id)
         if (!isAtMe) return
         payload.content = payload.content.replace(reg, '').trimStart()
     }
