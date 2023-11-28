@@ -118,6 +118,12 @@ export class Sender {
                     this.buttons.push(data)
                     this.brief += `<$button,data=${JSON.stringify(data)}>`
                     break;
+                case "ark":
+                case "embed":
+                    if(this.baseUrl.startsWith('/v2')) break
+                    this.messagePayload.msg_type=type==='ark'?3:4
+                    this.messagePayload[type]=data
+                    break;
             }
         }
         if (this.buttons.length) {

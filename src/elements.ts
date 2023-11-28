@@ -46,6 +46,16 @@ export interface MessageElemMap {
     };
     button:{
         data:Dict
+    };
+    ark:{
+        template_id:number
+        kv:Dict<string,'key'|'value'>[]
+    };
+    embed:{
+        title:string
+        prompt:string
+        htumbnail:Dict<string>
+        fields:Dict<string,'name'>[]
     }
 }
 
@@ -58,6 +68,8 @@ export type MessageElem<T extends MessageElemType = MessageElemType> = {
 export type TextElem = MessageElem<"text">;
 export type AtElem = MessageElem<"at">;
 export type FaceElem = MessageElem<"face">;
+export type ArkElem = MessageElem<'ark'>
+export type EmbedElem = MessageElem<'embed'>
 export type ImageElem = MessageElem<"image">;
 export type VideoElem = MessageElem<"video">;
 export type AudioElem = MessageElem<"audio">;
@@ -80,7 +92,9 @@ export type Sendable =
     | RepeatableCombineElem
     | (RepeatableCombineElem|string)[] // 可重复组合的消息元素
     | WithReply<
-    | MDElem
+    | MDElem // markdown元素
+    | ArkElem // Ark 元素
+    | EmbedElem // Embed元素 仅频道和频道私信支持
     | LinkElem // 链接元素
     | VideoElem // 视频消息元素
     | AudioElem // 语音消息元素
