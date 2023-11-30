@@ -1,6 +1,6 @@
 {
     "name": "qq-group-bot",
-    "version": "0.0.7-13",
+    "version": "0.0.7-14",
     "description": "qq机器人开发SDK",
     "main": "lib/index.js",
     "scripts": {
@@ -19,7 +19,7 @@
         "README.md"
     ],
     "repository": {
-        "url": "https://github.com/lc-cn/ts-qqbot.git",
+        "url": "https://github.com/lc-cn/qq-group-bot.git",
         "type": "git"
     },
     "keywords": [

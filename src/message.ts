@@ -170,14 +170,34 @@ export namespace Message {
                     attrs = ['id=' + type.split(':')[1]]
                     type = 'face'
                 }
-                result.push({
-                    type,
-                    ...Object.fromEntries(attrs.map((attr: string) => {
-                        const [key, ...values] = attr.split('=')
-                        return [key.toLowerCase(), trimQuote(values.join('='))]
-                    }))
-                })
-                brief += `<${type},${attrs.join(',')}>`
+                if([
+                    'text',
+                    'face',
+                    'at',
+                    'image',
+                    'video',
+                    'audio',
+                    'markdown',
+                    'button',
+                    'link',
+                    'reply',
+                    'ark',
+                    'embed'
+                ].includes(type)){
+                    result.push({
+                        type,
+                        ...Object.fromEntries(attrs.map((attr: string) => {
+                            const [key, ...values] = attr.split('=')
+                            return [key.toLowerCase(), trimQuote(values.join('='))]
+                        }))
+                    })
+                    brief += `<${type},${attrs.join(',')}>`
+                }else{
+                    result.push({
+                        type:'text',
+                        text:match
+                    })
+                }
             }else{
                 result.push({
                     type: "text",
