@@ -136,9 +136,18 @@ export class Sender {
             }
         }
         if (this.buttons.length) {
-            const rows = []
-            for (let i = 0; i < this.buttons.length; i += 4) {
-                rows.push(this.buttons.slice(i, i + 4))
+            const rows = [];
+            let row=[];
+            for (let i = 0; i < this.buttons.length; i++) {
+                if(row.length>5){
+                    rows.push(row)
+                    row=[]
+                }
+                if(Array.isArray(this.buttons[i])){
+                    rows.push(this.buttons[i])
+                    continue;
+                }
+                row.push(this.buttons[i])
             }
             this.messagePayload.keyboard = {
                 content: {
