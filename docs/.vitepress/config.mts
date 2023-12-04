@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 export default defineConfig({
-    base:"/qq-group-bot",
+    base:"/qq-group-bot/",
     themeConfig: {
         editLink: {
           pattern: 'https://github.com/lc-cn/qq-group-bot/edit/main/docs/src/:path',
