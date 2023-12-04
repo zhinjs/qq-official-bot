@@ -4,6 +4,20 @@ export default defineConfig({
         nav: [
             { text: '开始', link: '/guide/start', activeMatch: '/guide/' },
             { text: '配置', link: '/config', activeMatch: '/config' },
+            {
+                text: 'API',
+                activeMatch: '/api/',
+                items: [
+                    { text: '获取频道列表', link: '/api/getGuildList' },
+                    { text: '获取子频道列表', link: '/api/getChannelList' },
+                    { text: '获取频道成员列表', link: '/api/getGuildMemberList' },
+                    { text: '发送消息到子频道', link: '/api/sendGuildMessage' },
+                    { text: '发送频道私信', link: '/api/sendDirectMessage' },
+                    { text: '发送群聊消息', link: '/api/sendGroupMessage' },
+                    { text: '发送私聊消息', link: '/api/sendPrivateMessage' },
+                    { text: '创建频道私信会话', link: '/api/createDirectSession' },
+                ]
+            },
             { text: 'Changelog', link: 'https://github.com/lc-cn/qq-group-bot/blob/master/CHANGELOG.md', target: '_blank', }
         ],
         sidebar: [
@@ -35,7 +49,7 @@ export default defineConfig({
                 items: [
                     { text: '获取频道列表', link: '/api/getGuildList' },
                     { text: '获取子频道列表', link: '/api/getChannelList' },
-                    { text: '获取频道成员列表', link: '/api/getMemberList' },
+                    { text: '获取频道成员列表', link: '/api/getGuildMemberList' },
                     { text: '发送消息到子频道', link: '/api/sendGuildMessage' },
                     { text: '发送频道私信', link: '/api/sendDirectMessage' },
                     { text: '发送群聊消息', link: '/api/sendGroupMessage' },
