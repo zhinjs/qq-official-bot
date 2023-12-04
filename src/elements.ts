@@ -5,30 +5,20 @@ export enum MusicPlatform {
     netease = "163",
 }
 export interface Quotable{
-    event_id?:string;
-    message_id?:string
+    id?:string
 }
 export interface MessageElemMap {
     text: {
         text: string;
     };
     at: {
-        /** 在频道消息中该值为0 */
-        qq: number | "all"
-        /** 频道中的`tiny_id` */
-        id?: string | "all"
-        /** AT后跟的字符串，接收消息时有效 */
-        text?: string
-        /** 假AT */
-        dummy?: boolean
+        user_id:'all'|string
     };
     face: {
         /** face为0~348，sface不明 */
         id: number
         /** 表情说明，接收消息时有效 */
         text?: string
-        /** 大表情 */
-        qlottie?: string
     };
     image: {
         /**
@@ -36,69 +26,36 @@ export interface MessageElemMap {
          * @type {Buffer} 图片`Buffer`
          */
         file: string
-        /** 网络图片是否使用缓存 */
-        cache?: boolean
-        /** 流的超时时间，默认60(秒) */
-        timeout?: number
-        headers?: import("http").OutgoingHttpHeaders
-        /** 是否作为表情发送 */
-        asface?: boolean
-        /** 是否显示下载原图按钮 */
-        origin?: boolean
+        /** 仅接收有效 */
+        url?:string
     };
     video: {
-        /**
-         * 需要`ffmpeg`和`ffprobe`
-         * @type {string} 本地视频文件路径，例如`"/tmp/1.mp4"`
-         */
         file: string
-        /** 视频名，接收时有效 */
-        name?: string
-        /** 作为文件的文件id，接收时有效 */
-        fid?: string
-        md5?: string
-        /** 文件大小，接收时有效 */
-        size?: number
-        /** 视频时长（秒），接收时有效 */
-        seconds?: number
+        /** 仅接收有效 */
+        url?:string
     };
     audio: {
-        /**
-         * 支持`raw silk`和`amr`文件
-         * @type {string} 本地语音文件路径，例如`"/tmp/1.slk"`
-         * @type {Buffer} ptt buffer (silk or amr)
-         */
         file: string
-        md5?: string
-        /** 文件大小，接收时有效 */
-        size?: number
-        /** 语音时长（秒），接收时有效 */
-        seconds?: number
+        /** 仅接收有效 */
+        url?:string
     };
-    xml: {
-        id?:number
-        data: string;
-    };
-    json: {
-        res_id?:string
-        data: string|Record<string, any>;
-    };
-    markdown:{
-        content:string
-    }
-    // app: {
-    //     app: string;
-    // };
-    music: {
-        id: number;
-        platform: MusicPlatform;
-    };
+    markdown:Dict
     reply: Quotable;
     link:{
         channel_id:string
     };
     button:{
         data:Dict
+    };
+    ark:{
+        template_id:number
+        kv:Dict<string,'key'|'value'>[]
+    };
+    embed:{
+        title:string
+        prompt:string
+        htumbnail:Dict<string>
+        fields:Dict<string,'name'>[]
     }
 }
 
@@ -111,14 +68,13 @@ export type MessageElem<T extends MessageElemType = MessageElemType> = {
 export type TextElem = MessageElem<"text">;
 export type AtElem = MessageElem<"at">;
 export type FaceElem = MessageElem<"face">;
+export type ArkElem = MessageElem<'ark'>
+export type EmbedElem = MessageElem<'embed'>
 export type ImageElem = MessageElem<"image">;
 export type VideoElem = MessageElem<"video">;
 export type AudioElem = MessageElem<"audio">;
 export type LinkElem = MessageElem<'link'>
-export type XmlElem = MessageElem<"xml">;
-export type JsonElem = MessageElem<"json">;
 export type MDElem=MessageElem<'markdown'>
-export type MusicElem = MessageElem<"music">;
 export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
 
@@ -136,11 +92,10 @@ export type Sendable =
     | RepeatableCombineElem
     | (RepeatableCombineElem|string)[] // 可重复组合的消息元素
     | WithReply<
-    | MDElem
+    | MDElem // markdown元素
+    | ArkElem // Ark 元素
+    | EmbedElem // Embed元素 仅频道和频道私信支持
     | LinkElem // 链接元素
     | VideoElem // 视频消息元素
     | AudioElem // 语音消息元素
-    | XmlElem // Xml消息元素
-    | MusicElem // 音乐消息元素
-    | JsonElem // Json消息元素
 >; // 带回复的消息元素

@@ -1,6 +1,6 @@
 import {ChannelSubType, ChannelType, PrivateType, SpeakPermission} from "./constans";
 
-export type Dict<T = any> = Record<string, T>
+export type Dict<T = any,K extends string|symbol=string> = Record<K, T>
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "mark" | "off";
 
 // websocket建立成功回包

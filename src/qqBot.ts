@@ -45,8 +45,9 @@ export class QQBot extends EventEmitter {
     }
 
     removeAt(payload: Dict) {
+        if(this.config.removeAt===false) return;
         const reg = new RegExp(`<@!${this.self_id}>`)
-        const isAtMe = reg.test(payload.content) && payload.mentions.some(mention => mention.id === this.self_id)
+        const isAtMe = reg.test(payload.content) && payload.mentions.some((mention:Dict) => mention.id === this.self_id)
         if (!isAtMe) return
         payload.content = payload.content.replace(reg, '').trimStart()
     }
@@ -67,6 +68,7 @@ export class QQBot extends EventEmitter {
             const permissions = member?.roles || []
             Object.assign(result, {
                 user_id: payload.author?.id,
+                id:payload.event_id||payload.id,
                 message_id: payload.event_id || payload.id,
                 raw_message: brief,
                 sender: {
