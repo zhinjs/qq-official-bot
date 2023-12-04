@@ -134,8 +134,8 @@ export class Sender {
                     rows.push(row)
                     row=[]
                 }
-                if(Array.isArray(this.buttons[i].rows)){
-                    rows.push(this.buttons[i].rows)
+                if(Array.isArray(this.buttons[i].buttons)){
+                    rows.push(this.buttons[i].buttons)
                     continue;
                 }
                 row.push(this.buttons[i])
