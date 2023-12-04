@@ -1,6 +1,10 @@
 import { defineConfig } from 'vitepress'
 export default defineConfig({
     themeConfig: {
+        editLink: {
+          pattern: 'https://github.com/lc-cn/qq-group-bot/edit/main/docs/src/:path',
+          text: 'Edit this page on GitHub'
+        },
         nav: [
             { text: '开始', link: '/guide/start', activeMatch: '/guide/' },
             { text: '配置', link: '/config', activeMatch: '/config' },
@@ -41,7 +45,7 @@ export default defineConfig({
                     { text: 'Markdown', link: '/segment/markdown' },
                     { text: 'button', link: '/segment/button' },
                     { text: 'Ark', link: '/segment/ark' },
-                    { text: 'embed', link: '/segment/embed' },
+                    { text: 'Embed', link: '/segment/embed' },
                 ]
             },
             {
@@ -57,7 +61,11 @@ export default defineConfig({
                     { text: '创建频道私信会话', link: '/api/createDirectSession' },
                 ]
             }
-        ]
+        ],
+        footer: {
+            message: 'Released under the <a href="https://github.com/lc-cn/qq-group-bot/blob/master/LICENSE">MIT License</a>.',
+            copyright: 'Copyright © 2023-present <a href="https://github.com/lc-cn">lc-cn</a>'
+        }
     },
     title: 'qq-group-bot',
     srcDir: './src',
