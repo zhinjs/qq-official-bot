@@ -25,7 +25,6 @@ layout: doc
 | GUILD_MESSAGES                | 私域频道消息事件  |
 | GUILD_MESSAGE_REACTIONS       | 频道消息表态事件  |
 | DIRECT_MESSAGE                | 频道私信事件    |
-| OPEN_FORUMS_EVENTS            |           |
 | AUDIO_OR_LIVE_CHANNEL_MEMBERS | 音频或直播频道成员 |
 | C2C_MESSAGE_CREATE            | 私聊消息事件    |
 | GROUP_AT_MESSAGE_CREATE       | 群聊@消息事件   |

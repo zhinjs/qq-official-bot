@@ -79,7 +79,7 @@ export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
 
 // 重复组合的消息元素
-type RepeatableCombineElem = TextElem | FaceElem | ImageElem | AtElem| ButtonElem;
+type RepeatableCombineElem = TextElem | FaceElem | LinkElem | AtElem | ButtonElem;
 // 带回复的消息元素
 type WithReply<T extends MessageElem> =
     | T
@@ -92,6 +92,7 @@ export type Sendable =
     | RepeatableCombineElem
     | (RepeatableCombineElem|string)[] // 可重复组合的消息元素
     | WithReply<
+    | ImageElem // 图片元素
     | MDElem // markdown元素
     | ArkElem // Ark 元素
     | EmbedElem // Embed元素 仅频道和频道私信支持
