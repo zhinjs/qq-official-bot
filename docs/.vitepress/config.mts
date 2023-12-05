@@ -2,9 +2,19 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
     base:"/qq-group-bot/",
     themeConfig: {
+        returnToTopLabel:'返回顶部',
+        lastUpdated:{
+          text:'最近更新'
+        },
+        search:{
+            provider:'local',
+            options:{
+                detailedView:'auto'
+            }
+        },
         editLink: {
           pattern: 'https://github.com/lc-cn/qq-group-bot/edit/main/docs/src/:path',
-          text: 'Edit this page on GitHub'
+          text: '修改'
         },
         nav: [
             { text: '开始', link: '/guide/start', activeMatch: '/guide/' },
@@ -23,7 +33,17 @@ export default defineConfig({
                     { text: '创建频道私信会话', link: '/api/createDirectSession' },
                 ]
             },
-            { text: 'Changelog', link: 'https://github.com/lc-cn/qq-group-bot/blob/master/CHANGELOG.md', target: '_blank', }
+            {
+                text: '事件',
+                activeMatch: '/event/',
+                items: [
+                    { text: '私聊事件', link: '/event/privateMessage' },
+                    { text: '群聊AT事件', link: '/event/groupAtMessage' },
+                    { text: '私信事件', link: '/event/directMessage' },
+                    { text: '频道消息事件', link: '/event/guildMessage' },
+                ]
+            },
+            { text: '更新日志', link: 'https://github.com/lc-cn/qq-group-bot/blob/master/CHANGELOG.md', target: '_blank', }
         ],
         sidebar: [
             {
@@ -31,7 +51,7 @@ export default defineConfig({
                 items: [
                     { text: '简介', link: '/guide/instruction' },
                     { text: '快速开始', link: '/guide/start' },
-                    { text: '配置', link: '/config' },
+                    { text: '配置项', link: '/config' },
                 ]
             },
             {
@@ -40,9 +60,11 @@ export default defineConfig({
                     { text: '文本', link: '/segment/text' },
                     { text: '表情', link: '/segment/face' },
                     { text: '图片', link: '/segment/image' },
+                    { text: '链接', link: '/segment/link' },
                     { text: '语音', link: '/segment/audio' },
                     { text: '视频', link: '/segment/video' },
-                    { text: '链接', link: '/segment/link' },
+                    { text: '回复', link: '/segment/reply' },
+                    { text: 'At', link: '/segment/at' },
                     { text: 'Markdown', link: '/segment/markdown' },
                     { text: 'button', link: '/segment/button' },
                     { text: 'Ark', link: '/segment/ark' },
