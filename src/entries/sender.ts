@@ -114,6 +114,10 @@ export class Sender {
                     this.messagePayload.msg_type = 2
                     this.brief += `<#markdown,content=${elem.content}>`
                     break;
+                case 'keyboard':
+                    this.messagePayload.msg_type = 2
+                    this.messagePayload.keyboard = data
+                    break;
                 case 'button':
                     this.buttons.push(data)
                     this.brief += `<$button,data=${JSON.stringify(data)}>`

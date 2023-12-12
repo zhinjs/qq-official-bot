@@ -40,6 +40,9 @@ export interface MessageElemMap {
         url?:string
     };
     markdown:Dict
+    keyboard:{
+        id:string
+    }
     reply: Quotable;
     link:{
         channel_id:string
@@ -75,6 +78,7 @@ export type VideoElem = MessageElem<"video">;
 export type AudioElem = MessageElem<"audio">;
 export type LinkElem = MessageElem<'link'>
 export type MDElem=MessageElem<'markdown'>
+export type KeyboardElem = MessageElem<'keyboard'>
 export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
 
@@ -93,10 +97,10 @@ export type Sendable =
     | (RepeatableCombineElem|string)[] // 可重复组合的消息元素
     | WithReply<
     | ImageElem // 图片元素
+    | KeyboardElem // 按钮组，供按钮模板使用
     | MDElem // markdown元素
     | ArkElem // Ark 元素
     | EmbedElem // Embed元素 仅频道和频道私信支持
-    | LinkElem // 链接元素
     | VideoElem // 视频消息元素
     | AudioElem // 语音消息元素
 >; // 带回复的消息元素
