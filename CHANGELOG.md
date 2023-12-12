@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/lc-cn/qq-group-bot/compare/v1.0.0...v1.0.1) (2023-12-12)
+
+
+### Bug Fixes
+
+* 增加KeyboardElem 用于发送按钮模板； ([77414c3](https://github.com/lc-cn/qq-group-bot/commit/77414c3afc96c38bb004b78d69c69a4f7fba322c))
+
 ## 1.0.0 (2023-12-05)
 
 
