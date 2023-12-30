@@ -130,6 +130,9 @@ export class SessionManager extends EventEmitter {
         this.connect();
         this.startListen();
     }
+    async stop(){
+        this.bot.ws.close()
+    }
 
     connect() {
         this.bot.ws = new WebSocket(this.wsUrl, {

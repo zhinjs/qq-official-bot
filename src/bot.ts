@@ -328,8 +328,8 @@ export class Bot extends QQBot {
         await this.sessionManager.start()
     }
 
-    stop() {
-
+    async stop() {
+        await this.sessionManager.stop()
     }
 }
 
