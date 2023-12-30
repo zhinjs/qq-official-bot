@@ -11,6 +11,10 @@ export namespace Guild {
         max_members:number
         description:string
     }
+    export type ApiInfo=Omit<Info, 'id'|'name'> & {
+        guild_id:string
+        guild_name:string
+    }
     export interface Role{
         id:string
         name:string

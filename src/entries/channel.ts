@@ -14,4 +14,8 @@ export namespace Channel {
         application_id?: string
         permissions?: string
     }
+    export type ApiInfo=Omit<Info, 'id'|'name'> & {
+        channel_id:string
+        channel_name:string
+    }
 }

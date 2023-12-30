@@ -169,7 +169,11 @@ export class Sender {
     async sendMsg() {
         await this.processMessage()
         if(this.isFile){
-            const {data:result} = await this.bot.request.post(this.baseUrl+'/files',this.filePayload)
+            const {data:result} = await this.bot.request.post<{
+                file_uuid:string
+                file_info:string
+                ttl:number
+            }>(this.baseUrl+'/files',this.filePayload)
             return result
         }
         const {data:result} = await this.bot.request.post(this.baseUrl+'/messages',this.messagePayload)

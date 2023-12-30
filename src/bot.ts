@@ -1,11 +1,18 @@
 import {QQBot} from "./qqBot";
 import {Channel} from './entries/channel'
 import {Guild} from "./entries/guild";
-import {Message} from "@/message";
-import {ApiBaseInfo, UpdatePermissionParams} from "@/types";
+import {
+    Announce,
+    ApiBaseInfo, ApiPermissionDemand,
+    ChannelMemberPermissions,
+    ChannelRolePermissions, ChannelUpdateInfo, DMS, PinsMessage, RoleCreateParam, RoleUpdateParam,
+    UpdatePermissionParams
+} from "@/types";
 import {Quotable, Sendable} from "@/elements";
 import {UnsupportedMethodError} from "@/constans";
 import {Sender} from "@/entries/sender";
+import {AxiosResponse} from "axios";
+import {GuildMember} from "@/entries/guildMember";
 
 
 export class Bot extends QQBot {
@@ -15,17 +22,20 @@ export class Bot extends QQBot {
     }
 
     async getSelfInfo() {
-        const {data: result} = await this.request.get('/users/@me')
+        const {data: result} = await this.request.get<Bot.Info>('/users/@me')
         return result
     }
 
     async getChannelPermissionOfRole(channel_id: string, role_id: string) {
-        const {data: result} = await this.request.get(`/channels/${channel_id}/roles/${role_id}/permissions`)
+        const {data: result} = await this.request.get<ChannelRolePermissions>(`/channels/${channel_id}/roles/${role_id}/permissions`)
         return result
     }
 
     async setChannelAnnounce(guild_id: string, channel_id: string, message_id: string) {
-        const {data: result} = await this.request.post(`/guilds/${guild_id}/announces`, {
+        const {data: result} = await this.request.post<{
+            message_id:string
+            channel_id:string
+        },AxiosResponse<Announce>>(`/guilds/${guild_id}/announces`, {
             message_id,
             channel_id
         })
@@ -38,7 +48,7 @@ export class Bot extends QQBot {
     }
 
     async getChannelMemberPermission(channel_id: string, member_id: string) {
-        const {data: result} = await this.request.get(`/channels/${channel_id}/members/${member_id}/permissions`)
+        const {data: result} = await this.request.get<ChannelMemberPermissions>(`/channels/${channel_id}/members/${member_id}/permissions`)
         return result
     }
 
@@ -53,24 +63,22 @@ export class Bot extends QQBot {
     }
 
     async pinChannelMessage(channel_id: string, message_id: string) {
-        const {data: result} = await this.request.post(`/channels/${channel_id}/pins/${message_id}`)
+        const {data: result} = await this.request.post<PinsMessage>(`/channels/${channel_id}/pins/${message_id}`)
         return result
     }
 
     async unPinChannelMessage(channel_id: string, message_id: string) {
-        const {data: result} = await this.request.delete(`/channels/${channel_id}/pins/${message_id}`)
+        const result = await this.request.delete(`/channels/${channel_id}/pins/${message_id}`)
+        return result.status===204
+    }
+
+    async createChannel(guild_id: string, channelInfo: Omit<Channel.Info, 'id'>) {
+        const {data: result} = await this.request.post<Omit<Channel.Info, 'id'>,AxiosResponse<Channel.Info>>(`/guilds/${guild_id}/channels`, channelInfo)
         return result
     }
 
-    async createChannel(guild_id: string, channelInfo: Omit<Channel.Info, 'id'>): Promise<Channel.Info> {
-        const {data: result} = await this.request.post(`/guilds/${guild_id}/channels`, channelInfo)
-        return result
-    }
-
-    async updateChannel({channel_id, ...updateInfo}: {
-        channel_id: string
-    } & Partial<Pick<Channel.Info, 'name' | 'position' | 'parent_id' | 'private_type' | 'speak_permission'>>): Promise<Channel.Info> {
-        const {data: result} = await this.request.patch(`/channels/${channel_id}`, updateInfo)
+    async updateChannel(channel_id:string,updateInfo:ChannelUpdateInfo) {
+        const {data: result} = await this.request.patch<ChannelUpdateInfo,AxiosResponse<Channel.Info>>(`/channels/${channel_id}`, updateInfo)
         return result
     }
 
@@ -80,17 +88,17 @@ export class Bot extends QQBot {
     }
 
     async getGuildRoles(guild_id: string) {
-        const {data: {roles = []} = {}} = await this.request.get(`/guilds/${guild_id}/roles`)
+        const {data: {roles = []} = {}} = await this.request.get<{roles:Guild.Role[]}>(`/guilds/${guild_id}/roles`)
         return roles
     }
 
-    async creatGuildRole(guild_id: string, role: Pick<Guild.Role, 'name' | 'color' | 'hoist'>): Promise<Guild.Role> {
-        const {data: result} = await this.request.post(`/guilds/${guild_id}/roles`, role)
+    async creatGuildRole(guild_id: string, role: RoleCreateParam){
+        const {data: result} = await this.request.post<RoleCreateParam,AxiosResponse<{role:Guild.Role}>>(`/guilds/${guild_id}/roles`, role)
         return result.role
     }
 
-    async updateGuildRole(guild_id: string, {id, ...role}: Pick<Guild.Role, 'id' | 'name' | 'color' | 'hoist'>) {
-        const {data: result} = await this.request.patch(`/guilds/${guild_id}/roles/${id}`, role)
+    async updateGuildRole(guild_id: string, role_id:string,updateInfo:RoleUpdateParam ) {
+        const {data: result} = await this.request.patch<RoleUpdateParam,AxiosResponse<{role:Guild.Role}>>(`/guilds/${guild_id}/roles/${role_id}`, updateInfo)
         return result.role
     }
 
@@ -100,12 +108,16 @@ export class Bot extends QQBot {
     }
 
     async getGuildAccessApis(guild_id: string) {
-        const {data: result} = await this.request.get(`/guilds/${guild_id}/api_permission`)
+        const {data: result} = await this.request.get<{apis:ApiPermissionDemand[]}>(`/guilds/${guild_id}/api_permission`)
         return result.apis || []
     }
 
     async applyGuildAccess(guild_id: string, channel_id: string, apiInfo: ApiBaseInfo, desc?: string) {
-        const {data: result} = await this.request.post(`/guilds/${guild_id}/api_permission/demand`, {
+        const {data: result} = await this.request.post<{
+            channel_id:string
+            api_identify:ApiBaseInfo
+            desc:string
+        },AxiosResponse<ApiPermissionDemand>>(`/guilds/${guild_id}/api_permission/demand`, {
             channel_id,
             api_identify: apiInfo,
             desc,
@@ -191,7 +203,7 @@ export class Bot extends QQBot {
             const last = result[result.length - 1]
             return [...result, ...await _getGuildList(last.guild_id)]
         }
-        return await _getGuildList()
+        return await _getGuildList() as Guild.ApiInfo[]
     }
 
     async getGuildMemberList(guild_id: string) {
@@ -204,30 +216,32 @@ export class Bot extends QQBot {
             }).catch(() => ({data: []}))// 公域没有权限，做个兼容
             if (!res.data?.length) return []
             const result = (res.data || []).map(m => {
-                const {id: member_id, name: member_name, role, join_time, ...member} = m
+                const {user:{id:member_id,...member},roles, joined_at,nick} = m
                 return {
                     member_id,
-                    member_name,
-                    role,
-                    join_time: new Date(join_time).getTime() / 1000,
-                    ...member
+                    card:nick,
+                    roles,
+                    ...member,
+                    join_time: new Date(joined_at).getTime() / 1000,
                 }
             })
             const last = result[result.length - 1]
             return [...result, ...await _getGuildMemberList(last.member_id)]
         }
-        return await _getGuildMemberList()
+        return await _getGuildMemberList() as GuildMember.ApiInfo[]
     }
 
     async getGuildMemberInfo(guild_id: string, member_id: string) {
-        const {data: result} = await this.request.get(`/guilds/${guild_id}/members/${member_id}`)
-        return result
+        const {data: {user:{id:_,...member},roles, joined_at,nick}} = await this.request.get(`/guilds/${guild_id}/members/${member_id}`)
+        return {
+            member_id,
+            card:nick,
+            roles,
+            ...member,
+            join_time: new Date(joined_at).getTime() / 1000,
+        } as GuildMember.ApiInfo
     }
 
-    async getChannelInfo(channel_id: string) {
-        const {data: result} = await this.request.get(`/channels/${channel_id}`)
-        return result
-    }
 
     async getGroupMemberList(group_id: string) {
         throw UnsupportedMethodError
@@ -245,7 +259,7 @@ export class Bot extends QQBot {
         throw UnsupportedMethodError
     }
 
-    async getChannelList(guild_id: string) {
+    async getChannelList(guild_id: string):Promise<Channel.ApiInfo> {
         const {data: result = []} = await this.request.get(`/guilds/${guild_id}/channels`)
         return result.map(({id: channel_id, name: channel_name, ...channel}) => {
             return {
@@ -255,13 +269,27 @@ export class Bot extends QQBot {
             }
         })
     }
+    async getChannelInfo(channel_id: string) {
+        const {data: {id: _, name: channel_name, ...channel}} = await this.request.get<Channel.Info>(`/channels/${channel_id}`)
+        return {
+            channel_id,
+            channel_name,
+            ...channel
+        } as Channel.ApiInfo
+    }
 
     async createDirectSession(guild_id:string,user_id:string){
-        const {data:result}=await this.request.post(`/users/@me/dms`,{
+        const {data:result}=await this.request.post<{
+            recipient_id:string
+            source_guild_id:string
+        },AxiosResponse<DMS>>(`/users/@me/dms`,{
             recipient_id:user_id,
             source_guild_id:guild_id
         })
-        return result
+        return {
+            ...result,
+            create_time:new Date(result.create_time).getTime()/1000
+        } as DMS
     }
     async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable) {
         const sender=new Sender(this,`/v2/users/${user_id}`,message,source)
@@ -298,6 +326,13 @@ export class Bot extends QQBot {
 }
 
 export namespace Bot {
+    export interface Info{
+        id:string
+        username:string
+        avatar:string
+        union_openid?:string
+        union_user_account?:string
+    }
     export interface Config extends QQBot.Config {
     }
 }
