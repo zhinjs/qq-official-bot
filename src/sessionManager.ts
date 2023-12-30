@@ -37,13 +37,13 @@ export class SessionManager extends EventEmitter {
                     this.bot.logger.mark("[CLIENT] 等待断线重连中...");
                     break;
                 case SessionEvents.DISCONNECT:
-                    if(this.userClose) return
+                    if(this.userClose||[4914,4915].includes(data.code)) return
                     if (this.retry < (this.bot.config.maxRetry || MAX_RETRY)) {
                         this.bot.logger.mark("[CLIENT] 重新连接中，尝试次数：", this.retry + 1);
                         if (WebsocketCloseReason.find((v) => v.code === data.code)?.resume) {
                             this.sessionRecord = data.eventMsg;
                         }
-                        this.isReconnect = true
+                        this.isReconnect = data.code===4009
                         this.start();
                         this.retry += 1;
                     } else {
@@ -171,7 +171,6 @@ export class SessionManager extends EventEmitter {
     }
 
     authWs() {
-
         // 鉴权参数
         const authOp = {
             op: OpCode.IDENTIFY, // 鉴权参数
@@ -198,7 +197,7 @@ export class SessionManager extends EventEmitter {
             if (code) {
                 WebsocketCloseReason.forEach((e) => {
                     if (e.code === code) {
-                        this.emit(SessionEvents.ERROR, e.reason);
+                        this.emit(SessionEvents.ERROR,code, e.reason);
                     }
                 });
             }
