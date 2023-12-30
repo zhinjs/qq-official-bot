@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/lc-cn/qq-group-bot/compare/v1.0.1...v1.0.2) (2023-12-30)
+
+
+### Bug Fixes
+
+* 添加接口类型声明 ([ebf3383](https://github.com/lc-cn/qq-group-bot/commit/ebf338343ad9df9591372bc857bc6037d398742b))
+
 ## [1.0.1](https://github.com/lc-cn/qq-group-bot/compare/v1.0.0...v1.0.1) (2023-12-12)
 
 
