@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/lc-cn/qq-group-bot/compare/v1.0.3...v1.0.4) (2023-12-30)
+
+
+### Bug Fixes
+
+* 允许关闭 ([10005e8](https://github.com/lc-cn/qq-group-bot/commit/10005e816f081dbf625d709c8ee39f563662e8f8))
+
 ## [1.0.3](https://github.com/lc-cn/qq-group-bot/compare/v1.0.2...v1.0.3) (2023-12-30)
 
 
