@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/lc-cn/qq-group-bot/compare/v1.0.2...v1.0.3) (2023-12-30)
+
+
+### Bug Fixes
+
+* 添加撤回消息接口（仅频道私信和子频道消息可用） ([852d100](https://github.com/lc-cn/qq-group-bot/commit/852d100a9554314228721db76eaab1601c3f9eb2))
+
 ## [1.0.2](https://github.com/lc-cn/qq-group-bot/compare/v1.0.1...v1.0.2) (2023-12-30)
 
 
