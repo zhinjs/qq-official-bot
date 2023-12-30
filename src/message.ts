@@ -1,6 +1,6 @@
 import {MessageElem, Sendable} from "@/elements";
 import {QQBot} from "@/qqBot";
-import {Dict} from "@/types";
+import {Announce, Dict, PinsMessage} from "@/types";
 import {trimQuote} from "@/utils";
 import {Bot} from "./bot";
 import {User} from "@/entries/user";
@@ -105,11 +105,11 @@ export class GuildMessageEvent extends Message implements MessageEvent {
         this.message_type = 'guild'
     }
 
-    async asAnnounce() {
+    async asAnnounce():Promise<Announce> {
         return this.bot.setChannelAnnounce(this.guild_id, this.channel_id, this.id)
     }
 
-    async pin() {
+    async pin():Promise<PinsMessage> {
         return this.bot.pinChannelMessage(this.channel_id, this.id)
     }
 
