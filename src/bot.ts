@@ -303,11 +303,19 @@ export class Bot extends QQBot {
         this.logger.info(`send to Direct(${guild_id}): ${sender.brief}`)
         return result
     }
+    async recallDirectMessage(guild_id:string,message_id:string,hidetip?:boolean){
+        const result=await this.request.delete(`/dms/${guild_id}/messages/${message_id}?hidetip=${!!hidetip}`)
+        return result.status===200
+    }
     async sendGuildMessage(channel_id: string, message: Sendable, source?: Quotable) {
         const sender=new Sender(this,`/channels/${channel_id}`,message,source)
         const result= await sender.sendMsg()
         this.logger.info(`send to Channel(${channel_id}): ${sender.brief}`)
         return result
+    }
+    async recallGuildMessage(channel_id:string,message_id:string,hidetip?:boolean){
+        const result=await this.request.delete(`/channels/${channel_id}/messages/${message_id}?hidetip=${!!hidetip}`)
+        return result.status===200
     }
     async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable) {
         const sender=new Sender(this,`/v2/groups/${group_id}`,message,source)

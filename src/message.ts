@@ -85,7 +85,9 @@ export class DirectMessageEvent extends Message implements MessageEvent {
         super(bot, payload);
         this.message_type = 'direct'
     }
-
+    recall(hidetip?:boolean){
+        return this.bot.recallDirectMessage(this.guild_id,this.message_id,hidetip)
+    }
     reply(message: Sendable) {
         return this.bot.sendDirectMessage(this.guild_id, message, this)
     }
@@ -111,6 +113,9 @@ export class GuildMessageEvent extends Message implements MessageEvent {
         return this.bot.pinChannelMessage(this.channel_id, this.id)
     }
 
+    recall(hidetip?:boolean){
+        return this.bot.recallGuildMessage(this.channel_id,this.message_id,hidetip)
+    }
     async reply(message: Sendable) {
         return this.bot.sendGuildMessage(this.channel_id, message, this)
     }
