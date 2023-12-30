@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.6](https://github.com/lc-cn/qq-group-bot/compare/v1.0.5...v1.0.6) (2023-12-30)
+
+
+### Bug Fixes
+
+* 重连错误 ([412f681](https://github.com/lc-cn/qq-group-bot/commit/412f681bf56209b54e73d453aa802082b4631fe0))
+
 ## [1.0.5](https://github.com/lc-cn/qq-group-bot/compare/v1.0.4...v1.0.5) (2023-12-30)
 
 
