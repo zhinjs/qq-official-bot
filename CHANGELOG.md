@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.7](https://github.com/lc-cn/qq-group-bot/compare/v1.0.6...v1.0.7) (2023-12-30)
+
+
+### Bug Fixes
+
+* 编译类型错误 ([8259f7d](https://github.com/lc-cn/qq-group-bot/commit/8259f7df6da1004557c72b762b78c5ef70d3cf2a))
+
 ## [1.0.6](https://github.com/lc-cn/qq-group-bot/compare/v1.0.5...v1.0.6) (2023-12-30)
 
 
