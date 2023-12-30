@@ -15,6 +15,7 @@ export class SessionManager extends EventEmitter {
     alive?: boolean;
     heartbeatInterval: number;
     isReconnect: boolean;
+    userClose:boolean
     sessionRecord = {
         sessionID: "",
         seq: 0
@@ -36,6 +37,7 @@ export class SessionManager extends EventEmitter {
                     this.bot.logger.mark("[CLIENT] 等待断线重连中...");
                     break;
                 case SessionEvents.DISCONNECT:
+                    if(this.userClose) return
                     if (this.retry < (this.bot.config.maxRetry || MAX_RETRY)) {
                         this.bot.logger.mark("[CLIENT] 重新连接中，尝试次数：", this.retry + 1);
                         if (WebsocketCloseReason.find((v) => v.code === data.code)?.resume) {
@@ -125,12 +127,14 @@ export class SessionManager extends EventEmitter {
     }
 
     async start() {
+        this.userClose=false
         await this.getAccessToken();
         await this.getWsUrl();
         this.connect();
         this.startListen();
     }
     async stop(){
+        this.userClose=true
         this.bot.ws.close()
     }
 
