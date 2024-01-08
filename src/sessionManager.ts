@@ -127,15 +127,34 @@ export class SessionManager extends EventEmitter {
     }
 
     async start() {
-        this.userClose=false
-        await this.getAccessToken();
-        await this.getWsUrl();
+        if ( !( await this.checkNeedToRestart() ) ) {
+            return;
+        }
+        this.userClose = false;
         this.connect();
         this.startListen();
     }
     async stop(){
         this.userClose=true
-        this.bot.ws.close()
+        this.bot.ws?.close()
+    }
+
+    /* 校验是否需要重新创建 ws */
+    private async checkNeedToRestart() {
+        const originWsUrl = this.wsUrl;
+        const originAccessToken = this.access_token;
+        await this.getAccessToken();
+        await this.getWsUrl();
+        // 此时不存在示例或是实例正在关闭
+        if ( !this.bot.ws || ![0, 1].includes( this.bot.ws.readyState ) ) {
+            return true;
+        }
+        const checked = originWsUrl !== this.wsUrl || originAccessToken !== this.access_token;
+        // 重启前先停止原来的实例
+        if ( checked ) {
+            await this.stop();
+        }
+        return checked;
     }
 
     connect() {
