@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.9](https://github.com/lc-cn/qq-group-bot/compare/v1.0.8...v1.0.9) (2024-01-09)
+
+
+### Bug Fixes
+
+* message_id错误 ([5c393d7](https://github.com/lc-cn/qq-group-bot/commit/5c393d7b3f2c451aaee62efeade17cdfe853f2f0))
+
 ## [1.0.8](https://github.com/lc-cn/qq-group-bot/compare/v1.0.7...v1.0.8) (2024-01-09)
 
 
