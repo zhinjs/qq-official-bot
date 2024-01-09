@@ -69,7 +69,7 @@ export class QQBot extends EventEmitter {
             Object.assign(result, {
                 user_id: payload.author?.id,
                 id:payload.event_id||payload.id,
-                message_id: payload.event_id || payload.id,
+                message_id: payload.id,
                 raw_message: brief,
                 sender: {
                     user_id: payload.author?.id,
