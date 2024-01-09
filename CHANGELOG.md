@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.8](https://github.com/lc-cn/qq-group-bot/compare/v1.0.7...v1.0.8) (2024-01-09)
+
+
+### Bug Fixes
+
+* 重复监听ws事件问题 ([0107e2c](https://github.com/lc-cn/qq-group-bot/commit/0107e2ca140b52c99687b3199ed6d161c607f5b9))
+
 ## [1.0.7](https://github.com/lc-cn/qq-group-bot/compare/v1.0.6...v1.0.7) (2023-12-30)
 
 
