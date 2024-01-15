@@ -137,7 +137,6 @@ export namespace MessageEvent {
         const permissions = member?.roles || []
         Object.assign(payload, {
             user_id: payload.author?.id,
-            id: payload.event_id || payload.id,
             message_id: payload.id,
             raw_message: brief,
             sender: {
