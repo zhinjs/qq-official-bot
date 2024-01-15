@@ -1,6 +1,7 @@
 import {ChannelSubType, ChannelType, PrivateType, SpeakPermission} from "./constans";
 import {Channel} from "@/entries/channel";
 import {Guild} from "@/entries/guild";
+import {GuildMember} from "@/entries/guildMember";
 
 export type Dict<T = any, K extends string | symbol = string> = Record<K, T>
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error" | "fatal" | "mark" | "off";
@@ -70,7 +71,66 @@ export interface DMS {
     channel_id: string
     create_time: number
 }
-
+export interface ScheduleInfo{
+    id?:string
+    name:string
+    description?:string
+    start_timestamp:string
+    end_timestamp:string
+    creator?:GuildMember.ApiInfo
+    jump_channel_id:string
+    remind_type:RemindType
+}
+export type RemindType=0|1|2|3|4|5|6
+export type AudioStatus=0|1|2|3
+export interface AudioControl{
+    audio_url?:string
+    text?:string
+    status:AudioStatus
+}
+export interface AudioAction{
+    guild_id:string
+    channel_id:string
+    audio_url:string
+    text:string
+}
+export interface Thread{
+    guild_id:string
+    channel_id:string
+    author_id:string
+    thread_info:ThreadInfo
+}
+export interface ThreadInfo{
+    thread_id:string
+    title:string
+    content:string
+    date_time:number
+}
+export interface Post{
+    guild_id:string
+    channel_id:string
+    author_id:string
+    post_info:PostInfo
+}
+export interface PostInfo{
+    thread_id:string
+    post_id:string
+    content:string
+    date_time:number
+}
+export interface Reply{
+    guild_id:string
+    channel_id:string
+    author_id:string
+    reply_info:ReplyInfo
+}
+export interface ReplyInfo{
+    thread_id:string
+    post_id:string
+    reply_id:string
+    content:string
+    date_time:number
+}
 export type ApiPermissionDemand = {
     guild_id: string
     channel_id: string

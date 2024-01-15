@@ -3,12 +3,11 @@ import {WebSocket} from "ws";
 import * as log4js from 'log4js'
 import {EventEmitter} from "events";
 import {SessionManager} from "./sessionManager";
-import {Dict, FaceType, LogLevel} from "@/types";
+import {Dict, LogLevel} from "@/types";
 import {GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "@/event";
 import {EventMap, EventParserMap, QQEvent} from "@/event";
 import {Bot} from "./bot";
-import {Intends, Intent} from "@/constans";
-import {User} from "@/entries/user";
+import {Intent} from "@/constans";
 
 export class QQBot extends EventEmitter {
     request: AxiosInstance
@@ -74,78 +73,6 @@ export class QQBot extends EventEmitter {
         if (!payload || !event) return;
         const transformEvent = QQEvent[event] || 'system'
         this.em(transformEvent, this.processPayload(event_id, transformEvent, payload));
-    }
-
-    /**
-     * 对频道消息进行表态
-     * @param channel_id {string} 子频道id
-     * @param message_id {string} 消息id
-     * @param type {0|1} 表情类型
-     * @param id {`${number}`} 表情id
-     */
-    async reactionGuildMessage(channel_id: string, message_id: string, type: FaceType, id: `${number}`) {
-        const result = await this.request.put(`/channels/${channel_id}/messages/${message_id}/reactions/${type}/${id}`)
-        return result.status === 204
-    }
-
-    /**
-     * 删除频道消息表态
-     * @param channel_id {string} 子频道id
-     * @param message_id {string} 消息id
-     * @param type {0|1} 表情类型
-     * @param id {`${number}`} 表情id
-     */
-    async deleteGuildMessageReaction(channel_id: string, message_id: string, type: FaceType, id: `${number}`) {
-        const result = await this.request.delete(`/channels/${channel_id}/messages/${message_id}/reactions/${type}/${id}`)
-        return result.status === 204
-    }
-
-    /**
-     * 获取表态用户列表
-     * @param channel_id {string} 子频道id
-     * @param message_id {string} 消息id
-     * @param type {0|1} 表情类型
-     * @param id {`${number}`} 表情id
-     */
-    async getGuildMessageReactionMembers(channel_id: string, message_id: string, type: FaceType, id: `${number}`) {
-        const formatUser = (users: User.Info[]) => {
-            return users.map(user => {
-                return {
-                    user_id: user.id,
-                    user_name: user.username,
-                    avatar: user.avatar
-                }
-            })
-        }
-        const getMembers = async (cookies?: string): Promise<{
-            user_id: string
-            user_name: string
-            avatar: string
-        }[]> => {
-            const {
-                data: {
-                    users,
-                    cookie,
-                    is_end
-                }
-            } = await this.request.get(`/channels/${channel_id}/messages/${message_id}/reactions/${type}/${id}`, {
-                params: {
-                    cookie: cookies
-                }
-            })
-            if (is_end) return formatUser(users)
-            return [...formatUser(users), ...await getMembers(cookie)]
-        }
-        return await getMembers()
-    }
-
-    /**
-     * 回应操作
-     * @param action_id {string} 操作id
-     */
-    async replyAction(action_id: string) {
-        const result = await this.request.put(`/interactions/${action_id}`)
-        return result.status === 204
     }
 
     em(event: string, payload: Dict) {
