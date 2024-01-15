@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.11](https://github.com/lc-cn/qq-group-bot/compare/v1.0.10...v1.0.11) (2024-01-15)
+
+
+### Bug Fixes
+
+* 修复获取表态用户列表错误 ([0030d98](https://github.com/lc-cn/qq-group-bot/commit/0030d98c49435cbe97409f1001cf1b7b9ac37a21))
+
 ## [1.0.10](https://github.com/lc-cn/qq-group-bot/compare/v1.0.9...v1.0.10) (2024-01-15)
 
 
