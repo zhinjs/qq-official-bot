@@ -134,7 +134,7 @@ export class QQBot extends EventEmitter {
                 }
             })
             if (is_end) return formatUser(users)
-            return formatUser([...users, ...await getMembers(cookie)])
+            return [...formatUser(users), ...await getMembers(cookie)]
         }
         return await getMembers()
     }
