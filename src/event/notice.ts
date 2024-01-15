@@ -28,7 +28,7 @@ export class ActionNoticeEvent {
     async reply(code:ActionNoticeEvent.ReplyCode=0) {
         if (this.replied) return true
         this.replied = true
-        return this.bot.replyAction(this.notice_id)
+        return this.bot.replyAction(this.notice_id,code)
     }
 }
 

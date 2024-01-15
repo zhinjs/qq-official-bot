@@ -22,6 +22,7 @@ import {Sender} from "@/entries/sender";
 import {AxiosResponse} from "axios";
 import {GuildMember} from "@/entries/guildMember";
 import {User} from "@/entries/user";
+import {ActionNoticeEvent} from "@/event/notice";
 
 
 export class Bot extends QQBot {
@@ -631,9 +632,10 @@ export class Bot extends QQBot {
     /**
      * 回应操作
      * @param action_id {string} 操作id
+     * @param code {number}
      */
-    async replyAction(action_id: string) {
-        const result = await this.request.put(`/interactions/${action_id}`)
+    async replyAction(action_id: string,code:ActionNoticeEvent.ReplyCode=0) {
+        const result = await this.request.put(`/interactions/${action_id}?code=${code}`)
         return result.status === 200
     }
 
