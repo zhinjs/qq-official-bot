@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.10](https://github.com/lc-cn/qq-group-bot/compare/v1.0.9...v1.0.10) (2024-01-15)
+
+
+### Bug Fixes
+
+* 增加操作回应能力 ([3bc4548](https://github.com/lc-cn/qq-group-bot/commit/3bc45485f73f842c3c3cb360b799fd7a1488db65))
+* 频道消息增加消息表态能力 ([3bc4548](https://github.com/lc-cn/qq-group-bot/commit/3bc45485f73f842c3c3cb360b799fd7a1488db65))
+
 ## [1.0.9](https://github.com/lc-cn/qq-group-bot/compare/v1.0.8...v1.0.9) (2024-01-09)
 
 
