@@ -98,6 +98,38 @@ export enum Intends {
     PUBLIC_GUILD_MESSAGES = 1 << 30,// 公域机器人消息事件
 }
 
+export type Intent =
+// 频道事件
+    | 'GUILDS'
+    // 频道成员事件
+    | 'GUILD_MEMBERS'
+    // 频道消息事件
+    | 'GUILD_MESSAGES'
+    // 频道消息表态事件
+    | 'GUILD_MESSAGE_REACTIONS'
+    // 频道私信事件
+    | 'DIRECT_MESSAGE'
+    // 频道操作事件
+    | 'OPEN_FORUMS_EVENTS'
+    // 频道成员变更事件
+    | 'AUDIO_OR_LIVE_CHANNEL_MEMBERS'
+    // 群聊消息事件
+    | 'GROUP_MESSAGE_CREATE'
+    // 私聊消息事件
+    | 'C2C_MESSAGE_CREATE'
+    // 群聊@消息事件
+    | 'GROUP_AT_MESSAGE_CREATE'
+    // 互动事件
+    | 'INTERACTION'
+    // 消息审核事件
+    | 'MESSAGE_AUDIT'
+    // 论论坛事件(仅私域)
+    | 'FORUMS_EVENTS'
+    // 音频操作事件
+    | 'AUDIO_ACTIONS'
+    // 公域机器人消息事件
+    | 'PUBLIC_GUILD_MESSAGES'
+
 export enum ChannelType {
     Content = 0, // 文本频道
     Record = 2, // 语音频道

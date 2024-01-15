@@ -1,4 +1,8 @@
-import {DirectMessageEvent, GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "@/message";
+import {DirectMessageEvent, MessageEvent, GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "./message";
+import {Bot, Dict} from "@";
+import {ActionNoticeEvent} from "@/event/notice";
+
+export * from "./message"
 
 export enum QQEvent {
     DIRECT_MESSAGE_CREATE = 'message.direct',
@@ -17,9 +21,19 @@ export enum QQEvent {
     GROUP_DEL_ROBOT = 'notice.group.decrease',
     FRIEND_ADD = 'notice.friend.add',
     FRIEND_DEL = 'notice.friend.del',
+    INTERACTION_CREATE = 'notice.action.create',
     C2C_MESSAGE_CREATE = 'message.private',
     GROUP_AT_MESSAGE_CREATE = 'message.group',
 }
+
+export type EventParser<T extends keyof EventMap = keyof EventMap> = (this: Bot, event: T, payload: Dict) => Parameters<EventMap[T]>[0]
+export const EventParserMap: Map<string, EventParser> = new Map<string, EventParser>()
+
+EventParserMap.set(QQEvent.AT_MESSAGE_CREATE, MessageEvent.parse)
+EventParserMap.set(QQEvent.DIRECT_MESSAGE_CREATE, MessageEvent.parse)
+EventParserMap.set(QQEvent.GROUP_AT_MESSAGE_CREATE, MessageEvent.parse)
+EventParserMap.set(QQEvent.C2C_MESSAGE_CREATE, MessageEvent.parse)
+EventParserMap.set(QQEvent.INTERACTION_CREATE, ActionNoticeEvent.parse)
 
 export interface EventMap {
     'message'(e: PrivateMessageEvent | GroupMessageEvent | GuildMessageEvent | DirectMessageEvent): void
@@ -31,4 +45,8 @@ export interface EventMap {
     'message.private'(e: PrivateMessageEvent): void
 
     'message.guild'(e: GuildMessageEvent): void
+
+    'notice'(e: ActionNoticeEvent | Dict): void
+
+    'notice.action'(e: ActionNoticeEvent): void
 }

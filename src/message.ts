@@ -1,6 +1,6 @@
 import {MessageElem, Sendable} from "@/elements";
 import {QQBot} from "@/qqBot";
-import {Announce, Dict, PinsMessage} from "@/types";
+import {Dict} from "@/types";
 import {trimQuote} from "@/utils";
 import {Bot} from "./bot";
 import {User} from "@/entries/user";
@@ -16,7 +16,7 @@ export class Message {
     channel_id?: string
     group_id?: string
     id: string
-    message_id:string
+    message_id: string
     sender: Message.Sender
     user_id: string
 
@@ -46,81 +46,6 @@ export class Message {
     }
 }
 
-
-export interface MessageEvent {
-    reply(message: Sendable, quote?: boolean): Promise<any>
-}
-
-export class PrivateMessageEvent extends Message implements MessageEvent {
-    constructor(bot: Bot, payload: Partial<Message>) {
-        super(bot, payload);
-        this.message_type = 'private'
-    }
-
-    async reply(message: Sendable) {
-        return this.bot.sendPrivateMessage(this.user_id, message, this)
-    }
-}
-
-export class GroupMessageEvent extends Message implements MessageEvent {
-    group_id: string
-    group_name: string
-
-    constructor(bot: Bot, payload: Partial<Message>) {
-        super(bot, payload);
-        this.group_id=payload.group_id
-        this.message_type = 'group'
-    }
-
-    async reply(message: Sendable) {
-        return this.bot.sendGroupMessage(this.group_id, message, this)
-    }
-}
-
-export class DirectMessageEvent extends Message implements MessageEvent {
-    user_id: string
-    channel_id: string
-
-    constructor(bot: Bot, payload: Partial<Message>) {
-        super(bot, payload);
-        this.message_type = 'direct'
-    }
-    recall(hidetip?:boolean){
-        return this.bot.recallDirectMessage(this.guild_id,this.message_id,hidetip)
-    }
-    reply(message: Sendable) {
-        return this.bot.sendDirectMessage(this.guild_id, message, this)
-    }
-}
-
-export class GuildMessageEvent extends Message implements MessageEvent {
-    guild_id: string
-    guild_name: string
-    channel_id: string
-
-    channel_name: string
-
-    constructor(bot: Bot, payload: Partial<Message>) {
-        super(bot, payload);
-        this.message_type = 'guild'
-    }
-
-    async asAnnounce():Promise<Announce> {
-        return this.bot.setChannelAnnounce(this.guild_id, this.channel_id, this.id)
-    }
-
-    async pin():Promise<PinsMessage> {
-        return this.bot.pinChannelMessage(this.channel_id, this.id)
-    }
-
-    recall(hidetip?:boolean){
-        return this.bot.recallGuildMessage(this.channel_id,this.message_id,hidetip)
-    }
-    async reply(message: Sendable) {
-        return this.bot.sendGuildMessage(this.channel_id, message, this)
-    }
-}
-
 export namespace Message {
     export interface Sender {
         user_id: string
@@ -136,12 +61,12 @@ export namespace Message {
         let brief: string = ''
         // 1. 处理文字表情混排
         const regex = /("[^"]*?"|'[^']*?'|`[^`]*?`|“[^”]*?”|‘[^’]*?’|<[^>]+?>)/;
-        if(payload.message_reference){
+        if (payload.message_reference) {
             result.push({
-                type:'reply',
-                id:payload.message_reference.message_id
+                type: 'reply',
+                id: payload.message_reference.message_id
             })
-            brief+=`<reply,id=${payload.message_reference.message_id}>`
+            brief += `<reply,id=${payload.message_reference.message_id}>`
         }
         while (template.length) {
             const [match] = template.match(regex) || [];
@@ -166,7 +91,7 @@ export namespace Message {
                         const id = type.slice(2)
                         type = 'at'
                         attrs = Object.entries(payload.mentions.find((u: Dict) => u.id === id) || {})
-                            .map(([key, value]) => `${key==='id'?'user_id':key}=${value}`)
+                            .map(([key, value]) => `${key === 'id' ? 'user_id' : key}=${value}`)
                     } else if (type === '@everyone') {
                         type = 'at'
                         attrs = ['user_id=all']
@@ -175,7 +100,7 @@ export namespace Message {
                     attrs = ['id=' + type.split(':')[1]]
                     type = 'face'
                 }
-                if([
+                if ([
                     'text',
                     'face',
                     'at',
@@ -188,7 +113,7 @@ export namespace Message {
                     'reply',
                     'ark',
                     'embed'
-                ].includes(type)){
+                ].includes(type)) {
                     result.push({
                         type,
                         ...Object.fromEntries(attrs.map((attr: string) => {
@@ -197,13 +122,13 @@ export namespace Message {
                         }))
                     })
                     brief += `<${type},${attrs.join(',')}>`
-                }else{
+                } else {
                     result.push({
-                        type:'text',
-                        text:match
+                        type: 'text',
+                        text: match
                     })
                 }
-            }else{
+            } else {
                 result.push({
                     type: "text",
                     text: match
@@ -223,12 +148,12 @@ export namespace Message {
             for (const attachment of payload.attachments) {
                 let {content_type, ...data} = attachment
                 const [type] = content_type.split('/')
-                let url=data.src||data.url||''
-                if(!url.startsWith('http')) url=`https://${url}`
+                let url = data.src || data.url || ''
+                if (!url.startsWith('http')) url = `https://${url}`
                 result.push({
                     type,
                     ...data,
-                    file:url
+                    file: url
                 })
                 brief += `<${type},${Object.entries(data).map(([key, value]) => `${key}=${value}`).join(',')}>`
             }

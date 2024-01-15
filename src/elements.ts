@@ -4,15 +4,17 @@ export enum MusicPlatform {
     qq = "qq",
     netease = "163",
 }
-export interface Quotable{
-    id?:string
+
+export interface Quotable {
+    id?: string
 }
+
 export interface MessageElemMap {
     text: {
         text: string;
     };
     at: {
-        user_id:'all'|string
+        user_id: 'all' | string
     };
     face: {
         /** face为0~348，sface不明 */
@@ -27,38 +29,38 @@ export interface MessageElemMap {
          */
         file: string
         /** 仅接收有效 */
-        url?:string
+        url?: string
     };
     video: {
         file: string
         /** 仅接收有效 */
-        url?:string
+        url?: string
     };
     audio: {
         file: string
         /** 仅接收有效 */
-        url?:string
+        url?: string
     };
-    markdown:Dict
-    keyboard:{
-        id:string
+    markdown: Dict
+    keyboard: {
+        id: string
     }
     reply: Quotable;
-    link:{
-        channel_id:string
+    link: {
+        channel_id: string
     };
-    button:{
-        data:Dict
+    button: {
+        data: Dict
     };
-    ark:{
-        template_id:number
-        kv:Dict<string,'key'|'value'>[]
+    ark: {
+        template_id: number
+        kv: Dict<string, 'key' | 'value'>[]
     };
-    embed:{
-        title:string
-        prompt:string
-        htumbnail:Dict<string>
-        fields:Dict<string,'name'>[]
+    embed: {
+        title: string
+        prompt: string
+        htumbnail: Dict<string>
+        fields: Dict<string, 'name'>[]
     }
 }
 
@@ -77,7 +79,7 @@ export type ImageElem = MessageElem<"image">;
 export type VideoElem = MessageElem<"video">;
 export type AudioElem = MessageElem<"audio">;
 export type LinkElem = MessageElem<'link'>
-export type MDElem=MessageElem<'markdown'>
+export type MDElem = MessageElem<'markdown'>
 export type KeyboardElem = MessageElem<'keyboard'>
 export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
@@ -94,7 +96,7 @@ type WithReply<T extends MessageElem> =
 export type Sendable =
     | string // 文本
     | RepeatableCombineElem
-    | (RepeatableCombineElem|string)[] // 可重复组合的消息元素
+    | (RepeatableCombineElem | string)[] // 可重复组合的消息元素
     | WithReply<
     | ImageElem // 图片元素
     | KeyboardElem // 按钮组，供按钮模板使用

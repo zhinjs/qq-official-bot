@@ -33,9 +33,9 @@ export class Bot extends QQBot {
 
     async setChannelAnnounce(guild_id: string, channel_id: string, message_id: string) {
         const {data: result} = await this.request.post<{
-            message_id:string
-            channel_id:string
-        },AxiosResponse<Announce>>(`/guilds/${guild_id}/announces`, {
+            message_id: string
+            channel_id: string
+        }, AxiosResponse<Announce>>(`/guilds/${guild_id}/announces`, {
             message_id,
             channel_id
         })
@@ -69,16 +69,16 @@ export class Bot extends QQBot {
 
     async unPinChannelMessage(channel_id: string, message_id: string) {
         const result = await this.request.delete(`/channels/${channel_id}/pins/${message_id}`)
-        return result.status===204
+        return result.status === 204
     }
 
     async createChannel(guild_id: string, channelInfo: Omit<Channel.Info, 'id'>) {
-        const {data: result} = await this.request.post<Omit<Channel.Info, 'id'>,AxiosResponse<Channel.Info>>(`/guilds/${guild_id}/channels`, channelInfo)
+        const {data: result} = await this.request.post<Omit<Channel.Info, 'id'>, AxiosResponse<Channel.Info>>(`/guilds/${guild_id}/channels`, channelInfo)
         return result
     }
 
-    async updateChannel(channel_id:string,updateInfo:ChannelUpdateInfo) {
-        const {data: result} = await this.request.patch<ChannelUpdateInfo,AxiosResponse<Channel.Info>>(`/channels/${channel_id}`, updateInfo)
+    async updateChannel(channel_id: string, updateInfo: ChannelUpdateInfo) {
+        const {data: result} = await this.request.patch<ChannelUpdateInfo, AxiosResponse<Channel.Info>>(`/channels/${channel_id}`, updateInfo)
         return result
     }
 
@@ -88,17 +88,21 @@ export class Bot extends QQBot {
     }
 
     async getGuildRoles(guild_id: string) {
-        const {data: {roles = []} = {}} = await this.request.get<{roles:Guild.Role[]}>(`/guilds/${guild_id}/roles`)
+        const {data: {roles = []} = {}} = await this.request.get<{ roles: Guild.Role[] }>(`/guilds/${guild_id}/roles`)
         return roles
     }
 
-    async creatGuildRole(guild_id: string, role: RoleCreateParam){
-        const {data: result} = await this.request.post<RoleCreateParam,AxiosResponse<{role:Guild.Role}>>(`/guilds/${guild_id}/roles`, role)
+    async creatGuildRole(guild_id: string, role: RoleCreateParam) {
+        const {data: result} = await this.request.post<RoleCreateParam, AxiosResponse<{
+            role: Guild.Role
+        }>>(`/guilds/${guild_id}/roles`, role)
         return result.role
     }
 
-    async updateGuildRole(guild_id: string, role_id:string,updateInfo:RoleUpdateParam ) {
-        const {data: result} = await this.request.patch<RoleUpdateParam,AxiosResponse<{role:Guild.Role}>>(`/guilds/${guild_id}/roles/${role_id}`, updateInfo)
+    async updateGuildRole(guild_id: string, role_id: string, updateInfo: RoleUpdateParam) {
+        const {data: result} = await this.request.patch<RoleUpdateParam, AxiosResponse<{
+            role: Guild.Role
+        }>>(`/guilds/${guild_id}/roles/${role_id}`, updateInfo)
         return result.role
     }
 
@@ -108,16 +112,18 @@ export class Bot extends QQBot {
     }
 
     async getGuildAccessApis(guild_id: string) {
-        const {data: result} = await this.request.get<{apis:ApiPermissionDemand[]}>(`/guilds/${guild_id}/api_permission`)
+        const {data: result} = await this.request.get<{
+            apis: ApiPermissionDemand[]
+        }>(`/guilds/${guild_id}/api_permission`)
         return result.apis || []
     }
 
     async applyGuildAccess(guild_id: string, channel_id: string, apiInfo: ApiBaseInfo, desc?: string) {
         const {data: result} = await this.request.post<{
-            channel_id:string
-            api_identify:ApiBaseInfo
-            desc:string
-        },AxiosResponse<ApiPermissionDemand>>(`/guilds/${guild_id}/api_permission/demand`, {
+            channel_id: string
+            api_identify: ApiBaseInfo
+            desc: string
+        }, AxiosResponse<ApiPermissionDemand>>(`/guilds/${guild_id}/api_permission/demand`, {
             channel_id,
             api_identify: apiInfo,
             desc,
@@ -216,10 +222,10 @@ export class Bot extends QQBot {
             }).catch(() => ({data: []}))// 公域没有权限，做个兼容
             if (!res.data?.length) return []
             const result = (res.data || []).map(m => {
-                const {user:{id:member_id,...member},roles, joined_at,nick} = m
+                const {user: {id: member_id, ...member}, roles, joined_at, nick} = m
                 return {
                     member_id,
-                    card:nick,
+                    card: nick,
                     roles,
                     ...member,
                     join_time: new Date(joined_at).getTime() / 1000,
@@ -232,10 +238,17 @@ export class Bot extends QQBot {
     }
 
     async getGuildMemberInfo(guild_id: string, member_id: string) {
-        const {data: {user:{id:_,...member},roles, joined_at,nick}} = await this.request.get(`/guilds/${guild_id}/members/${member_id}`)
+        const {
+            data: {
+                user: {id: _, ...member},
+                roles,
+                joined_at,
+                nick
+            }
+        } = await this.request.get(`/guilds/${guild_id}/members/${member_id}`)
         return {
             member_id,
-            card:nick,
+            card: nick,
             roles,
             ...member,
             join_time: new Date(joined_at).getTime() / 1000,
@@ -259,7 +272,7 @@ export class Bot extends QQBot {
         throw UnsupportedMethodError
     }
 
-    async getChannelList(guild_id: string):Promise<Channel.ApiInfo> {
+    async getChannelList(guild_id: string): Promise<Channel.ApiInfo> {
         const {data: result = []} = await this.request.get(`/guilds/${guild_id}/channels`)
         return result.map(({id: channel_id, name: channel_name, ...channel}) => {
             return {
@@ -269,8 +282,15 @@ export class Bot extends QQBot {
             }
         })
     }
+
     async getChannelInfo(channel_id: string) {
-        const {data: {id: _, name: channel_name, ...channel}} = await this.request.get<Channel.Info>(`/channels/${channel_id}`)
+        const {
+            data: {
+                id: _,
+                name: channel_name,
+                ...channel
+            }
+        } = await this.request.get<Channel.Info>(`/channels/${channel_id}`)
         return {
             channel_id,
             channel_name,
@@ -278,48 +298,54 @@ export class Bot extends QQBot {
         } as Channel.ApiInfo
     }
 
-    async createDirectSession(guild_id:string,user_id:string){
-        const {data:result}=await this.request.post<{
-            recipient_id:string
-            source_guild_id:string
-        },AxiosResponse<DMS>>(`/users/@me/dms`,{
-            recipient_id:user_id,
-            source_guild_id:guild_id
+    async createDirectSession(guild_id: string, user_id: string) {
+        const {data: result} = await this.request.post<{
+            recipient_id: string
+            source_guild_id: string
+        }, AxiosResponse<DMS>>(`/users/@me/dms`, {
+            recipient_id: user_id,
+            source_guild_id: guild_id
         })
         return {
             ...result,
-            create_time:new Date(result.create_time).getTime()/1000
+            create_time: new Date(result.create_time).getTime() / 1000
         } as DMS
     }
+
     async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable) {
-        const sender=new Sender(this,`/v2/users/${user_id}`,message,source)
-        const result= await sender.sendMsg()
+        const sender = new Sender(this, `/v2/users/${user_id}`, message, source)
+        const result = await sender.sendMsg()
         this.logger.info(`send to User(${user_id}): ${sender.brief}`)
         return result
     }
-    async sendDirectMessage(guild_id:string,message:Sendable,source?:Quotable){
-        const sender=new Sender(this,`/dms/${guild_id}`,message,source)
-        const result= await sender.sendMsg()
+
+    async sendDirectMessage(guild_id: string, message: Sendable, source?: Quotable) {
+        const sender = new Sender(this, `/dms/${guild_id}`, message, source)
+        const result = await sender.sendMsg()
         this.logger.info(`send to Direct(${guild_id}): ${sender.brief}`)
         return result
     }
-    async recallDirectMessage(guild_id:string,message_id:string,hidetip?:boolean){
-        const result=await this.request.delete(`/dms/${guild_id}/messages/${message_id}?hidetip=${!!hidetip}`)
-        return result.status===200
+
+    async recallDirectMessage(guild_id: string, message_id: string, hidetip?: boolean) {
+        const result = await this.request.delete(`/dms/${guild_id}/messages/${message_id}?hidetip=${!!hidetip}`)
+        return result.status === 200
     }
+
     async sendGuildMessage(channel_id: string, message: Sendable, source?: Quotable) {
-        const sender=new Sender(this,`/channels/${channel_id}`,message,source)
-        const result= await sender.sendMsg()
+        const sender = new Sender(this, `/channels/${channel_id}`, message, source)
+        const result = await sender.sendMsg()
         this.logger.info(`send to Channel(${channel_id}): ${sender.brief}`)
         return result
     }
-    async recallGuildMessage(channel_id:string,message_id:string,hidetip?:boolean){
-        const result=await this.request.delete(`/channels/${channel_id}/messages/${message_id}?hidetip=${!!hidetip}`)
-        return result.status===200
+
+    async recallGuildMessage(channel_id: string, message_id: string, hidetip?: boolean) {
+        const result = await this.request.delete(`/channels/${channel_id}/messages/${message_id}?hidetip=${!!hidetip}`)
+        return result.status === 200
     }
+
     async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable) {
-        const sender=new Sender(this,`/v2/groups/${group_id}`,message,source)
-        const result= await sender.sendMsg()
+        const sender = new Sender(this, `/v2/groups/${group_id}`, message, source)
+        const result = await sender.sendMsg()
         this.logger.info(`send to Group(${group_id}): ${sender.brief}`)
         return result
     }
@@ -334,13 +360,14 @@ export class Bot extends QQBot {
 }
 
 export namespace Bot {
-    export interface Info{
-        id:string
-        username:string
-        avatar:string
-        union_openid?:string
-        union_user_account?:string
+    export interface Info {
+        id: string
+        username: string
+        avatar: string
+        union_openid?: string
+        union_user_account?: string
     }
+
     export interface Config extends QQBot.Config {
     }
 }

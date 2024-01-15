@@ -1,4 +1,5 @@
-import { ChannelSubType, ChannelType, PrivateType, SpeakPermission } from "@/constans";
+import {ChannelSubType, ChannelType, PrivateType, SpeakPermission} from "@/constans";
+
 export namespace Channel {
     export interface Info {
         id: string
@@ -14,8 +15,9 @@ export namespace Channel {
         application_id?: string
         permissions?: string
     }
-    export type ApiInfo=Omit<Info, 'id'|'name'> & {
-        channel_id:string
-        channel_name:string
+
+    export type ApiInfo = Omit<Info, 'id' | 'name'> & {
+        channel_id: string
+        channel_name: string
     }
 }

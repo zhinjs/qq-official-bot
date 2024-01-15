@@ -15,7 +15,7 @@ export class SessionManager extends EventEmitter {
     alive?: boolean;
     heartbeatInterval: number;
     isReconnect: boolean;
-    userClose:boolean
+    userClose: boolean
     sessionRecord = {
         sessionID: "",
         seq: 0
@@ -37,13 +37,13 @@ export class SessionManager extends EventEmitter {
                     this.bot.logger.mark("[CLIENT] 等待断线重连中...");
                     break;
                 case SessionEvents.DISCONNECT:
-                    if(this.userClose||[4914,4915].includes(data.code)) return
+                    if (this.userClose || [4914, 4915].includes(data.code)) return
                     if (this.retry < (this.bot.config.maxRetry || MAX_RETRY)) {
                         this.bot.logger.mark("[CLIENT] 重新连接中，尝试次数：", this.retry + 1);
                         if (WebsocketCloseReason.find((v) => v.code === data.code)?.resume) {
                             this.sessionRecord = data.eventMsg;
                         }
-                        this.isReconnect = data.code===4009
+                        this.isReconnect = data.code === 4009
                         this.start();
                         this.retry += 1;
                     } else {
@@ -127,15 +127,16 @@ export class SessionManager extends EventEmitter {
     }
 
     async start() {
-        if ( !( await this.checkNeedToRestart() ) ) {
+        if (!(await this.checkNeedToRestart())) {
             return;
         }
         this.userClose = false;
         this.connect();
         this.startListen();
     }
-    async stop(){
-        this.userClose=true
+
+    async stop() {
+        this.userClose = true
         this.bot.ws?.close()
     }
 
@@ -146,12 +147,12 @@ export class SessionManager extends EventEmitter {
         await this.getAccessToken();
         await this.getWsUrl();
         // 此时不存在示例或是实例正在关闭
-        if ( !this.bot.ws || ![0, 1].includes( this.bot.ws.readyState ) ) {
+        if (!this.bot.ws || ![0, 1].includes(this.bot.ws.readyState)) {
             return true;
         }
         const checked = originWsUrl !== this.wsUrl || originAccessToken !== this.access_token;
         // 重启前先停止原来的实例
-        if ( checked ) {
+        if (checked) {
             await this.stop();
         }
         return checked;
@@ -216,7 +217,7 @@ export class SessionManager extends EventEmitter {
             if (code) {
                 WebsocketCloseReason.forEach((e) => {
                     if (e.code === code) {
-                        this.emit(SessionEvents.ERROR,code, e.reason);
+                        this.emit(SessionEvents.ERROR, code, e.reason);
                     }
                 });
             }
