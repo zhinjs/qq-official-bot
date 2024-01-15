@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.13](https://github.com/lc-cn/qq-group-bot/compare/v1.0.12...v1.0.13) (2024-01-15)
+
+
+### Bug Fixes
+
+* replyAction ([decec4b](https://github.com/lc-cn/qq-group-bot/commit/decec4bf4261f96fdf883657a1fd6be7559a0cda))
+
 ## [1.0.12](https://github.com/lc-cn/qq-group-bot/compare/v1.0.11...v1.0.12) (2024-01-15)
 
 
