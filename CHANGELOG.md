@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.0.12](https://github.com/lc-cn/qq-group-bot/compare/v1.0.11...v1.0.12) (2024-01-15)
+
+
+### Bug Fixes
+
+* 增加频道上下麦接口 ([7778073](https://github.com/lc-cn/qq-group-bot/commit/7778073bee0c7e3f99f54b059308e9f64e9eb026))
+* 增加频道帖子相关接口 ([7778073](https://github.com/lc-cn/qq-group-bot/commit/7778073bee0c7e3f99f54b059308e9f64e9eb026))
+* 增加频道日程相关接口 ([7778073](https://github.com/lc-cn/qq-group-bot/commit/7778073bee0c7e3f99f54b059308e9f64e9eb026))
+* 增加频道音频控制接口 ([7778073](https://github.com/lc-cn/qq-group-bot/commit/7778073bee0c7e3f99f54b059308e9f64e9eb026))
+
 ## [1.0.11](https://github.com/lc-cn/qq-group-bot/compare/v1.0.10...v1.0.11) (2024-01-15)
 
 

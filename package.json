@@ -1,6 +1,6 @@
 {
     "name": "qq-group-bot",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "description": "qq机器人开发SDK",
     "main": "lib/index.js",
     "scripts": {
