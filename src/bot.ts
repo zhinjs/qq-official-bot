@@ -363,6 +363,20 @@ export class Bot extends QQBot {
     }
 
     /**
+     * 获取频道信息
+     * @param guild_id
+     */
+    async getGuildInfo(guild_id:string):Promise<Guild.Info>{
+        const {data: {id: _, name: guild_name, joined_at, ...guild}}=await this.request.get(`/guilds/${guild_id}`)
+        return {
+            guild_id,
+            guild_name,
+            join_time: new Date(joined_at).getTime() / 1000,
+            ...guild
+        }
+    }
+
+    /**
      * 获取频道成员列表
      * @param guild_id
      */
