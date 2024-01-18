@@ -3,8 +3,8 @@ import {EventParser} from "@/event/index";
 
 export class ActionNoticeEvent {
     notice_id: string
-    notice_type: string
-    sub_type:"friend"|'group'|'direct'|'guild'
+    notice_type: 'friend'|'group'|'direct'|'guild'
+    sub_type:'action'='action'
     guild_id?: string
     channel_id?: string
     group_id?: string
@@ -14,9 +14,7 @@ export class ActionNoticeEvent {
 
     constructor(public bot: Bot, payload: Dict) {
         this.notice_id = payload.id
-        this.notice_type = 'action'
         this.data = payload.data
-        bot.emit('notice.action',this)
     }
 
     /**
@@ -31,35 +29,38 @@ export class ActionNoticeEvent {
 }
 export class PrivateActionNoticeEvent extends ActionNoticeEvent {
     operator_id:string
-    sub_type:'friend'='friend'
+    notice_type:'friend'='friend'
     constructor(public bot: Bot, payload: Dict) {
         super(bot, payload)
         this.operator_id = payload.user_openid
-        bot.emit(`notice.action.${this.sub_type}`,this)
+        bot.emit(`notice.${this.notice_type}`,this)
+        bot.emit(`notice.${this.notice_type}.action`,this)
     }
 }
 export class GroupActionNoticeEvent extends ActionNoticeEvent {
     group_id:string
     operator_id:string
-    sub_type:'group'='group'
+    notice_type:'group'='group'
     constructor(bot: Bot, payload: Dict) {
         super(bot, payload)
         this.group_id = payload.group_openid
         this.operator_id = payload.group_member_openid
-        bot.emit(`notice.action.${this.sub_type}`,this)
+        bot.emit(`notice.${this.notice_type}`,this)
+        bot.emit(`notice.${this.notice_type}.action`,this)
     }
 }
 export class GuildActionNoticeEvent extends ActionNoticeEvent {
     guild_id:string
     channel_id:string
     operator_id:string
-    sub_type:'guild'='guild'
+    notice_type:'guild'='guild'
     constructor(bot: Bot, payload: Dict) {
         super(bot, payload)
         this.guild_id = payload.guild_id
         this.channel_id = payload.channel_id
         this.operator_id = payload.data.resoloved.user_id
-        bot.emit(`notice.action.${this.sub_type}`,this)
+        bot.emit(`notice.${this.notice_type}`,this)
+        bot.emit(`notice.${this.notice_type}.action`,this)
     }
 }
 export namespace ActionNoticeEvent {
