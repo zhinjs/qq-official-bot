@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.17](https://github.com/lc-cn/qq-group-bot/compare/v1.0.16...v1.0.17) (2024-01-18)
+
+
+### Bug Fixes
+
+* 事件错误 ([15f103d](https://github.com/lc-cn/qq-group-bot/commit/15f103ded1eef539a382df16fb1f9ac984e213f2))
+* 类型提示优化 ([388a985](https://github.com/lc-cn/qq-group-bot/commit/388a9851b600c027f585a7732f9c6ae910c850cd))
+
 ## [1.0.16](https://github.com/lc-cn/qq-group-bot/compare/v1.0.15...v1.0.16) (2024-01-18)
 
 
