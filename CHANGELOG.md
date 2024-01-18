@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.19](https://github.com/lc-cn/qq-group-bot/compare/v1.0.18...v1.0.19) (2024-01-18)
+
+
+### Bug Fixes
+
+* 通知事件格式化 ([cd3b5a7](https://github.com/lc-cn/qq-group-bot/commit/cd3b5a7f95ed23fecf43d3aa9953a147df455273))
+
 ## [1.0.18](https://github.com/lc-cn/qq-group-bot/compare/v1.0.17...v1.0.18) (2024-01-18)
 
 
