@@ -49,17 +49,6 @@ export class GroupActionNoticeEvent extends ActionNoticeEvent {
         bot.emit(`notice.action.${this.sub_type}`,this)
     }
 }
-export class DirectActionNoticeEvent extends ActionNoticeEvent {
-    guild_id:string
-    operator_id:string
-    sub_type:'direct'='direct'
-    constructor(bot: Bot, payload: Dict) {
-        super(bot, payload)
-        this.guild_id = payload.guild_id
-        this.operator_id = payload.user_openid
-        bot.emit(`notice.action.${this.sub_type}`,this)
-    }
-}
 export class GuildActionNoticeEvent extends ActionNoticeEvent {
     guild_id:string
     channel_id:string
@@ -69,7 +58,7 @@ export class GuildActionNoticeEvent extends ActionNoticeEvent {
         super(bot, payload)
         this.guild_id = payload.guild_id
         this.channel_id = payload.channel_id
-        this.operator_id = payload.data.user_openid
+        this.operator_id = payload.data.resoloved.user_id
         bot.emit(`notice.action.${this.sub_type}`,this)
     }
 }
@@ -88,8 +77,6 @@ export namespace ActionNoticeEvent {
                 return new PrivateActionNoticeEvent(this, payload)
             case "group":
                 return new GroupActionNoticeEvent(this, payload)
-            case "direct":
-                return new DirectActionNoticeEvent(this, payload)
             case "guild":
                 return new GuildActionNoticeEvent(this, payload)
         }

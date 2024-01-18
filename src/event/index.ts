@@ -1,6 +1,10 @@
 import {DirectMessageEvent, MessageEvent, GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "./message";
 import {Bot, Dict} from "@";
-import {ActionNoticeEvent} from "@/event/notice";
+import {
+    ActionNoticeEvent,
+    GroupActionNoticeEvent, GuildActionNoticeEvent,
+    PrivateActionNoticeEvent
+} from "@/event/notice";
 
 export * from "./message"
 
@@ -50,17 +54,13 @@ export interface EventMap {
 
     'notice.private'(e: ActionNoticeEvent | Dict): void
 
-    'notice.private.action'(e: ActionNoticeEvent): void
+    'notice.private.action'(e: PrivateActionNoticeEvent): void
 
     'notice.group'(e: ActionNoticeEvent | Dict): void
 
-    'notice.group.action'(e: ActionNoticeEvent): void
-
-    'notice.direct'(e: ActionNoticeEvent | Dict): void
-
-    'notice.direct.action'(e: ActionNoticeEvent): void
+    'notice.group.action'(e: GroupActionNoticeEvent): void
 
     'notice.guild'(e: ActionNoticeEvent | Dict): void
 
-    'notice.guild.action'(e: ActionNoticeEvent): void
+    'notice.guild.action'(e: GuildActionNoticeEvent): void
 }
