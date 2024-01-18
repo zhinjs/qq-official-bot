@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.18](https://github.com/lc-cn/qq-group-bot/compare/v1.0.17...v1.0.18) (2024-01-18)
+
+
+### Bug Fixes
+
+* 添加接口 getGuildInfo ([fc14a4a](https://github.com/lc-cn/qq-group-bot/commit/fc14a4ad58ee5a52b3f56654e47a085b0e5267ca))
+
 ## [1.0.17](https://github.com/lc-cn/qq-group-bot/compare/v1.0.16...v1.0.17) (2024-01-18)
 
 
