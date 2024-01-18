@@ -635,7 +635,7 @@ export class Bot extends QQBot {
      * @param code {number}
      */
     async replyAction(action_id: string,code:ActionNoticeEvent.ReplyCode=0) {
-        const result = await this.request.put(`/interactions/${action_id}?code=${code}`)
+        const result = await this.request.put(`/interactions/${action_id}`, { code })
         return result.status === 200
     }
 

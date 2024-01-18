@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.0.15](https://github.com/lc-cn/qq-group-bot/compare/v1.0.14...v1.0.15) (2024-01-15)
+
+
+### Bug Fixes
+
+* replyAction ([0fe0831](https://github.com/lc-cn/qq-group-bot/commit/0fe0831284176eb4a4ac22b12569f9056e885c36))
+
+## [1.0.14](https://github.com/lc-cn/qq-group-bot/compare/v1.0.13...v1.0.14) (2024-01-15)
+
+
+### Bug Fixes
+
+* 被动回复失败 ([7273ed8](https://github.com/lc-cn/qq-group-bot/commit/7273ed83cd63b552b23029d86a413728c1f235c3))
+
 ## [1.0.13](https://github.com/lc-cn/qq-group-bot/compare/v1.0.12...v1.0.13) (2024-01-15)
 
 
