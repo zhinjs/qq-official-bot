@@ -41,7 +41,15 @@ export interface MessageElemMap {
         /** 仅接收有效 */
         url?: string
     };
-    markdown: Dict
+    markdown: {
+        content:string
+        custom_template_id:never
+        params:never
+    }|{
+        custom_template_id:string
+        content:never
+        params:{key:string,values:string}[]
+    }
     keyboard: {
         id: string
     }

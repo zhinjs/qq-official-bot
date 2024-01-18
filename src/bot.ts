@@ -783,3 +783,9 @@ export namespace Bot {
     export interface Config extends QQBot.Config {
     }
 }
+export function defineConfig(config:Bot.Config){
+    return config
+}
+export function createBot(config:Bot.Config){
+    return new Bot(config)
+}

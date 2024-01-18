@@ -21,7 +21,7 @@ export enum QQEvent {
     GROUP_DEL_ROBOT = 'notice.group.decrease',
     FRIEND_ADD = 'notice.friend.add',
     FRIEND_DEL = 'notice.friend.del',
-    INTERACTION_CREATE = 'notice.action.create',
+    INTERACTION_CREATE = 'notice',
     C2C_MESSAGE_CREATE = 'message.private',
     GROUP_AT_MESSAGE_CREATE = 'message.group',
 }
@@ -48,5 +48,19 @@ export interface EventMap {
 
     'notice'(e: ActionNoticeEvent | Dict): void
 
-    'notice.action'(e: ActionNoticeEvent): void
+    'notice.private'(e: ActionNoticeEvent | Dict): void
+
+    'notice.private.action'(e: ActionNoticeEvent): void
+
+    'notice.group'(e: ActionNoticeEvent | Dict): void
+
+    'notice.group.action'(e: ActionNoticeEvent): void
+
+    'notice.direct'(e: ActionNoticeEvent | Dict): void
+
+    'notice.direct.action'(e: ActionNoticeEvent): void
+
+    'notice.guild'(e: ActionNoticeEvent | Dict): void
+
+    'notice.guild.action'(e: ActionNoticeEvent): void
 }

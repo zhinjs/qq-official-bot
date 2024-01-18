@@ -71,15 +71,15 @@ export class Sender {
                 case 'reply':
                     this.messagePayload.msg_id = elem.id
                     this.filePayload.msg_id = elem.id
-                    this.brief += `<$reply,msg_id=${elem.id}>`
+                    this.brief += `<reply,msg_id=${elem.id}>`
                     break;
                 case "at":
                     this.messagePayload.content += `<@${elem.user_id === 'all' ? 'everyone' : elem.user_id}>`
-                    this.brief += `<$at,user=${elem.user_id === 'all' ? 'everyone' : elem.user_id}>`
+                    this.brief += `<at,user=${elem.user_id === 'all' ? 'everyone' : elem.user_id}>`
                     break;
                 case 'link':
                     this.messagePayload.content += `<#${elem.channel_id}>`
-                    this.brief += `<$link,channel=${elem.channel_id}>`
+                    this.brief += `<link,channel=${elem.channel_id}>`
                     break;
                 case 'text':
                     this.messagePayload.content += elem.text
@@ -87,7 +87,7 @@ export class Sender {
                     break;
                 case 'face':
                     this.messagePayload.content += `<emoji:${elem.id}>`
-                    this.brief += `<$face,id=${elem.id}>`
+                    this.brief += `<face,id=${elem.id}>`
                     break;
                 case 'image':
                 case 'audio':
@@ -115,21 +115,23 @@ export class Sender {
                 case 'markdown':
                     this.messagePayload.markdown = data
                     this.messagePayload.msg_type = 2
-                    this.brief += `<#markdown,content=${elem.content}>`
+                    this.brief += `<markdown,${elem.content?`content=${elem.content}`:`template_id=${elem.custom_template_id}`}>`
                     break;
                 case 'keyboard':
                     this.messagePayload.msg_type = 2
                     this.messagePayload.keyboard = data
+                    this.messagePayload.bot_appid=this.bot.config.appid
                     break;
                 case 'button':
                     this.buttons.push(data)
-                    this.brief += `<$button,data=${JSON.stringify(data)}>`
+                    this.brief += `<button,data=${JSON.stringify(data)}>`
                     break;
                 case "ark":
                 case "embed":
                     if (this.baseUrl.startsWith('/v2')) break
                     this.messagePayload.msg_type = type === 'ark' ? 3 : 4
                     this.messagePayload[type] = data
+                    this.brief += `<${type}>`
                     break;
             }
         }
