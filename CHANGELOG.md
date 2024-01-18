@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.16](https://github.com/lc-cn/qq-group-bot/compare/v1.0.15...v1.0.16) (2024-01-18)
+
+
+### Bug Fixes
+
+* 按钮操作格式化 ([7af8bd7](https://github.com/lc-cn/qq-group-bot/commit/7af8bd7eafbc758b07977d402cfcb8d47cc908d1))
+
 ## [1.0.15](https://github.com/lc-cn/qq-group-bot/compare/v1.0.14...v1.0.15) (2024-01-15)
 
 
