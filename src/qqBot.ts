@@ -1,6 +1,6 @@
 import axios, {AxiosInstance} from "axios";
 import {WebSocket} from "ws";
-import FormData from 'form-data'
+import {FormData} from 'formdata-node'
 import * as log4js from 'log4js'
 import {EventEmitter} from "events";
 import {SessionManager} from "./sessionManager";
@@ -42,7 +42,7 @@ export class QQBot extends EventEmitter {
             if(config.headers['Content-Type']==='multipart/form-data'){
                 const formData=new FormData()
                 for(const key in config.data){
-                    formData.append(key,config.data[key])
+                    formData.set(key,config.data[key])
                 }
                 config.data=formData
             }

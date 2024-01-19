@@ -1,7 +1,7 @@
 import {AudioElem, Dict, ImageElem, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
-import * as fs from "fs";
-import {ReadStream} from "node:fs";
+import fs from "node:fs";
+import { Blob } from "formdata-node"
 
 export class Sender {
     brief: string = ''
@@ -62,15 +62,15 @@ export class Sender {
             return elem.file
         }
         this.contentType='multipart/form-data'
-        if(elem.file instanceof ReadStream) return elem.file
+        if(elem.file instanceof fs.ReadStream) return elem.file
         if(Buffer.isBuffer(elem.file)){
-            return fs.createReadStream(elem.file)
+            return new Blob([elem.file])
         }else if(typeof elem.file !== "string"){
             throw new Error("bad file param: " + elem.file)
         }else if(elem.file.startsWith("base64://")){
-            return fs.createReadStream(Buffer.from(elem.file.slice(9),'base64'))
+            return new Blob([Buffer.from(elem.file.slice(9),'base64')])
         }else if(/^data:[^/]+\/[^;]+;base64,/.test(elem.file)){
-            return fs.createReadStream(Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64'))
+            return new Blob([Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64')])
         }else if(fs.existsSync(elem.file)){
             return fs.createReadStream(elem.file)
         }
