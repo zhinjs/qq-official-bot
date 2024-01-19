@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.26](https://github.com/lc-cn/qq-group-bot/compare/v1.0.25...v1.0.26) (2024-01-19)
+
+
+### Bug Fixes
+
+* 使用 formdata-node ([5ad543c](https://github.com/lc-cn/qq-group-bot/commit/5ad543c68a8170890e69a03262e4941cf964181f))
+
 ## [1.0.25](https://github.com/lc-cn/qq-group-bot/compare/v1.0.24...v1.0.25) (2024-01-19)
 
 
