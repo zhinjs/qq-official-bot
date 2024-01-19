@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.24](https://github.com/lc-cn/qq-group-bot/compare/v1.0.23...v1.0.24) (2024-01-19)
+
+
+### Bug Fixes
+
+* 增强代码健壮性 ([6f112c5](https://github.com/lc-cn/qq-group-bot/commit/6f112c57b8ef7a64c9b28b496e676e50254c0ca1))
+
 ## [1.0.23](https://github.com/lc-cn/qq-group-bot/compare/v1.0.22...v1.0.23) (2024-01-19)
 
 
