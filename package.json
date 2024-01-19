@@ -36,19 +36,19 @@
     "author": "凉菜",
     "license": "MIT",
     "dependencies": {
-        "axios": "^1.6.1",
-        "form-data": "^4.0.0",
+        "axios": "^1.6.5",
+        "formdata-node": "^6.0.3",
         "log4js": "^6.9.1",
-        "ws": "^8.14.0"
+        "ws": "^8.16.0"
     },
     "devDependencies": {
-        "@types/node": "^20.5.9",
-        "@types/ws": "^8.5.5",
+        "@types/node": "^20.11.5",
+        "@types/ws": "^8.5.10",
         "dtsc": "^2.3.0",
         "ts-node-dev": "^2.0.0",
         "tsc-alias": "^1.8.8",
         "tsconfig-paths": "^4.2.0",
-        "typescript": "^5.2.2",
-        "vitepress": "^1.0.0-rc.31"
+        "typescript": "^5.3.3",
+        "vitepress": "1.0.0-rc.39"
     }
 }
