@@ -72,7 +72,9 @@ export class QQBot extends EventEmitter {
         const event_id = wsRes.id || '';
         if (!payload || !event) return;
         const transformEvent = QQEvent[event] || 'system'
-        this.em(transformEvent, this.processPayload(event_id, transformEvent, payload));
+        const result=this.processPayload(event_id,transformEvent,payload)
+        if(!result) return this.logger.debug('解析事件失败',wsRes)
+        this.em(transformEvent, result);
     }
 
     em(event: string, payload: Dict) {

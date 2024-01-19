@@ -109,8 +109,6 @@ export type Intent =
     | 'GUILD_MESSAGE_REACTIONS'
     // 频道私信事件
     | 'DIRECT_MESSAGE'
-    // 频道操作事件
-    | 'OPEN_FORUMS_EVENTS'
     // 频道成员变更事件
     | 'AUDIO_OR_LIVE_CHANNEL_MEMBERS'
     // 群聊消息事件
@@ -126,7 +124,7 @@ export type Intent =
     // 论坛事件(仅私域)
     | 'FORUMS_EVENTS'
     // 论坛事件(仅公域)
-    | 'OPEN_FORUM_EVENT'
+    | 'OPEN_FORUMS_EVENTS'
     // 音频操作事件
     | 'AUDIO_ACTIONS'
     // 公域机器人消息事件

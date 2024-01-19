@@ -61,8 +61,8 @@ export class SessionManager extends EventEmitter {
                 default:
             }
         });
-        this.on(SessionEvents.ERROR, (e) => {
-            this.bot.logger.error(`[CLIENT] 发生错误：${e}`);
+        this.on(SessionEvents.ERROR, (code,message) => {
+            this.bot.logger.error(`[CLIENT] 发生错误：${code} ${message}`);
         })
     }
 
@@ -208,19 +208,20 @@ export class SessionManager extends EventEmitter {
     startListen() {
         this.bot.ws.on("close", (code) => {
             this.alive = false;
-            this.bot.logger.error(`[CLIENT] 连接关闭：${code}`);
             this.emit(SessionEvents.EVENT_WS, {
                 eventType: SessionEvents.DISCONNECT,
                 code,
                 eventMsg: this.sessionRecord
             });
             if (code) {
-                WebsocketCloseReason.forEach((e) => {
+                for(const e of WebsocketCloseReason){
                     if (e.code === code) {
-                        this.emit(SessionEvents.ERROR, code, e.reason);
+                        return this.emit(SessionEvents.ERROR, code, e.reason);
                     }
-                });
+                }
+                return this.emit(SessionEvents.ERROR, code,'未知错误')
             }
+            this.bot.logger.error(`[CLIENT] 连接关闭`);
         });
         this.bot.ws.on("error", (e) => {
             this.alive = false
