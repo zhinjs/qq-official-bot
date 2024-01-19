@@ -1,4 +1,4 @@
-import {AudioElem, Dict, ImageElem, QQBot, Quotable, Sendable, VideoElem} from "@";
+import {AudioElem, Dict, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
 import fs from "node:fs";
 import {Blob} from "formdata-node"
