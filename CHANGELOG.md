@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.23](https://github.com/lc-cn/qq-group-bot/compare/v1.0.22...v1.0.23) (2024-01-19)
+
+
+### Bug Fixes
+
+* 图片发送不存本地 ([efa0b48](https://github.com/lc-cn/qq-group-bot/commit/efa0b48fec7c61dd261ba3893a6e366598ae744f))
+
 ## [1.0.22](https://github.com/lc-cn/qq-group-bot/compare/v1.0.21...v1.0.22) (2024-01-19)
 
 
