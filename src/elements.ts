@@ -29,7 +29,7 @@ export interface MessageElemMap {
          * @type {string} 网络图片文件地址，例如"http://www.baidu.com/iconfont.png"
          * @type {Buffer} 图片Buffer数据
          */
-        file: string|Buffer
+        file: string | Buffer
         /** 仅接收有效 */
         url?: string
     };
@@ -44,13 +44,13 @@ export interface MessageElemMap {
         url?: string
     };
     markdown: {
-        content:string
-        custom_template_id:never
-        params:never
-    }|{
-        custom_template_id:string
-        content:never
-        params:{key:string,values:string}[]
+        content: string
+        custom_template_id: never
+        params: never
+    } | {
+        custom_template_id: string
+        content: never
+        params: { key: string, values: string }[]
     }
     keyboard: {
         id: string
@@ -95,18 +95,21 @@ export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
 
 // 重复组合的消息元素
-type RepeatableCombineElem = TextElem | FaceElem | LinkElem | AtElem | ButtonElem;
+type RepeatableCombineElem = string | TextElem | FaceElem | LinkElem | AtElem | ButtonElem;
+type SingleWithRepeatEnd<T extends MessageElem> = [T, ...RepeatableCombineElem[]] // 单元素+组合元素
+type SingleWithRepeat<T extends MessageElem> = [...RepeatableCombineElem[], T] | SingleWithRepeatEnd<T> // 组合元素+单元素
+
 // 带回复的消息元素
 type WithReply<T extends MessageElem> =
     | T
     | [T]
-    | [ReplyElem, T]
+    | SingleWithRepeat<T>
+    | [ReplyElem, ...SingleWithRepeat<T>]
     | [ReplyElem, ...RepeatableCombineElem[]];
 // 可发送的消息元素
 export type Sendable =
-    | string // 文本
     | RepeatableCombineElem
-    | (RepeatableCombineElem | string)[] // 可重复组合的消息元素
+    | (RepeatableCombineElem)[] // 可重复组合的消息元素
     | WithReply<
     | ImageElem // 图片元素
     | KeyboardElem // 按钮组，供按钮模板使用
