@@ -23,6 +23,7 @@ import {AxiosResponse} from "axios";
 import {GuildMember} from "@/entries/guildMember";
 import {User} from "@/entries/user";
 import {ActionNoticeEvent} from "@/event/notice";
+import {GuildMessageEvent} from "@/event";
 
 
 export class Bot extends QQBot {
@@ -376,6 +377,15 @@ export class Bot extends QQBot {
         }
     }
 
+    /**
+     * 获取子频道消息
+     * @param channel_id {string} 子频道id
+     * @param message_id {string} 消息id
+     */
+    async getGuildMessage(channel_id:string,message_id:string):Promise<GuildMessageEvent>{
+        const {data:payload}=await this.request.get(`/channels/${channel_id}/messages/${message_id}`)
+        return this.processPayload(payload.id,`message.guild`,payload) as GuildMessageEvent
+    }
     /**
      * 获取频道成员列表
      * @param guild_id

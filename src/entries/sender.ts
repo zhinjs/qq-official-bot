@@ -79,6 +79,8 @@ export class Sender {
             return await this.saveToLocal(Buffer.from(elem.file.slice(9),'base64'))
         }else if(/^data:image\/(png|jpeg|jpg);base64,/.test(elem.file)){
             return await this.saveToLocal(Buffer.from(elem.file.replace(/^data:image\/(png|jpeg|jpg);base64,/,''),'base64'))
+        }else if(fs.existsSync(elem.file)){
+            return elem.file
         }
         throw new Error("bad file param: " + elem.file)
     }
@@ -96,6 +98,9 @@ export class Sender {
                 case 'reply':
                     this.messagePayload.msg_id = elem.id
                     this.filePayload.msg_id = elem.id
+                    this.messagePayload.message_reference={
+                        message_id: elem.id
+                    }
                     this.brief += `<reply,msg_id=${elem.id}>`
                     break;
                 case "at":
@@ -118,7 +123,6 @@ export class Sender {
                 case 'audio':
                 case 'video':
                     if (this.messagePayload.msg_id) {
-                        this.messagePayload.content = this.messagePayload.content || ' '
                         if (!this.baseUrl.startsWith('/v2')) {
                             elem.file=await this.fixMediaData(elem)
                             if(fs.existsSync(elem.file)){

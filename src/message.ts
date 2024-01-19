@@ -21,12 +21,17 @@ export class Message {
     sender: Message.Sender
     user_id: string
 
-    constructor(public bot: Bot, attrs: Partial<Message>) {
-        Object.assign(this, attrs)
+    constructor(public bot: Bot, attrs: Dict) {
+        const {message_reference,...other_attrs} = attrs
+        Object.assign(this, other_attrs)
+        if(message_reference) this.source={
+            id:message_reference.message_id,
+            message_id: message_reference.message_id,
+        }
     }
 
     raw_message: string
-    message_reference?: { message_id: string }
+    source?: { message_id: string,id:string }
     message: Sendable
 
 
