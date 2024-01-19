@@ -1,4 +1,4 @@
-import {Dict, QQBot, Quotable, Sendable} from "@";
+import {AudioElem, Dict, ImageElem, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
 import {File,Blob} from "buffer";
 import * as fs from "fs";
@@ -66,7 +66,22 @@ export class Sender {
         }
         return result
     }
-
+    private async fixMediaData(elem:ImageElem|VideoElem|AudioElem){
+        if(typeof elem.file==="string" && elem.file.startsWith('http')){
+            return elem.file
+        }
+        this.contentType='multipart/form-data'
+        if(Buffer.isBuffer(elem.file)){
+            return await this.saveToLocal(elem.file)
+        }else if(typeof elem.file !== "string"){
+            throw new Error("bad file param: " + elem.file)
+        }else if(elem.file.startsWith("base64://")){
+            return await this.saveToLocal(Buffer.from(elem.file.slice(9),'base64'))
+        }else if(/^data:image\/(png|jpeg|jpg);base64,/.test(elem.file)){
+            return await this.saveToLocal(Buffer.from(elem.file.replace(/^data:image\/(png|jpeg|jpg);base64,/,''),'base64'))
+        }
+        throw new Error("bad file param: " + elem.file)
+    }
     async processMessage() {
         if (!Array.isArray(this.message)) this.message = [this.message as any]
         while (this.message.length) {
@@ -105,33 +120,33 @@ export class Sender {
                     if (this.messagePayload.msg_id) {
                         this.messagePayload.content = this.messagePayload.content || ' '
                         if (!this.baseUrl.startsWith('/v2')) {
-                            if(elem.file.startsWith('http')){
-                                this.messagePayload.image += elem.file
-                                break
-                            }
-                            this.contentType='multipart/form-data'
-                            if(Buffer.isBuffer(elem.file)){
-                                elem.file=await this.saveToLocal(elem.file)
-                            }else if(typeof elem.file !== "string"){
-                                throw new Error("bad file param: " + elem.file)
-                            }else if(elem.file.startsWith("base64://")){
-                                elem.file=await this.saveToLocal(Buffer.from(elem.file.slice(9),'base64'))
-                            }else if(/^data:image\/(png|jpeg|jpg);base64,/.test(elem.file)){
-                                elem.file=await this.saveToLocal(Buffer.from(elem.file.replace(/^data:image\/(png|jpeg|jpg);base64,/,''),'base64'))
-                            }
+                            elem.file=await this.fixMediaData(elem)
                             if(fs.existsSync(elem.file)){
                                 this.messagePayload.file_image = fs.createReadStream(elem.file,{highWaterMark: 1024 * 256})
+                            }else{
+                                this.messagePayload.image = elem.file
                             }
                         } else {
+                            if(typeof elem.file!=='string' || !elem.file.startsWith('http')){
+                                throw new Error('暂不支持上传本地文件/Buffer/base64')
+                            }
                             this.messagePayload.msg_type = 7
                             const result = await this.sendFile(elem.file, this.getType(elem.type))
                             this.messagePayload.media = {file_info: result.file_info}
                         }
                     } else {
                         if (!this.baseUrl.startsWith('/v2')) {
-                            this.messagePayload.image = !elem.file?.startsWith('http') ? `http://${elem.file}` : elem.file
+                            elem.file=await this.fixMediaData(elem)
+                            if(fs.existsSync(elem.file)){
+                                this.messagePayload.file_image = fs.createReadStream(elem.file,{highWaterMark: 1024 * 256})
+                            }else{
+                                this.messagePayload.image = elem.file
+                            }
                         } else {
                             this.filePayload.file_type = this.getType(elem.type)
+                            if(typeof elem.file!=="string" || !elem.file.startsWith('http')){
+                                throw new Error('暂不支持上传本地文件/Buffer/base64')
+                            }
                             this.filePayload.url = !elem.file?.startsWith('http') ? `http://${elem.file}` : elem.file
                             this.isFile = true
                         }
