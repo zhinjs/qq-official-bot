@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.27](https://github.com/lc-cn/qq-group-bot/compare/v1.0.26...v1.0.27) (2024-01-19)
+
+
+### Bug Fixes
+
+* friendly media brief ([ca003a8](https://github.com/lc-cn/qq-group-bot/commit/ca003a8a0ec23ec963ec5c97a0de85a9b8ec9661))
+* package-lock ([fccdba3](https://github.com/lc-cn/qq-group-bot/commit/fccdba34f8b9e9aa0b3ead5957e715cbaf64ab3e))
+
 ## [1.0.26](https://github.com/lc-cn/qq-group-bot/compare/v1.0.25...v1.0.26) (2024-01-19)
 
 
