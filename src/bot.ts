@@ -4,7 +4,8 @@ import {Guild} from "./entries/guild";
 import {
     Announce,
     ApiBaseInfo,
-    ApiPermissionDemand, AudioControl,
+    ApiPermissionDemand,
+    AudioControl,
     ChannelMemberPermissions,
     ChannelRolePermissions,
     ChannelUpdateInfo,
@@ -13,7 +14,9 @@ import {
     PinsMessage,
     RoleCreateParam,
     RoleUpdateParam,
-    ScheduleInfo, Thread, ThreadInfo,
+    ScheduleInfo,
+    Thread,
+    ThreadInfo,
     UpdatePermissionParams
 } from "@/types";
 import {Quotable, Sendable} from "@/elements";
@@ -30,6 +33,10 @@ export class Bot extends QQBot {
 
     constructor(config: Bot.Config) {
         super(config)
+        const nodeVersion=parseInt(process.version)
+        if(nodeVersion<18){
+            this.logger.warn(`你的node版本(${process.version}) <18，可能会出现不可预测的错误，请升级node版本`)
+        }
     }
 
     /**

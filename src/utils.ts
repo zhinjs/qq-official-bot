@@ -1,10 +1,13 @@
+import {BinaryLike, createHash} from "crypto";
+
 export const toObject = <T = any>(data: any) => {
     if (Buffer.isBuffer(data)) return JSON.parse(data.toString()) as T;
     if (typeof data === 'object') return data as T;
     if (typeof data === 'string') return JSON.parse(data) as T;
     // return String(data);
 };
-
+/** md5 hash */
+export const md5 = (data: BinaryLike) => createHash("md5").update(data).digest()
 export function isEmpty<T>(data: T) {
     if (!data) return true;
     if (typeof data !== "object") return false

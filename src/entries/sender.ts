@@ -1,7 +1,7 @@
 import {AudioElem, Dict, ImageElem, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
 import fs from "node:fs";
-import { Blob } from "formdata-node"
+import {Blob} from "formdata-node"
 
 export class Sender {
     brief: string = ''
@@ -147,7 +147,7 @@ export class Sender {
                             this.isFile = true
                         }
                     }
-                    this.brief += `<${elem.type},url=${elem.file}>`
+                    this.brief += `<${elem.type}:${md5(elem.file)}>`;
                     break;
                 case 'markdown':
                     this.messagePayload.markdown = data
