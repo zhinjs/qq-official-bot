@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.29](https://github.com/lc-cn/qq-group-bot/compare/v1.0.28...v1.0.29) (2024-01-19)
+
+
+### Bug Fixes
+
+* friendly error ([2bc6360](https://github.com/lc-cn/qq-group-bot/commit/2bc63601110a12e85e4b3f8c0ea4351ca020cfbb))
+
 ## [1.0.28](https://github.com/lc-cn/qq-group-bot/compare/v1.0.27...v1.0.28) (2024-01-19)
 
 
