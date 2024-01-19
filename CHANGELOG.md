@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.21](https://github.com/lc-cn/qq-group-bot/compare/v1.0.20...v1.0.21) (2024-01-19)
+
+
+### Bug Fixes
+
+* 频道接口支持上传本地图片或Buffer或base64 ([6fa63eb](https://github.com/lc-cn/qq-group-bot/commit/6fa63ebe3a64f78d7f7e59da43cc0cad4e748dc0))
+* 频道接口支持上传本地图片或Buffer或base64 ([256746d](https://github.com/lc-cn/qq-group-bot/commit/256746dcb482e234ed7e2482e7a8126f07367efd))
+
 ## [1.0.20](https://github.com/lc-cn/qq-group-bot/compare/v1.0.19...v1.0.20) (2024-01-19)
 
 
