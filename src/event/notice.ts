@@ -51,7 +51,7 @@ export class FriendActionNoticeEvent extends ActionNoticeEvent {
         this.operator_id = payload.user_openid
         bot.emit(`notice.${this.notice_type}`, this)
         bot.emit(`notice.${this.notice_type}.action`, this)
-        bot.logger.info(`好友${this.operator_id} 点击了消息按钮：${this.data.button_id}`)
+        bot.logger.info(`好友${this.operator_id} 点击了消息按钮：${this.data.resolved.button_id}`)
     }
 }
 
@@ -66,7 +66,7 @@ export class GroupActionNoticeEvent extends ActionNoticeEvent {
         this.operator_id = payload.group_member_openid
         bot.emit(`notice.${this.notice_type}`, this)
         bot.emit(`notice.${this.notice_type}.action`, this)
-        bot.logger.info(`群(${this.group_id})成员${this.operator_id} 点击了消息按钮：${this.data.button_id}`)
+        bot.logger.info(`群(${this.group_id})成员${this.operator_id} 点击了消息按钮：${this.data.resolved.button_id}`)
     }
 }
 
@@ -83,18 +83,21 @@ export class GuildActionNoticeEvent extends ActionNoticeEvent {
         this.operator_id = payload.data.resoloved.user_id
         bot.emit(`notice.${this.notice_type}`, this)
         bot.emit(`notice.${this.notice_type}.action`, this)
-        bot.logger.info(`频道(${this.guild_id})成员${this.operator_id}在子频道(${this.channel_id})点击了消息按钮：${this.data.button_id}`)
+        bot.logger.info(`频道(${this.guild_id})成员${this.operator_id}在子频道(${this.channel_id})点击了消息按钮：${this.data.resolved.button_id}`)
     }
 }
 
 export namespace ActionNoticeEvent {
     export type ReplyCode = 0 | 1 | 2 | 3 | 4 | 5
     export type ActionData = {
-        button_data: string
-        button_id: string
-        user_id: string
-        feature_id: string
-        message_id: string
+        type:number
+        resolved:{
+            button_data?: string
+            button_id: string
+            user_id?: string
+            feature_id?: string
+            message_id?: string
+        }
     }
     export const parse: EventParser = function (this: Bot, event: string, payload) {
         switch (payload.scene) {
@@ -279,7 +282,7 @@ export class GuildMemberChangeNoticeEvent extends NoticeEvent {
         this.user_id = payload.user.id
         this.user_name = payload.user.nickname
         this.is_bot = payload.user.bot
-        bot.logger.info(`频道(${this.guild_id})成员(${this.user_name})${this.actionText}. 操作人：${this.operator_id}`)
+        bot.logger.info(`频道(${this.guild_id})成员(${this.user_id})${this.actionText}. 操作人：${this.operator_id}`)
     }
 }
 

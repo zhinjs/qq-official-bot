@@ -49,9 +49,8 @@ export class QQBot extends EventEmitter {
             return config
         })
         this.request.interceptors.response.use((res) => res,(res)=>{
-            if(!res && !res.response && !res.response.data)  return Promise.reject(res)
-            const {code,message}=res.response.data||{}
-            console.log(res.config)
+            if(!res || !res.response || !res.response.data)  return Promise.reject(res)
+            const {code=res.statusCode,message='未知错误'}=res?.response?.data||{}
             const err=new Error(`request "${res.config.url}" error:${code} ${message}`)
             this.logger.error(err)
             return Promise.reject(err)
