@@ -123,8 +123,10 @@ export type Intent =
     | 'INTERACTION'
     // 消息审核事件
     | 'MESSAGE_AUDIT'
-    // 论论坛事件(仅私域)
+    // 论坛事件(仅私域)
     | 'FORUMS_EVENTS'
+    // 论坛事件(仅公域)
+    | 'OPEN_FORUM_EVENT'
     // 音频操作事件
     | 'AUDIO_ACTIONS'
     // 公域机器人消息事件

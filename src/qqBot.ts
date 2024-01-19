@@ -156,10 +156,8 @@ export namespace QQBot {
 
     export function getFullTargetId(message: GuildMessageEvent | GroupMessageEvent | PrivateMessageEvent) {
         switch (message.message_type) {
-            case "direct":
-                return `direct-${message.guild_id}`
             case "private":
-                return `private-${message.user_id}`
+                return `private-${message.guild_id||message.user_id}`
             case "group":
                 return `group-${(message as GroupMessageEvent).group_id}:${message.user_id}`
             case "guild":

@@ -7,13 +7,16 @@ export interface MessageEvent {
 }
 
 export class PrivateMessageEvent extends Message implements MessageEvent {
-    constructor(bot: Bot, payload: Partial<Message>) {
+    constructor(bot: Bot, sub_type: Message.SubType, payload: Partial<Message>) {
         super(bot, payload);
         this.message_type = 'private'
+        this.sub_type = sub_type
     }
 
     async reply(message: Sendable) {
-        return this.bot.sendPrivateMessage(this.user_id, message, this)
+        return this.sub_type === 'direct' ?
+            this.bot.sendDirectMessage(this.guild_id, message, this) :
+            this.bot.sendPrivateMessage(this.user_id, message, this)
     }
 }
 
@@ -32,31 +35,6 @@ export class GroupMessageEvent extends Message implements MessageEvent {
     }
 }
 
-export class DirectMessageEvent extends Message implements MessageEvent {
-    user_id: string
-    channel_id: string
-
-    constructor(bot: Bot, payload: Partial<Message>) {
-        super(bot, payload);
-        this.message_type = 'direct'
-    }
-
-    /**
-     * 撤回消息
-     * @param hidetip {boolean} 是否隐藏提示
-     */
-    recall(hidetip?: boolean) {
-        return this.bot.recallDirectMessage(this.guild_id, this.message_id, hidetip)
-    }
-
-    /**
-     * 回复消息
-     * @param message {Sendable} 回复内容
-     */
-    reply(message: Sendable) {
-        return this.bot.sendDirectMessage(this.guild_id, message, this)
-    }
-}
 
 export class GuildMessageEvent extends Message implements MessageEvent {
     guild_id: string
@@ -147,10 +125,10 @@ export namespace MessageEvent {
             },
             timestamp: new Date(payload.timestamp).getTime() / 1000,
         })
-        let messageEvent: PrivateMessageEvent | GroupMessageEvent | GuildMessageEvent | DirectMessageEvent
+        let messageEvent: PrivateMessageEvent | GroupMessageEvent | GuildMessageEvent
         switch (event) {
-            case 'message.private':
-                messageEvent = new PrivateMessageEvent(this, payload)
+            case 'message.private.friend':
+                messageEvent = new PrivateMessageEvent(this, 'friend', payload)
                 this.logger.info(`recv from User(${payload.user_id}): ${payload.raw_message}`)
                 break;
             case 'message.group':
@@ -161,8 +139,8 @@ export namespace MessageEvent {
                 messageEvent = new GuildMessageEvent(this, payload)
                 this.logger.info(`recv from Guild(${payload.guild_id})Channel(${payload.channel_id}): ${payload.raw_message}`)
                 break;
-            case 'message.direct':
-                messageEvent = new DirectMessageEvent(this, payload)
+            case 'message.private.direct':
+                messageEvent = new PrivateMessageEvent(this, 'direct', payload)
                 this.logger.info(`recv from Direct(${payload.guild_id}): ${payload.raw_message}`)
                 break;
         }

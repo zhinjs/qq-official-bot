@@ -6,7 +6,8 @@ import {Bot} from "./bot";
 import {User} from "@/entries/user";
 
 export class Message {
-    message_type: Message.SubType
+    message_type: Message.Type
+    sub_type:Message.SubType='normal'
 
     get self_id() {
         return this.bot.self_id
@@ -53,7 +54,8 @@ export namespace Message {
         permissions: User.Permission[]
     }
 
-    export type SubType = 'private' | 'group' | 'guild' | 'direct'
+    export type Type = 'private' | 'group' | 'guild'
+    export type SubType = 'direct'|'friend'|'temp'|'normal'
 
     export function parse(this: QQBot, payload: Dict) {
         let template = payload.content || ''

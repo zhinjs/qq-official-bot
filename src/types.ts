@@ -147,4 +147,9 @@ export type RecommendInfo = {
     channel_id: string
     introduce: string
 }
+export enum AuditType{
+    Thread=1,
+    Post,
+    Reply
+}
 
