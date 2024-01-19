@@ -7,7 +7,7 @@ export const toObject = <T = any>(data: any) => {
     // return String(data);
 };
 /** md5 hash */
-export const md5 = (data: BinaryLike) => createHash("md5").update(data).digest()
+export const md5 = (data: BinaryLike) => createHash("md5").update(data).digest().toString();
 export function isEmpty<T>(data: T) {
     if (!data) return true;
     if (typeof data !== "object") return false
