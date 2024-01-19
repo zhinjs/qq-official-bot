@@ -33,10 +33,13 @@ export class Bot extends QQBot {
 
     constructor(config: Bot.Config) {
         super(config)
-        const nodeVersion=parseInt(process.version)
-        if(nodeVersion<18){
-            this.logger.warn(`你的node版本(${process.version}) <18，可能会出现不可预测的错误，请升级node版本`)
+        const nodeVersion=parseInt(process.version.slice(1))
+        if(nodeVersion<16){
+            this.logger.warn(`你的node版本(${process.version}) <16，可能会出现不可预测的错误，请升级node版本，为确保服务正常运行，请升级node版本`)
         }
+        process.on("uncaughtException",e=>{
+            this.logger.debug(e.stack)
+        })
     }
 
     /**
