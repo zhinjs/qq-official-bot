@@ -64,13 +64,13 @@ export class Sender {
         this.contentType='multipart/form-data'
         if(elem.file instanceof ReadStream) return elem.file
         if(Buffer.isBuffer(elem.file)){
-            return new Blob([elem.file])
+            return fs.createReadStream(elem.file)
         }else if(typeof elem.file !== "string"){
             throw new Error("bad file param: " + elem.file)
         }else if(elem.file.startsWith("base64://")){
-            return new Blob([Buffer.from(elem.file.slice(9),'base64')])
+            return fs.createReadStream(Buffer.from(elem.file.slice(9),'base64'))
         }else if(/^data:[^/]+\/[^;]+;base64,/.test(elem.file)){
-            return new Blob([Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64')])
+            return fs.createReadStream(Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64'))
         }else if(fs.existsSync(elem.file)){
             return fs.createReadStream(elem.file)
         }
