@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.20](https://github.com/lc-cn/qq-group-bot/compare/v1.0.19...v1.0.20) (2024-01-19)
+
+
+### Bug Fixes
+
+* 增加音频/直播/论坛子频道事件 ([37b6ce2](https://github.com/lc-cn/qq-group-bot/commit/37b6ce2770b20152ea4b532d3c507871732f4540))
+* 将direct事件移动至private事件 ([37b6ce2](https://github.com/lc-cn/qq-group-bot/commit/37b6ce2770b20152ea4b532d3c507871732f4540))
+* 连接出错标明原因，事件解析失败增加debug日志 ([c2b77f2](https://github.com/lc-cn/qq-group-bot/commit/c2b77f2256f03d0fc74b10f6c25444a0ae3cf121))
+
 ## [1.0.19](https://github.com/lc-cn/qq-group-bot/compare/v1.0.18...v1.0.19) (2024-01-18)
 
 
