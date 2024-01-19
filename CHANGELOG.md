@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.22](https://github.com/lc-cn/qq-group-bot/compare/v1.0.21...v1.0.22) (2024-01-19)
+
+
+### Bug Fixes
+
+* 完善类型约束 ([b437359](https://github.com/lc-cn/qq-group-bot/commit/b437359a909c96cac1d0406c06cd9e24d25e4ffe))
+* 获取频道消息 ([2525399](https://github.com/lc-cn/qq-group-bot/commit/252539952c7ce5d9970b1a45ec868b4c79782e21))
+
 ## [1.0.21](https://github.com/lc-cn/qq-group-bot/compare/v1.0.20...v1.0.21) (2024-01-19)
 
 
