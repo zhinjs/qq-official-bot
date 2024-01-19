@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.25](https://github.com/lc-cn/qq-group-bot/compare/v1.0.24...v1.0.25) (2024-01-19)
+
+
+### Bug Fixes
+
+* 使用ReadStream替代blob ([d6b35b5](https://github.com/lc-cn/qq-group-bot/commit/d6b35b579bc0440f02750ce46ccd933edcab228e))
+
 ## [1.0.24](https://github.com/lc-cn/qq-group-bot/compare/v1.0.23...v1.0.24) (2024-01-19)
 
 
