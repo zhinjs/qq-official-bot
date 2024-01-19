@@ -795,6 +795,7 @@ export class Bot extends QQBot {
     }
     async start() {
         await this.sessionManager.start()
+        return this
     }
 
     async stop() {

@@ -5,8 +5,7 @@ import * as log4js from 'log4js'
 import {EventEmitter} from "events";
 import {SessionManager} from "./sessionManager";
 import {Dict, LogLevel} from "@/types";
-import {GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "@/event";
-import {EventMap, EventParserMap, QQEvent} from "@/event";
+import {EventMap, EventParserMap, GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent, QQEvent} from "@/event";
 import {Bot} from "./bot";
 import {Intent} from "@/constans";
 
@@ -50,9 +49,8 @@ export class QQBot extends EventEmitter {
         })
         this.request.interceptors.response.use((res) => res,(res)=>{
             if(!res || !res.response || !res.response.data)  return Promise.reject(res)
-            const {code=res.statusCode,message='未知错误'}=res?.response?.data||{}
-            const err=new Error(`request "${res.config.url}" error:${code} ${message}`)
-            this.logger.error(err)
+            const {code=res?.response.status,message=res?.response.statusText}=res?.response?.data||{}
+            const err=new Error(`request "${res.config.url}" error with code(${code}): ${message}`)
             return Promise.reject(err)
         })
         this.logger = log4js.getLogger(`[QQBot:${this.config.appid}]`)

@@ -1,6 +1,6 @@
 import {AudioElem, Dict, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
-import fs from "node:fs";
+import fs, {ReadStream} from "node:fs";
 import {Blob} from "formdata-node"
 
 export class Sender {
@@ -147,7 +147,7 @@ export class Sender {
                             this.isFile = true
                         }
                     }
-                    this.brief += `<${elem.type}:${md5(elem.file)}>`;
+                    this.brief += `<${elem.type}:${md5(elem.file instanceof ReadStream?'readStream':elem.file)}>`;
                     break;
                 case 'markdown':
                     this.messagePayload.markdown = data
