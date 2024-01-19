@@ -1,5 +1,9 @@
 import {Dict, QQBot, Quotable, Sendable} from "@";
 import {randomInt} from "crypto";
+import {File,Blob} from "buffer";
+import * as fs from "fs";
+import * as path from "path";
+import {Readable} from "node:stream";
 
 export class Sender {
     brief: string = ''
@@ -12,7 +16,7 @@ export class Sender {
     private filePayload: Dict = {
         srv_send_msg: true
     }
-
+    contentType='application/json'
     constructor(private bot: QQBot, private baseUrl: string, private message: Sendable, private source: Quotable = {}) {
         this.messagePayload.msg_id = source.id
     }
@@ -20,7 +24,13 @@ export class Sender {
     private getType(type: string): 1 | 2 | 3 {
         return ['image', 'video', 'audio'].indexOf(type) + 1 as any
     }
-
+    private async saveToLocal(fileBuf:Buffer){
+        const tempDir=this.bot.config.dataDir||process.cwd()
+        const filename = `${Date.now()}.${fileBuf.toString('base64').split(';')[0].split('/')[1]}`
+        const filePath=path.resolve(tempDir,filename)
+        fs.writeFileSync(filePath, fileBuf)
+        return filePath
+    }
     private parseFromTemplate(template: string) {
         const result = []
         const reg = /(<[^>]+>)/
@@ -95,7 +105,23 @@ export class Sender {
                     if (this.messagePayload.msg_id) {
                         this.messagePayload.content = this.messagePayload.content || ' '
                         if (!this.baseUrl.startsWith('/v2')) {
-                            this.messagePayload.image = !elem.file?.startsWith('http') ? `http://${elem.file}` : elem.file
+                            if(elem.file.startsWith('http')){
+                                this.messagePayload.image += elem.file
+                                break
+                            }
+                            this.contentType='multipart/form-data'
+                            if(Buffer.isBuffer(elem.file)){
+                                elem.file=await this.saveToLocal(elem.file)
+                            }else if(typeof elem.file !== "string"){
+                                throw new Error("bad file param: " + elem.file)
+                            }else if(elem.file.startsWith("base64://")){
+                                elem.file=await this.saveToLocal(Buffer.from(elem.file.slice(9),'base64'))
+                            }else if(/^data:image\/(png|jpeg|jpg);base64,/.test(elem.file)){
+                                elem.file=await this.saveToLocal(Buffer.from(elem.file.replace(/^data:image\/(png|jpeg|jpg);base64,/,''),'base64'))
+                            }
+                            if(fs.existsSync(elem.file)){
+                                this.messagePayload.file_image = fs.createReadStream(elem.file,{highWaterMark: 1024 * 256})
+                            }
                         } else {
                             this.messagePayload.msg_type = 7
                             const result = await this.sendFile(elem.file, this.getType(elem.type))
@@ -182,7 +208,11 @@ export class Sender {
             }>(this.baseUrl + '/files', this.filePayload)
             return result
         }
-        const {data: result} = await this.bot.request.post(this.baseUrl + '/messages', this.messagePayload)
+        const {data: result} = await this.bot.request.post(this.baseUrl + '/messages', this.messagePayload,{
+            headers:{
+                'Content-Type':this.contentType
+            }
+        })
         return result
     }
 }

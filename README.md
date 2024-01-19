@@ -14,7 +14,6 @@ const {Bot} = require('qq-group-bot')
 // 创建机器人
 const bot = new Bot({
 	appid: '', // qq机器人的appID (必填)
-	token: '', // qq机器人的appToken (必填)
 	secret: '', // qq机器人的secret (必填)
 	sandbox: true, // 是否是沙箱环境 默认 false
 	removeAt: true, // 移除第一个at 默认 false
@@ -37,7 +36,6 @@ bot.start()
 ```
 
 ## 发送消息
-
 ```javascript
 const {Bot} = require('qq-group-bot')
 const bot = new Bot({

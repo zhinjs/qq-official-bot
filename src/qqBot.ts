@@ -1,5 +1,6 @@
 import axios, {AxiosInstance} from "axios";
 import {WebSocket} from "ws";
+import FormData from 'form-data'
 import * as log4js from 'log4js'
 import {EventEmitter} from "events";
 import {SessionManager} from "./sessionManager";
@@ -8,6 +9,7 @@ import {GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "@/event
 import {EventMap, EventParserMap, QQEvent} from "@/event";
 import {Bot} from "./bot";
 import {Intent} from "@/constans";
+import * as fs from "fs";
 
 export class QQBot extends EventEmitter {
     request: AxiosInstance
@@ -37,6 +39,13 @@ export class QQBot extends EventEmitter {
                 for (const key in restObj) {
                     config.url = config.url.replace(':' + key, restObj[key])
                 }
+            }
+            if(config.headers['Content-Type']==='multipart/form-data'){
+                const formData=new FormData()
+                for(const key in config.data){
+                    formData.append(key,config.data[key])
+                }
+                config.data=formData
             }
             return config
         })
@@ -143,10 +152,10 @@ export namespace QQBot {
     export interface Config {
         appid: string
         secret: string
-        token?: string
         sandbox?: boolean
         timeout?: number
         maxRetry?: number
+        dataDir?:string
         /**
          * 是否移除第一个@
          */

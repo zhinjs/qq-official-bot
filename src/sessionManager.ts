@@ -25,9 +25,6 @@ export class SessionManager extends EventEmitter {
         d: null // 心跳唯一值
     };
 
-    get token() {
-        return this.bot.config.token;
-    }
 
     constructor(private bot: QQBot) {
         super();
@@ -195,7 +192,6 @@ export class SessionManager extends EventEmitter {
         const authOp = {
             op: OpCode.IDENTIFY, // 鉴权参数
             d: {
-                // token: `Bot ${this.bot.appId}${this.token}`,
                 token: `QQBot ${this.access_token}`, // 根据配置转换token
                 intents: this.getValidIntends(), // todo 接受的类型
                 shard: [0, 1] // 分片信息,给一个默认值

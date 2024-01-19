@@ -24,10 +24,12 @@ export interface MessageElemMap {
     };
     image: {
         /**
-         * @type {string} 本地图片文件路径，例如`"/tmp/1.jpg"`
-         * @type {Buffer} 图片`Buffer`
+         * @type {string} 本地图片文件路径，例如"/tmp/1.jpg"
+         * @type {string} base64协议数据，例如 "base64://*****" 或 "data:image/png;base64,iVBORw0KG
+         * @type {string} 网络图片文件地址，例如"http://www.baidu.com/iconfont.png"
+         * @type {Buffer} 图片Buffer数据
          */
-        file: string
+        file: string|Buffer
         /** 仅接收有效 */
         url?: string
     };

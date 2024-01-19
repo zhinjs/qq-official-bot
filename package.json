@@ -3,6 +3,9 @@
     "version": "1.0.19",
     "description": "qq机器人开发SDK",
     "main": "lib/index.js",
+    "engines": {
+        "node": "v18"
+    },
     "scripts": {
         "start": "node .",
         "compile": "tsc --project tsconfig.build.json && tsc-alias -p tsconfig.build.json",
@@ -34,6 +37,7 @@
     "license": "MIT",
     "dependencies": {
         "axios": "^1.6.1",
+        "form-data": "^4.0.0",
         "log4js": "^6.9.1",
         "ws": "^8.14.0"
     },

@@ -28,6 +28,7 @@ export class ActionNoticeEvent extends NoticeEvent {
         this.sub_type = 'action'
         this.notice_id = payload.id
         this.data = payload.data
+
     }
 
     /**
@@ -45,11 +46,12 @@ export class FriendActionNoticeEvent extends ActionNoticeEvent {
     operator_id: string
     notice_type: 'friend' = 'friend'
 
-    constructor(public bot: Bot, payload: Dict) {
+    constructor(bot: Bot, payload: Dict) {
         super(bot, payload)
         this.operator_id = payload.user_openid
         bot.emit(`notice.${this.notice_type}`, this)
         bot.emit(`notice.${this.notice_type}.action`, this)
+        bot.logger.info(`好友${this.operator_id} 点击了消息按钮：${this.data.button_id}`)
     }
 }
 
@@ -64,6 +66,7 @@ export class GroupActionNoticeEvent extends ActionNoticeEvent {
         this.operator_id = payload.group_member_openid
         bot.emit(`notice.${this.notice_type}`, this)
         bot.emit(`notice.${this.notice_type}.action`, this)
+        bot.logger.info(`群(${this.group_id})成员${this.operator_id} 点击了消息按钮：${this.data.button_id}`)
     }
 }
 
@@ -80,6 +83,7 @@ export class GuildActionNoticeEvent extends ActionNoticeEvent {
         this.operator_id = payload.data.resoloved.user_id
         bot.emit(`notice.${this.notice_type}`, this)
         bot.emit(`notice.${this.notice_type}.action`, this)
+        bot.logger.info(`频道(${this.guild_id})成员${this.operator_id}在子频道(${this.channel_id})点击了消息按钮：${this.data.button_id}`)
     }
 }
 
@@ -107,13 +111,16 @@ export namespace ActionNoticeEvent {
 export class FriendChangeNoticeEvent extends NoticeEvent {
     user_id: string
     time: number
-
+    get actionText(){
+        return this.sub_type===`increase`?'新增':'减少'
+    }
     constructor(bot: Bot, sub_type: 'increase' | 'decrease', payload: Dict) {
         super(bot, payload);
         this.notice_type = 'friend'
         this.sub_type = sub_type
         this.user_id = payload.openid
         this.time = Math.floor(payload.timestamp / 1000)
+        bot.logger.info(`好友${this.actionText}：${this.user_id}`)
     }
 }
 
@@ -132,7 +139,9 @@ export class GroupChangeNoticeEvent extends NoticeEvent {
     group_id: string
     operator_id: string
     time: number
-
+    get actionText(){
+        return this.sub_type===`increase`?'新增':'减少'
+    }
     constructor(bot: Bot, sub_type: 'increase' | 'decrease', payload: Dict) {
         super(bot, payload);
         this.notice_type = 'group'
@@ -140,6 +149,7 @@ export class GroupChangeNoticeEvent extends NoticeEvent {
         this.group_id = payload.group_openid
         this.operator_id = payload.op_member_openid
         this.time = Math.floor(payload.timestamp / 1000)
+        bot.logger.info(`群${this.actionText}：${this.group_id}. 操作人：${this.operator_id}`)
     }
 }
 
@@ -160,7 +170,9 @@ export class GuildChangeNoticeEvent extends NoticeEvent {
     operator_id: string
     time: number
     sub_type: 'increase' | 'update' | 'decrease'
-
+    get actionText(){
+        return this.sub_type===`increase`?'新增':this.sub_type===`update`?'更新':'减少'
+    }
     constructor(bot: Bot, sub_type: 'increase' | 'decrease' | 'update', payload: Dict) {
         super(bot, payload);
         this.notice_type = 'guild'
@@ -169,6 +181,7 @@ export class GuildChangeNoticeEvent extends NoticeEvent {
         this.guild_name = payload.name
         this.operator_id = payload.op_user_id
         this.time = Math.floor(new Date(payload.joined_at).getTime() / 1000)
+        bot.logger.info(`频道${this.actionText}：${this.guild_id}. 操作人：${this.operator_id}`)
     }
 }
 
@@ -194,6 +207,20 @@ export class ChannelChangeNoticeEvent extends NoticeEvent {
     time: number
     sub_type: ChannelChangeNoticeEvent.SubType
 
+    get actionText(){
+        switch (this.sub_type){
+            case 'increase':
+                return '新增'
+            case 'update':
+                return '更新'
+            case 'decrease':
+                return '减少'
+            case "enter":
+                return '进入'
+            case "exit":
+                return '离开'
+        }
+    }
     constructor(bot: Bot, sub_type: ChannelChangeNoticeEvent.SubType, payload: Dict) {
         super(bot, payload);
         this.notice_type = 'channel'
@@ -204,6 +231,12 @@ export class ChannelChangeNoticeEvent extends NoticeEvent {
         this.channel_name = payload.channel_name || payload.name
         this.operator_id = payload.op_user_id || payload.user_id
         this.time = Math.floor(new Date(payload.joined_at).getTime() / 1000)
+        bot.logger.info(`${this.actionText}：${this.guild_id}. 操作人：`)
+        if(['enter','exit'].includes(this.sub_type)){
+            bot.logger.info(`用户${this.actionText}子频道：${this.channel_id}`)
+        }else{
+            bot.logger.info(`子频道${this.actionText}：${this.channel_id}. 操作人：${this.operator_id}`)
+        }
     }
 }
 
@@ -233,7 +266,9 @@ export class GuildMemberChangeNoticeEvent extends NoticeEvent {
     is_bot: boolean
     time: number
     sub_type: 'member.increase' | 'member.update' | 'member.decrease'
-
+    get actionText(){
+        return this.sub_type===`member.increase`?'加入':this.sub_type==='member.update'?'变更':'退出'
+    }
     constructor(bot: Bot, sub_type: 'member.increase' | 'member.decrease' | 'member.update', payload: Dict) {
         super(bot, payload);
         this.notice_type = 'guild'
@@ -244,6 +279,7 @@ export class GuildMemberChangeNoticeEvent extends NoticeEvent {
         this.user_id = payload.user.id
         this.user_name = payload.user.nickname
         this.is_bot = payload.user.bot
+        bot.logger.info(`频道(${this.guild_id})成员(${this.user_name})${this.actionText}. 操作人：${this.operator_id}`)
     }
 }
 
@@ -288,7 +324,9 @@ export namespace ForumNoticeEvent {
     export const parse: EventParser = function (this: Bot, event, payload) {
         switch (event) {
             case "notice.forum":
-                return new ForumNoticeEvent(this, payload)
+                const noticeEvent=new ForumNoticeEvent(this, payload)
+                this.logger.info(`用户:${noticeEvent.author_id}操作了论坛内容`)
+                return noticeEvent
             case "notice.forum.thread.create":
                 return new ThreadChangeNoticeEvent(this, 'create', payload)
             case "notice.forum.thread.update":
@@ -314,7 +352,9 @@ export class ThreadChangeNoticeEvent extends ForumNoticeEvent {
     title: string
     content: string
     time: number
-
+    get actionText(){
+        return this.sub_type==='thread.create'?'创建':this.sub_type==='thread.update'?'更新':'删除'
+    }
     constructor(bot: Bot, sub_type: 'create' | 'update' | 'delete', payload: Dict) {
         super(bot, payload);
         this.sub_type = `thread.${sub_type}`
@@ -322,6 +362,7 @@ export class ThreadChangeNoticeEvent extends ForumNoticeEvent {
         this.title = payload.thread_info.title
         this.content = payload.thread_info.content
         this.time = Math.floor(new Date(payload.thread_info.date_time).getTime() / 1000)
+        bot.logger.info(`用户${this.author_id}${this.actionText}了主题(${this.thread_id})`)
     }
 }
 
@@ -330,7 +371,9 @@ export class PostChangeNoticeEvent extends ForumNoticeEvent {
     post_id: string
     content: string
     time: number
-
+    get actionText(){
+        return this.sub_type==='post.create'?'发布':'删除'
+    }
     constructor(bot: Bot, sub_type: 'create' | 'delete', payload: Dict) {
         super(bot, payload);
         this.sub_type = `post.${sub_type}`
@@ -338,6 +381,7 @@ export class PostChangeNoticeEvent extends ForumNoticeEvent {
         this.post_id = payload.post_info.post_id
         this.content = payload.post_info.content
         this.time = Math.floor(new Date(payload.post_info.date_time).getTime() / 1000)
+        bot.logger.info(`用户${this.author_id}${this.actionText}了帖子(${this.post_id})`)
     }
 }
 
@@ -347,7 +391,9 @@ export class ReplyChangeNoticeEvent extends ForumNoticeEvent {
     reply_id: string
     content: string
     time: number
-
+    get actionText(){
+        return this.sub_type==='reply.create'?'创建':'删除'
+    }
     constructor(bot: Bot, sub_type: 'create' | 'delete', payload: Dict) {
         super(bot, payload);
         this.sub_type = `reply.${sub_type}`
@@ -356,6 +402,7 @@ export class ReplyChangeNoticeEvent extends ForumNoticeEvent {
         this.reply_id = payload.reply_info.reply_id
         this.content = payload.reply_info.content
         this.time = Math.floor(new Date(payload.reply_info.date_time).getTime() / 1000)
+        bot.logger.info(`用户${this.author_id})${this.actionText}了回复(${this.reply_id})`)
     }
 }
 
@@ -367,7 +414,11 @@ export class AuditNoticeEvent extends ForumNoticeEvent {
     /** 审核结果： 0 成功 1 失败 */
     result: 0 | 1
     message?: string
-
+    get typeText(){
+        if(this.type===AuditType.Thread) return '主题'
+        if(this.type===AuditType.Post) return '帖子'
+        if(this.type===AuditType.Reply) return '回复'
+    }
     constructor(bot: Bot, payload: Dict) {
         super(bot, payload)
         this.sub_type = 'audit'
@@ -377,5 +428,6 @@ export class AuditNoticeEvent extends ForumNoticeEvent {
         this.type = payload.type
         this.result = payload.result
         this.message = payload.err_msg
+        bot.logger.info(`${this.typeText}审核${this.result===0?'通过':'拒绝'}. ${this.message||''}`)
     }
 }
