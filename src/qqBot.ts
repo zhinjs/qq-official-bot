@@ -9,7 +9,6 @@ import {GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "@/event
 import {EventMap, EventParserMap, QQEvent} from "@/event";
 import {Bot} from "./bot";
 import {Intent} from "@/constans";
-import * as fs from "fs";
 
 export class QQBot extends EventEmitter {
     request: AxiosInstance
@@ -48,6 +47,14 @@ export class QQBot extends EventEmitter {
                 config.data=formData
             }
             return config
+        })
+        this.request.interceptors.response.use((res) => res,(res)=>{
+            if(!res && !res.response && !res.response.data)  return Promise.reject(res)
+            const {code,message}=res.response.data||{}
+            console.log(res.config)
+            const err=new Error(`request "${res.config.url}" error:${code} ${message}`)
+            this.logger.error(err)
+            return Promise.reject(err)
         })
         this.logger = log4js.getLogger(`[QQBot:${this.config.appid}]`)
         this.logger.level = this.config.logLevel ||= 'info'

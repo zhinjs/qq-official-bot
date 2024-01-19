@@ -1,9 +1,7 @@
 import {AudioElem, Dict, ImageElem, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
-import {File,Blob} from "buffer";
 import * as fs from "fs";
-import * as path from "path";
-import {Readable} from "node:stream";
+import {ReadStream} from "node:fs";
 
 export class Sender {
     brief: string = ''
@@ -23,13 +21,6 @@ export class Sender {
 
     private getType(type: string): 1 | 2 | 3 {
         return ['image', 'video', 'audio'].indexOf(type) + 1 as any
-    }
-    private async saveToLocal(fileBuf:Buffer){
-        const tempDir=this.bot.config.dataDir||process.cwd()
-        const filename = `${Date.now()}.${fileBuf.toString('base64').split(';')[0].split('/')[1]}`
-        const filePath=path.resolve(tempDir,filename)
-        fs.writeFileSync(filePath, fileBuf)
-        return filePath
     }
     private parseFromTemplate(template: string) {
         const result = []
@@ -71,16 +62,17 @@ export class Sender {
             return elem.file
         }
         this.contentType='multipart/form-data'
+        if(elem.file instanceof ReadStream) return elem.file
         if(Buffer.isBuffer(elem.file)){
-            return await this.saveToLocal(elem.file)
+            return new Blob([elem.file])
         }else if(typeof elem.file !== "string"){
             throw new Error("bad file param: " + elem.file)
         }else if(elem.file.startsWith("base64://")){
-            return await this.saveToLocal(Buffer.from(elem.file.slice(9),'base64'))
-        }else if(/^data:image\/(png|jpeg|jpg);base64,/.test(elem.file)){
-            return await this.saveToLocal(Buffer.from(elem.file.replace(/^data:image\/(png|jpeg|jpg);base64,/,''),'base64'))
+            return new Blob([Buffer.from(elem.file.slice(9),'base64')])
+        }else if(/^data:[^/]+\/[^;]+;base64,/.test(elem.file)){
+            return new Blob([Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64')])
         }else if(fs.existsSync(elem.file)){
-            return elem.file
+            return fs.createReadStream(elem.file)
         }
         throw new Error("bad file param: " + elem.file)
     }
@@ -124,9 +116,9 @@ export class Sender {
                 case 'video':
                     if (this.messagePayload.msg_id) {
                         if (!this.baseUrl.startsWith('/v2')) {
-                            elem.file=await this.fixMediaData(elem)
-                            if(fs.existsSync(elem.file)){
-                                this.messagePayload.file_image = fs.createReadStream(elem.file,{highWaterMark: 1024 * 256})
+                            const fileData=await this.fixMediaData(elem)
+                            if(typeof fileData!=='string'){
+                                this.messagePayload.file_image = fileData
                             }else{
                                 this.messagePayload.image = elem.file
                             }
@@ -140,9 +132,9 @@ export class Sender {
                         }
                     } else {
                         if (!this.baseUrl.startsWith('/v2')) {
-                            elem.file=await this.fixMediaData(elem)
-                            if(fs.existsSync(elem.file)){
-                                this.messagePayload.file_image = fs.createReadStream(elem.file,{highWaterMark: 1024 * 256})
+                            const fileData=await this.fixMediaData(elem)
+                            if(typeof fileData!=='string'){
+                                this.messagePayload.file_image = fileData
                             }else{
                                 this.messagePayload.image = elem.file
                             }
