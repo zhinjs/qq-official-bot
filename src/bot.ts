@@ -26,7 +26,7 @@ import {AxiosResponse} from "axios";
 import {GuildMember} from "@/entries/guildMember";
 import {User} from "@/entries/user";
 import {ActionNoticeEvent} from "@/event/notice";
-import {GuildMessageEvent} from "@/event";
+import {GuildMessageEvent, PrivateMessageEvent} from "@/event";
 
 
 export class Bot extends QQBot {
@@ -477,6 +477,31 @@ export class Bot extends QQBot {
         throw UnsupportedMethodError
     }
     /**
+     * 发送私聊信息
+     * @param user_id
+     * @param message
+     * @param source
+     */
+    async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable) {
+        const sender = new Sender(this, `/v2/users/${user_id}`, message, source)
+        const result = await sender.sendMsg()
+        this.logger.info(`send to User(${user_id}): ${sender.brief}`)
+        return result
+    }
+    /**
+     * 发送群消息
+     * @param group_id
+     * @param message
+     * @param source
+     */
+    async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable) {
+        const sender = new Sender(this, `/v2/groups/${group_id}`, message, source)
+        const result = await sender.sendMsg()
+        this.logger.info(`send to Group(${group_id}): ${sender.brief}`)
+        return result
+    }
+
+    /**
      * 获取子频道列表
      */
     async getChannelList(guild_id: string): Promise<Channel.ApiInfo> {
@@ -527,18 +552,6 @@ export class Bot extends QQBot {
         } as DMS
     }
 
-    /**
-     * 发送私聊信息
-     * @param user_id
-     * @param message
-     * @param source
-     */
-    async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable) {
-        const sender = new Sender(this, `/v2/users/${user_id}`, message, source)
-        const result = await sender.sendMsg()
-        this.logger.info(`send to User(${user_id}): ${sender.brief}`)
-        return result
-    }
 
     /**
      * 发送频道私信
@@ -553,6 +566,15 @@ export class Bot extends QQBot {
         return result
     }
 
+    /**
+     * 获取频道私信
+     * @param guild_id
+     * @param message_id
+     */
+    async getDirectMessage(guild_id:string,message_id:string){
+        const {data:payload}=await this.request.get(`/dms/${guild_id}/messages/${message_id}`)
+        return this.processPayload(payload.id,`message.direct`,payload) as PrivateMessageEvent
+    }
     /**
      * 撤回频道私信
      * @param guild_id
@@ -573,7 +595,7 @@ export class Bot extends QQBot {
     async sendGuildMessage(channel_id: string, message: Sendable, source?: Quotable) {
         const sender = new Sender(this, `/channels/${channel_id}`, message, source)
         const result = await sender.sendMsg()
-        this.logger.info(`send to Channel(${channel_id}): ${sender.brief}`)
+        this.logger.info(`send to Channel(${channel_id}/messages): ${sender.brief}`)
         return result
     }
 
@@ -586,19 +608,6 @@ export class Bot extends QQBot {
     async recallGuildMessage(channel_id: string, message_id: string, hidetip?: boolean) {
         const result = await this.request.delete(`/channels/${channel_id}/messages/${message_id}?hidetip=${!!hidetip}`)
         return result.status === 200
-    }
-
-    /**
-     * 发送群消息
-     * @param group_id
-     * @param message
-     * @param source
-     */
-    async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable) {
-        const sender = new Sender(this, `/v2/groups/${group_id}`, message, source)
-        const result = await sender.sendMsg()
-        this.logger.info(`send to Group(${group_id}): ${sender.brief}`)
-        return result
     }
     /**
      * 对频道消息进行表态
@@ -662,17 +671,6 @@ export class Bot extends QQBot {
         }
         return await getMembers()
     }
-
-    /**
-     * 回应操作
-     * @param action_id {string} 操作id
-     * @param code {number}
-     */
-    async replyAction(action_id: string,code:ActionNoticeEvent.ReplyCode=0) {
-        const result = await this.request.put(`/interactions/${action_id}`, { code })
-        return result.status === 200
-    }
-
     /** 获取频道日程
      * @param channel_id {string}
      * @param since {number}
@@ -796,6 +794,17 @@ export class Bot extends QQBot {
         const result=await this.request.delete(`/channels/${channel_id}/threads/${thread_id}`)
         return result.status===204
     }
+
+    /**
+     * 回应操作
+     * @param action_id {string} 操作id
+     * @param code {number}
+     */
+    async replyAction(action_id: string,code:ActionNoticeEvent.ReplyCode=0) {
+        const result = await this.request.put(`/interactions/${action_id}`, { code })
+        return result.status === 200
+    }
+
     async start() {
         await this.sessionManager.start()
         return this

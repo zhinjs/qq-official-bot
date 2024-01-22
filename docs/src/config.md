@@ -8,7 +8,6 @@ layout: doc
 |----------|---------------------|---------------------------------------|-------|
 | appid    | string              | qq机器人的appid 必填                        | -     |
 | secret   | string              | qq机器人的secret 必填                       | -     |
-| token    | string              | qq机器人的secret                          | -     |
 | sandbox  | boolean             | 是否使用沙箱环境                              | false |
 | intents  | [Intent](#intent)[] | 监听哪些官方事件 必填   | -     |
 | logLevel | string              | 输出日志等级                                | info  |

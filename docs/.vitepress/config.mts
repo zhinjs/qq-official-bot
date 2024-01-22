@@ -1,4 +1,5 @@
-import { defineConfig } from 'vitepress'
+import {defineConfig} from 'vitepress'
+
 export default defineConfig({
     base:"/qq-group-bot/",
     themeConfig: {
@@ -23,14 +24,11 @@ export default defineConfig({
                 text: 'API',
                 activeMatch: '/api/',
                 items: [
-                    { text: '获取频道列表', link: '/api/getGuildList' },
-                    { text: '获取子频道列表', link: '/api/getChannelList' },
-                    { text: '获取频道成员列表', link: '/api/getGuildMemberList' },
-                    { text: '发送消息到子频道', link: '/api/sendGuildMessage' },
-                    { text: '发送频道私信', link: '/api/sendDirectMessage' },
-                    { text: '发送群聊消息', link: '/api/sendGroupMessage' },
-                    { text: '发送私聊消息', link: '/api/sendPrivateMessage' },
-                    { text: '创建频道私信会话', link: '/api/createDirectSession' },
+                    { text: '频道', link: '/api/guild' },
+                    { text: '子频道', link: '/api/channel' },
+                    { text: '私信', link: '/api/direct' },
+                    { text: '群', link: '/api/group' },
+                    { text: '好友', link: '/api/friend' },
                 ]
             },
             {
@@ -72,16 +70,13 @@ export default defineConfig({
                 ]
             },
             {
-                text: '公共方法',
+                text: '接口分组',
                 items: [
-                    { text: '获取频道列表', link: '/api/getGuildList' },
-                    { text: '获取子频道列表', link: '/api/getChannelList' },
-                    { text: '获取频道成员列表', link: '/api/getGuildMemberList' },
-                    { text: '发送消息到子频道', link: '/api/sendGuildMessage' },
-                    { text: '发送频道私信', link: '/api/sendDirectMessage' },
-                    { text: '发送群聊消息', link: '/api/sendGroupMessage' },
-                    { text: '发送私聊消息', link: '/api/sendPrivateMessage' },
-                    { text: '创建频道私信会话', link: '/api/createDirectSession' },
+                    { text: '频道', link: '/api/guild' },
+                    { text: '子频道', link: '/api/channel' },
+                    { text: '私信', link: '/api/direct' },
+                    { text: '群', link: '/api/group' },
+                    { text: '好友', link: '/api/friend' },
                 ]
             }
         ],

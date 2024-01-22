@@ -12,7 +12,9 @@ export class PrivateMessageEvent extends Message implements MessageEvent {
         this.message_type = 'private'
         this.sub_type = sub_type
     }
-
+    async recall(){
+        if(this.sub_type==='direct') return this.bot.recallDirectMessage(this.guild_id,this.message_id)
+    }
     async reply(message: Sendable) {
         return this.sub_type === 'direct' ?
             this.bot.sendDirectMessage(this.guild_id, message, this) :
