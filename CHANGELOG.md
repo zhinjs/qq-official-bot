@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.30](https://github.com/lc-cn/qq-group-bot/compare/v1.0.29...v1.0.30) (2024-01-19)
+
+
+### Bug Fixes
+
+* friendly img brief ([706b572](https://github.com/lc-cn/qq-group-bot/commit/706b5728ed9b390d87c8b686c1b2d0e401abaeed))
+* 将报错信息输出到debug ([bc4aabf](https://github.com/lc-cn/qq-group-bot/commit/bc4aabfcfe6e6df0c1c4b3381e7ce9a21d2459bc))
+
 ## [1.0.29](https://github.com/lc-cn/qq-group-bot/compare/v1.0.28...v1.0.29) (2024-01-19)
 
 
