@@ -1,6 +1,6 @@
 import {AudioElem, Dict, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
-import fs, {ReadStream} from "node:fs";
+import fs from "node:fs/promises";
 import {Blob} from "formdata-node"
 
 export class Sender {
@@ -62,7 +62,6 @@ export class Sender {
             return elem.file
         }
         this.contentType='multipart/form-data'
-        if(elem.file instanceof fs.ReadStream) return elem.file
         if(Buffer.isBuffer(elem.file)){
             return new Blob([elem.file])
         }else if(typeof elem.file !== "string"){
@@ -71,9 +70,9 @@ export class Sender {
             return new Blob([Buffer.from(elem.file.slice(9),'base64')])
         }else if(/^data:[^/]+\/[^;]+;base64,/.test(elem.file)){
             return new Blob([Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64')])
-        }else if(fs.existsSync(elem.file)){
-            return fs.createReadStream(elem.file)
-        }
+        }else try{
+            return new Blob([await fs.readFile(elem.file.replace("file://", ""))])
+        }catch{}
         throw new Error("bad file param: " + elem.file)
     }
     async processMessage() {
@@ -147,7 +146,7 @@ export class Sender {
                             this.isFile = true
                         }
                     }
-                    this.brief += `<${elem.type}:${md5(elem.file instanceof ReadStream?'readStream':elem.file)}>`;
+                    this.brief += `<${elem.type}:${md5(elem.file)}>`;
                     break;
                 case 'markdown':
                     this.messagePayload.markdown = data

@@ -1,5 +1,4 @@
 import {Dict} from '@/types'
-import {ReadStream} from "node:fs";
 
 export enum MusicPlatform {
     qq = "qq",
@@ -29,9 +28,8 @@ export interface MessageElemMap {
          * @type {string} base64协议数据，例如 "base64://*****" 或 "data:image/png;base64,iVBORw0KG
          * @type {string} 网络图片文件地址，例如"http://www.baidu.com/iconfont.png"
          * @type {Buffer} 图片Buffer数据
-         * @type {ReadStream} 数据读取流
          */
-        file: string | Buffer | ReadStream
+        file: string | Buffer
         /** 仅接收有效 */
         url?: string
     };

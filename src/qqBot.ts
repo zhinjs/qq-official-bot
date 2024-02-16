@@ -39,10 +39,10 @@ export class QQBot extends EventEmitter {
                 }
             }
             if(config.headers['Content-Type']==='multipart/form-data'){
+                delete config.data.message_reference
                 const formData=new FormData()
-                for(const key in config.data){
+                for(const key in config.data)
                     formData.set(key,config.data[key])
-                }
                 config.data=formData
             }
             return config
