@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.31](https://github.com/lc-cn/qq-group-bot/compare/v1.0.30...v1.0.31) (2024-02-16)
+
+
+### Bug Fixes
+
+* file:// 开头无法发送，同时带 reply file 无法发送 ([831fbb8](https://github.com/lc-cn/qq-group-bot/commit/831fbb8a796b4939b0dbc3029dd12c756ee86948))
+* friendly img brief ([e8d6d65](https://github.com/lc-cn/qq-group-bot/commit/e8d6d65346f6908d4d5d8c91c7a5f32052be6ba4))
+* 添加部分文档 ([a577036](https://github.com/lc-cn/qq-group-bot/commit/a577036557cf4c601cfef91403a92f11d8122898))
+
 ## [1.0.30](https://github.com/lc-cn/qq-group-bot/compare/v1.0.29...v1.0.30) (2024-01-19)
 
 
