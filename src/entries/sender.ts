@@ -76,9 +76,9 @@ export class Sender {
         throw new Error("bad file param: " + elem.file)
     }
     async processMessage() {
-        if (!Array.isArray(this.message)) this.message = [this.message as any]
-        while (this.message.length) {
-            const elem = this.message.shift()
+        if (!Array.isArray(this.message))
+            this.message = [this.message as any]
+        for (const elem of this.message) {
             if (typeof elem === 'string') {
                 const index = this.message.findIndex((item) => item === elem)
                 this.message.splice(index, 0, ...this.parseFromTemplate(elem))
