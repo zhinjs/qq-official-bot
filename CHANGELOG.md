@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.32](https://github.com/lc-cn/qq-group-bot/compare/v1.0.31...v1.0.32) (2024-02-17)
+
+
+### Bug Fixes
+
+* 发送完消息，消息数组没了 ([2865945](https://github.com/lc-cn/qq-group-bot/commit/2865945ebbd63f8258321327bc3a549a2c40206b))
+
 ## [1.0.31](https://github.com/lc-cn/qq-group-bot/compare/v1.0.30...v1.0.31) (2024-02-16)
 
 
