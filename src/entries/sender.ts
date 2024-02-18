@@ -58,6 +58,7 @@ export class Sender {
         return result
     }
     private async fixMediaData(elem:ImageElem|VideoElem|AudioElem){
+        if(elem.url)return elem.url
         if(typeof elem.file==="string" && elem.file.startsWith('http')){
             return elem.file
         }
