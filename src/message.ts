@@ -155,12 +155,15 @@ export namespace Message {
             for (const attachment of payload.attachments) {
                 let {content_type, ...data} = attachment
                 const [type] = content_type.split('/')
-                let url = data.src || data.url || ''
-                if (!url.startsWith('http')) url = `https://${url}`
+                if (!data.url.startsWith('http'))
+                    data.url = `https://${data.url}`
+                if (data.filename) {
+                    data.name = data.filename
+                    delete data.filename
+                }
                 result.push({
                     type,
                     ...data,
-                    file: url
                 })
                 brief += `<${type},${Object.entries(data).map(([key, value]) => `${key}=${value}`).join(',')}>`
             }

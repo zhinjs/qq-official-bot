@@ -30,18 +30,21 @@ export interface MessageElemMap {
          * @type {Buffer} 图片Buffer数据
          */
         file: string | Buffer
-        /** 仅接收有效 */
         url?: string
+        /** 仅接收有效 */
+        name?: string
     };
     video: {
         file: string
-        /** 仅接收有效 */
         url?: string
+        /** 仅接收有效 */
+        name?: string
     };
     audio: {
         file: string
-        /** 仅接收有效 */
         url?: string
+        /** 仅接收有效 */
+        name?: string
     };
     markdown: {
         content: string
