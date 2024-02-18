@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.33](https://github.com/lc-cn/qq-group-bot/compare/v1.0.32...v1.0.33) (2024-02-18)
+
+
+### Bug Fixes
+
+* 附件增加 name 字段 ([fd5b519](https://github.com/lc-cn/qq-group-bot/commit/fd5b5190a5e9e410d3ec848e87276b3a76d55e07))
+
 ## [1.0.32](https://github.com/lc-cn/qq-group-bot/compare/v1.0.31...v1.0.32) (2024-02-17)
 
 
