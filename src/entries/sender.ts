@@ -81,8 +81,8 @@ export class Sender {
             this.message = [this.message as any]
         for (const elem of this.message) {
             if (typeof elem === 'string') {
-                const index = this.message.findIndex((item) => item === elem)
-                this.message.splice(index, 0, ...this.parseFromTemplate(elem))
+                this.messagePayload.content += elem
+                this.brief += elem
                 continue
             }
             const {type, ...data} = elem
