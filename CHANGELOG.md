@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.34](https://github.com/lc-cn/qq-group-bot/compare/v1.0.33...v1.0.34) (2024-02-22)
+
+
+### Bug Fixes
+
+* actions/checkout@v4,actions/setup-node@v4,add package-lock.json ([646493b](https://github.com/lc-cn/qq-group-bot/commit/646493b68ee33a544c93fce4901d8f9ca2fa8733))
+* string msg ([4395f28](https://github.com/lc-cn/qq-group-bot/commit/4395f28eed5395c4f74790ec80d455a12ebab93f))
+* Update Build Docs Action ([99fcfe7](https://github.com/lc-cn/qq-group-bot/commit/99fcfe7dab8c68ae3bf4345c4aa724f414837405))
+* Update Build Docs Action ([5bcf0e2](https://github.com/lc-cn/qq-group-bot/commit/5bcf0e2a2671935015ca90b8ad4ba20ad36f8a80))
+* Update Build Docs Action ([df6cf2b](https://github.com/lc-cn/qq-group-bot/commit/df6cf2b5bf3e6759b9b065c33ef69eba00e56ed8))
+* use ali mirror ([2fc7690](https://github.com/lc-cn/qq-group-bot/commit/2fc7690016c53c7a8c91750951670192c9c24063))
+* 消息模板字符串不解析Bug ([2d98fec](https://github.com/lc-cn/qq-group-bot/commit/2d98fec8006e16f275bad5495c3c4fc4e1e78e7b))
+
 ## [1.0.33](https://github.com/lc-cn/qq-group-bot/compare/v1.0.32...v1.0.33) (2024-02-18)
 
 
