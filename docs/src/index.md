@@ -3,7 +3,7 @@ layout: home
 
 hero:
   name: qq-group-bot
-  text: 基于NodeJS的qq官方机器人开发框架
+  text: 基于NodeJS的qq官方机器人开发SDK
   actions:
     - theme: brand
       text: 快速开始

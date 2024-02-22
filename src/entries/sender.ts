@@ -79,10 +79,12 @@ export class Sender {
     async processMessage() {
         if (!Array.isArray(this.message))
             this.message = [this.message as any]
-        for (const elem of this.message) {
+        const message=[...this.message]
+        while (message.length) {
+            const elem = message.shift()
             if (typeof elem === 'string') {
-                this.messagePayload.content += elem
-                this.brief += elem
+                const index = message.findIndex((item) => item === elem)
+                message.splice(index, 0, ...this.parseFromTemplate(elem))
                 continue
             }
             const {type, ...data} = elem
