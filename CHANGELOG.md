@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.36](https://github.com/lc-cn/qq-group-bot/compare/v1.0.35...v1.0.36) (2024-03-23)
+
+
+### Bug Fixes
+
+* code error ([25ad7ee](https://github.com/lc-cn/qq-group-bot/commit/25ad7ee330c283da3c3ee3daa4741545defd55d0))
+
 ## [1.0.35](https://github.com/lc-cn/qq-group-bot/compare/v1.0.34...v1.0.35) (2024-03-23)
 
 
