@@ -494,7 +494,7 @@ export class Bot extends QQBot {
      * @param message_id
      */
     async recallPrivateMessage(user_id:string,message_id:string) {
-        const result = await this.request.delete(`/v2/users/${user_id}/messages/${message_id})
+        const result = await this.request.delete(`/v2/users/${user_id}/messages/${message_id}`)
         return result.status === 200
     }
     /**
@@ -515,7 +515,7 @@ export class Bot extends QQBot {
      * @param message_id
      */
     async recallGroupMessage(group_id:string,message_id:string) {
-        const result = await this.request.delete(`/v2/groups/${group_id}/messages/${message_id})
+        const result = await this.request.delete(`/v2/groups/${group_id}/messages/${message_id}`)
         return result.status === 200
     }
     /**
