@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.35](https://github.com/lc-cn/qq-group-bot/compare/v1.0.34...v1.0.35) (2024-03-23)
+
+
+### Bug Fixes
+
+* add group/user recall msg method ([73663b9](https://github.com/lc-cn/qq-group-bot/commit/73663b9297571f72efcf3c3d57c7eff03c630c16))
+* change error method name ([b613ab4](https://github.com/lc-cn/qq-group-bot/commit/b613ab473e6b6ae8285541cede7d1edc433dd365))
+* Update Release Action ([e691408](https://github.com/lc-cn/qq-group-bot/commit/e691408c0aa6df71c430f70e5c9189e7e5eb2c47))
+
 ## [1.0.34](https://github.com/lc-cn/qq-group-bot/compare/v1.0.33...v1.0.34) (2024-02-22)
 
 
