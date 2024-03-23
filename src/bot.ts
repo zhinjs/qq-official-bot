@@ -493,7 +493,7 @@ export class Bot extends QQBot {
      * @param user_id
      * @param message_id
      */
-    async recallGroupMessage(user_id:string,message_id:string) {
+    async recallPrivateMessage(user_id:string,message_id:string) {
         const result = await this.request.delete(`/v2/users/${user_id}/messages/${message_id})
         return result.status === 200
     }
