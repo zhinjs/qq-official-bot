@@ -489,6 +489,15 @@ export class Bot extends QQBot {
         return result
     }
     /**
+     * 撤回私聊消息
+     * @param user_id
+     * @param message_id
+     */
+    async recallGroupMessage(user_id:string,message_id:string) {
+        const result = await this.request.delete(`/v2/users/${user_id}/messages/${message_id})
+        return result.status === 200
+    }
+    /**
      * 发送群消息
      * @param group_id
      * @param message
@@ -500,7 +509,15 @@ export class Bot extends QQBot {
         this.logger.info(`send to Group(${group_id}): ${sender.brief}`)
         return result
     }
-
+    /**
+     * 撤回群消息
+     * @param group_id
+     * @param message_id
+     */
+    async recallGroupMessage(group_id:string,message_id:string) {
+        const result = await this.request.delete(`/v2/groups/${group_id}/messages/${message_id})
+        return result.status === 200
+    }
     /**
      * 获取子频道列表
      */
