@@ -68,13 +68,12 @@ export class Sender {
         return Buffer.from(res.data).toString('base64')
     }
     async #getBase64FromLocal(file_path:string){
-        const res = await fs.readFile(path.resolve(process.cwd(),file_path))
-        return Buffer.from(res).toString('base64')
+        return (await fs.readFile(file_path.replace("file://", ""))).toString('base64')
     }
     private async fixGroupOrC2cMediaData(elem:ImageElem|VideoElem|AudioElem):Promise<string>{
         if(Buffer.isBuffer(elem.file)) return elem.file.toString('base64')
         if(elem.file.startsWith('http')) return await this.#getBase64FromWeb(elem.file)
-        if(elem.file.includes(path.sep)) return await this.#getBase64FromLocal(elem.file)
+        try { return await this.#getBase64FromLocal(elem.file) } catch {}
         return elem.file
     }
     private async fixGuildMediaData(elem: ImageElem | VideoElem | AudioElem) {
@@ -148,7 +147,6 @@ export class Sender {
                             }
                         } else {
                             const fileBase64=await this.fixGroupOrC2cMediaData(elem)
-                            console.log(fileBase64)
                             this.messagePayload.msg_type = 7
                             const result = await this.uploadMedia(fileBase64, this.getType(elem.type))
                             this.messagePayload.media = {file_info: result.file_info}
@@ -183,9 +181,9 @@ export class Sender {
                     this.buttons.push(data)
                     this.brief += `<button,data=${JSON.stringify(data)}>`
                     break;
-                case "ark":
                 case "embed":
-                    if (this.baseUrl.startsWith('/v2') && type==='embed') break
+                    if (this.baseUrl.startsWith('/v2')) break
+                case "ark":
                     this.messagePayload.msg_type = type === 'ark' ? 3 : 4
                     this.messagePayload[type] = data
                     this.brief += `<${type}>`
