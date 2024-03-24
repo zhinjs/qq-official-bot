@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.38](https://github.com/lc-cn/qq-group-bot/compare/v1.0.37...v1.0.38) (2024-03-24)
+
+
+### Bug Fixes
+
+* 增加主动消息开启/拒绝事件 ([6470a14](https://github.com/lc-cn/qq-group-bot/commit/6470a1457f899e6a7b60ee29030bbab3b4504581))
+
 ## [1.0.37](https://github.com/lc-cn/qq-group-bot/compare/v1.0.36...v1.0.37) (2024-03-24)
 
 
