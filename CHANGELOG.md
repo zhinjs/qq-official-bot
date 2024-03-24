@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.39](https://github.com/lc-cn/qq-group-bot/compare/v1.0.38...v1.0.39) (2024-03-24)
+
+
+### Bug Fixes
+
+* 群聊支持发送Ark ([c2d5e7d](https://github.com/lc-cn/qq-group-bot/commit/c2d5e7df05df73162370d060a0617636e14108b2))
+
 ## [1.0.38](https://github.com/lc-cn/qq-group-bot/compare/v1.0.37...v1.0.38) (2024-03-24)
 
 
