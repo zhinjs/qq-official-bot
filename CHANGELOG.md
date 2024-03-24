@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.37](https://github.com/lc-cn/qq-group-bot/compare/v1.0.36...v1.0.37) (2024-03-24)
+
+
+### Bug Fixes
+
+* 群聊、私信支持本地文件/base64/Buffer/网络url发送 ([a12b24e](https://github.com/lc-cn/qq-group-bot/commit/a12b24ef41521d999e6bfdadb581604bc3e90da3))
+
 ## [1.0.36](https://github.com/lc-cn/qq-group-bot/compare/v1.0.35...v1.0.36) (2024-03-23)
 
 
