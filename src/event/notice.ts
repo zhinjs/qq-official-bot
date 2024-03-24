@@ -110,7 +110,31 @@ export namespace ActionNoticeEvent {
         }
     }
 }
-
+export class FriendReceiveNoticeEvent extends NoticeEvent{
+    user_id: string
+    time: number
+    get actionText(){
+        return this.sub_type===`receive_open`?'开启':'关闭'
+    }
+    constructor(bot: Bot, sub_type: 'receive_open' | 'receive_close', payload: Dict) {
+        super(bot, payload);
+        this.notice_type = 'friend'
+        this.sub_type = sub_type
+        this.user_id = payload.openid
+        this.time = Math.floor(payload.timestamp / 1000)
+        bot.logger.info(`好友${this.actionText}主动消息接收：${this.user_id}`)
+    }
+}
+export namespace FriendReceiveNoticeEvent {
+    export const parse: EventParser = function (this: Bot, event: string, payload) {
+        switch (event) {
+            case "notice.friend.receive_open":
+                return new FriendReceiveNoticeEvent(this, 'receive_open', payload)
+            case "notice.friend.receive_close":
+                return new FriendReceiveNoticeEvent(this, 'receive_close', payload)
+        }
+    }
+}
 export class FriendChangeNoticeEvent extends NoticeEvent {
     user_id: string
     time: number
@@ -137,7 +161,33 @@ export namespace FriendChangeNoticeEvent {
         }
     }
 }
-
+export class GroupReceiveNoticeEvent extends NoticeEvent {
+    group_id: string
+    operator_id: string
+    time: number
+    get actionText(){
+        return this.sub_type===`receive_open`?'开启':'关闭'
+    }
+    constructor(bot: Bot, sub_type: 'receive_open' | 'receive_close', payload: Dict) {
+        super(bot, payload);
+        this.notice_type = 'group'
+        this.sub_type = sub_type
+        this.group_id = payload.group_openid
+        this.operator_id = payload.op_member_openid
+        this.time = Math.floor(payload.timestamp / 1000)
+        bot.logger.info(`群${this.actionText}主动消息接收：${this.group_id}. 操作人：${this.operator_id}`)
+    }
+}
+export namespace GroupReceiveNoticeEvent {
+    export const parse: EventParser = function (this: Bot, event: string, payload) {
+        switch (event) {
+            case "notice.group.receive_open":
+                return new GroupReceiveNoticeEvent(this, 'receive_open', payload)
+            case "notice.group.receive_close":
+                return new GroupReceiveNoticeEvent(this, 'receive_close', payload)
+        }
+    }
+}
 export class GroupChangeNoticeEvent extends NoticeEvent {
     group_id: string
     operator_id: string

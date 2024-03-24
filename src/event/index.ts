@@ -1,15 +1,23 @@
-import {MessageEvent, GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent} from "./message";
+import {GroupMessageEvent, GuildMessageEvent, MessageEvent, PrivateMessageEvent} from "./message";
 import {Bot, Dict} from "@";
 import {
-    ActionNoticeEvent, AuditNoticeEvent,
-    ChannelChangeNoticeEvent, ForumNoticeEvent, FriendActionNoticeEvent,
+    ActionNoticeEvent,
+    AuditNoticeEvent,
+    ChannelChangeNoticeEvent,
+    ForumNoticeEvent,
+    FriendActionNoticeEvent,
     FriendChangeNoticeEvent,
+    FriendReceiveNoticeEvent,
     GroupActionNoticeEvent,
     GroupChangeNoticeEvent,
+    GroupReceiveNoticeEvent,
     GuildActionNoticeEvent,
     GuildChangeNoticeEvent,
     GuildMemberChangeNoticeEvent,
-    NoticeEvent, PostChangeNoticeEvent, ReplyChangeNoticeEvent, ThreadChangeNoticeEvent
+    NoticeEvent,
+    PostChangeNoticeEvent,
+    ReplyChangeNoticeEvent,
+    ThreadChangeNoticeEvent
 } from "@/event/notice";
 
 export * from "./message"
@@ -31,8 +39,12 @@ export enum QQEvent {
     GUILD_MEMBER_REMOVE = 'notice.guild.member.decrease',
     GROUP_ADD_ROBOT = 'notice.group.increase',
     GROUP_DEL_ROBOT = 'notice.group.decrease',
+    GROUP_MSG_REJECT = 'notice.group.receive_close',
+    GROUP_MSG_RECEIVE = 'notice.group.receive_open',
     FRIEND_ADD = 'notice.friend.increase',
     FRIEND_DEL = 'notice.friend.decrease',
+    C2C_MSG_REJECT = 'notice.friend.receive_close',
+    C2C_MSG_RECEIVE = 'notice.friend.receive_open',
     INTERACTION_CREATE = 'notice',
     C2C_MESSAGE_CREATE = 'message.private.friend',
     GROUP_AT_MESSAGE_CREATE = 'message.group',
@@ -64,11 +76,15 @@ EventParserMap.set(QQEvent.C2C_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.INTERACTION_CREATE, ActionNoticeEvent.parse)
 EventParserMap.set(QQEvent.FRIEND_ADD, FriendChangeNoticeEvent.parse)
 EventParserMap.set(QQEvent.FRIEND_DEL, FriendChangeNoticeEvent.parse)
+EventParserMap.set(QQEvent.C2C_MSG_REJECT, FriendReceiveNoticeEvent.parse)
+EventParserMap.set(QQEvent.C2C_MSG_RECEIVE, FriendReceiveNoticeEvent.parse)
 EventParserMap.set(QQEvent.GROUP_ADD_ROBOT, GroupChangeNoticeEvent.parse)
 EventParserMap.set(QQEvent.GROUP_DEL_ROBOT, GroupChangeNoticeEvent.parse)
-EventParserMap.set(QQEvent.GUILD_CREATE, GroupChangeNoticeEvent.parse)
-EventParserMap.set(QQEvent.GUILD_UPDATE, GroupChangeNoticeEvent.parse)
-EventParserMap.set(QQEvent.GUILD_DELETE, GroupChangeNoticeEvent.parse)
+EventParserMap.set(QQEvent.GROUP_MSG_RECEIVE, GroupReceiveNoticeEvent.parse)
+EventParserMap.set(QQEvent.GROUP_MSG_REJECT, GroupReceiveNoticeEvent.parse)
+EventParserMap.set(QQEvent.GUILD_CREATE, GuildChangeNoticeEvent.parse)
+EventParserMap.set(QQEvent.GUILD_UPDATE, GuildChangeNoticeEvent.parse)
+EventParserMap.set(QQEvent.GUILD_DELETE, GuildChangeNoticeEvent.parse)
 EventParserMap.set(QQEvent.CHANNEL_CREATE, ChannelChangeNoticeEvent.parse)
 EventParserMap.set(QQEvent.CHANNEL_UPDATE, ChannelChangeNoticeEvent.parse)
 EventParserMap.set(QQEvent.CHANNEL_DELETE, ChannelChangeNoticeEvent.parse)
@@ -106,15 +122,27 @@ export interface EventMap {
 
     'notice'(e: NoticeEvent): void
 
-    'notice.friend'(e: FriendActionNoticeEvent | FriendChangeNoticeEvent): void
+    'notice.friend'(e: FriendActionNoticeEvent | FriendChangeNoticeEvent | FriendReceiveNoticeEvent): void
 
     'notice.friend.action'(e: FriendActionNoticeEvent): void
 
-    'notice.group'(e: ActionNoticeEvent | GroupChangeNoticeEvent): void
+    'notice.friend.increase'(e: FriendChangeNoticeEvent): void
+
+    'notice.friend.decrease'(e: FriendChangeNoticeEvent): void
+
+    'notice.friend.receive_close'(e: FriendReceiveNoticeEvent): void
+
+    'notice.friend.receive_open'(e: FriendReceiveNoticeEvent): void
+
+    'notice.group'(e: ActionNoticeEvent | GroupChangeNoticeEvent | GroupReceiveNoticeEvent): void
 
     'notice.group.increase'(e: GroupChangeNoticeEvent): void
 
     'notice.group.decrease'(e: GroupChangeNoticeEvent): void
+
+    'notice.group.receive_close'(e: GroupReceiveNoticeEvent): void
+
+    'notice.group.receive_open'(e: GroupReceiveNoticeEvent): void
 
     'notice.group.action'(e: GroupActionNoticeEvent): void
 
