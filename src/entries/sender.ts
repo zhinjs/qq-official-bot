@@ -185,7 +185,7 @@ export class Sender {
                     break;
                 case "ark":
                 case "embed":
-                    if (this.baseUrl.startsWith('/v2')) break
+                    if (this.baseUrl.startsWith('/v2') && type==='embed') break
                     this.messagePayload.msg_type = type === 'ark' ? 3 : 4
                     this.messagePayload[type] = data
                     this.brief += `<${type}>`
