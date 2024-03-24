@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.40](https://github.com/lc-cn/qq-group-bot/compare/v1.0.39...v1.0.40) (2024-03-24)
+
+
+### Bug Fixes
+
+* local file ([c97014a](https://github.com/lc-cn/qq-group-bot/commit/c97014ac78a017bca6436635bed3dec23a1b5509))
+
 ## [1.0.39](https://github.com/lc-cn/qq-group-bot/compare/v1.0.38...v1.0.39) (2024-03-24)
 
 
