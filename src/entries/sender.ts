@@ -2,6 +2,8 @@ import {AudioElem, Dict, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} f
 import {randomInt} from "crypto";
 import fs from "node:fs/promises";
 import {Blob} from "formdata-node"
+import axios from "axios";
+import path from "node:path";
 
 export class Sender {
     brief: string = ''
@@ -14,7 +16,8 @@ export class Sender {
     private filePayload: Dict = {
         srv_send_msg: true
     }
-    contentType='application/json'
+    contentType = 'application/json'
+
     constructor(private bot: QQBot, private baseUrl: string, private message: Sendable, private source: Quotable = {}) {
         this.messagePayload.msg_id = source.id
     }
@@ -22,6 +25,7 @@ export class Sender {
     private getType(type: string): 1 | 2 | 3 {
         return ['image', 'video', 'audio'].indexOf(type) + 1 as any
     }
+
     private parseFromTemplate(template: string) {
         const result = []
         const reg = /(<[^>]+>)/
@@ -57,29 +61,47 @@ export class Sender {
         }
         return result
     }
-    private async fixMediaData(elem:ImageElem|VideoElem|AudioElem){
-        if(elem.url)return elem.url
-        if(typeof elem.file==="string" && elem.file.startsWith('http')){
+    async #getBase64FromWeb(url:string){
+        const res = await axios.get(url,{
+            responseType:'arraybuffer'
+        })
+        return Buffer.from(res.data).toString('base64')
+    }
+    async #getBase64FromLocal(file_path:string){
+        const res = await fs.readFile(path.resolve(process.cwd(),file_path))
+        return Buffer.from(res).toString('base64')
+    }
+    private async fixGroupOrC2cMediaData(elem:ImageElem|VideoElem|AudioElem):Promise<string>{
+        if(Buffer.isBuffer(elem.file)) return elem.file.toString('base64')
+        if(elem.file.startsWith('http')) return await this.#getBase64FromWeb(elem.file)
+        if(elem.file.includes(path.sep)) return await this.#getBase64FromLocal(elem.file)
+        return elem.file
+    }
+    private async fixGuildMediaData(elem: ImageElem | VideoElem | AudioElem) {
+        if (elem.url) return elem.url
+        if (typeof elem.file === "string" && elem.file.startsWith('http')) {
             return elem.file
         }
-        this.contentType='multipart/form-data'
-        if(Buffer.isBuffer(elem.file)){
+        this.contentType = 'multipart/form-data'
+        if (Buffer.isBuffer(elem.file)) {
             return new Blob([elem.file])
-        }else if(typeof elem.file !== "string"){
+        } else if (typeof elem.file !== "string") {
             throw new Error("bad file param: " + elem.file)
-        }else if(elem.file.startsWith("base64://")){
-            return new Blob([Buffer.from(elem.file.slice(9),'base64')])
-        }else if(/^data:[^/]+\/[^;]+;base64,/.test(elem.file)){
-            return new Blob([Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/,''),'base64')])
-        }else try{
+        } else if (elem.file.startsWith("base64://")) {
+            return new Blob([Buffer.from(elem.file.slice(9), 'base64')])
+        } else if (/^data:[^/]+\/[^;]+;base64,/.test(elem.file)) {
+            return new Blob([Buffer.from(elem.file.replace(/^data:[^/]+\/[^;]+;base64,/, ''), 'base64')])
+        } else try {
             return new Blob([await fs.readFile(elem.file.replace("file://", ""))])
-        }catch{}
+        } catch {
+        }
         throw new Error("bad file param: " + elem.file)
     }
+
     async processMessage() {
         if (!Array.isArray(this.message))
             this.message = [this.message as any]
-        const message=[...this.message]
+        const message = [...this.message]
         while (message.length) {
             const elem = message.shift()
             if (typeof elem === 'string') {
@@ -92,7 +114,7 @@ export class Sender {
                 case 'reply':
                     this.messagePayload.msg_id = elem.id
                     this.filePayload.msg_id = elem.id
-                    this.messagePayload.message_reference={
+                    this.messagePayload.message_reference = {
                         message_id: elem.id
                     }
                     this.brief += `<reply,msg_id=${elem.id}>`
@@ -118,34 +140,30 @@ export class Sender {
                 case 'video':
                     if (this.messagePayload.msg_id) {
                         if (!this.baseUrl.startsWith('/v2')) {
-                            const fileData=await this.fixMediaData(elem)
-                            if(typeof fileData!=='string'){
+                            const fileData = await this.fixGuildMediaData(elem)
+                            if (typeof fileData !== 'string') {
                                 this.messagePayload.file_image = fileData
-                            }else{
+                            } else {
                                 this.messagePayload.image = elem.file
                             }
                         } else {
-                            if(typeof elem.file!=='string' || !elem.file.startsWith('http')){
-                                throw new Error('暂不支持上传本地文件/Buffer/base64')
-                            }
+                            const fileBase64=await this.fixGroupOrC2cMediaData(elem)
+                            console.log(fileBase64)
                             this.messagePayload.msg_type = 7
-                            const result = await this.sendFile(elem.file, this.getType(elem.type))
+                            const result = await this.uploadMedia(fileBase64, this.getType(elem.type))
                             this.messagePayload.media = {file_info: result.file_info}
                         }
                     } else {
                         if (!this.baseUrl.startsWith('/v2')) {
-                            const fileData=await this.fixMediaData(elem)
-                            if(typeof fileData!=='string'){
+                            const fileData = await this.fixGuildMediaData(elem)
+                            if (typeof fileData !== 'string') {
                                 this.messagePayload.file_image = fileData
-                            }else{
+                            } else {
                                 this.messagePayload.image = elem.file
                             }
                         } else {
                             this.filePayload.file_type = this.getType(elem.type)
-                            if(typeof elem.file!=="string" || !elem.file.startsWith('http')){
-                                throw new Error('暂不支持上传本地文件/Buffer/base64')
-                            }
-                            this.filePayload.url = !elem.file?.startsWith('http') ? `http://${elem.file}` : elem.file
+                            this.filePayload.file_data=await this.fixGroupOrC2cMediaData(elem)
                             this.isFile = true
                         }
                     }
@@ -154,12 +172,12 @@ export class Sender {
                 case 'markdown':
                     this.messagePayload.markdown = data
                     this.messagePayload.msg_type = 2
-                    this.brief += `<markdown,${elem.content?`content=${elem.content}`:`template_id=${elem.custom_template_id}`}>`
+                    this.brief += `<markdown,${elem.content ? `content=${elem.content}` : `template_id=${elem.custom_template_id}`}>`
                     break;
                 case 'keyboard':
                     this.messagePayload.msg_type = 2
                     this.messagePayload.keyboard = data
-                    this.messagePayload.bot_appid=this.bot.config.appid
+                    this.messagePayload.bot_appid = this.bot.config.appid
                     break;
                 case 'button':
                     this.buttons.push(data)
@@ -201,11 +219,10 @@ export class Sender {
         }
     }
 
-    private async sendFile(url: string, file_type: 1 | 2 | 3) {
-        if (!url.startsWith('http')) url = `http://${url}`
+    async uploadMedia(file_data: string, file_type: 1 | 2 | 3) {
         const {data: result} = await this.bot.request.post(this.baseUrl + '/files', {
             file_type,
-            url,
+            file_data,
             srv_send_msg: false,
         })
         return result
@@ -221,9 +238,9 @@ export class Sender {
             }>(this.baseUrl + '/files', this.filePayload)
             return result
         }
-        const {data: result} = await this.bot.request.post(this.baseUrl + '/messages', this.messagePayload,{
-            headers:{
-                'Content-Type':this.contentType
+        const {data: result} = await this.bot.request.post(this.baseUrl + '/messages', this.messagePayload, {
+            headers: {
+                'Content-Type': this.contentType
             }
         })
         return result
