@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.41](https://github.com/lc-cn/qq-group-bot/compare/v1.0.40...v1.0.41) (2024-03-25)
+
+
+### Bug Fixes
+
+* uploadMedia接口暴露 ([5de0523](https://github.com/lc-cn/qq-group-bot/commit/5de0523371cf5bd6bad163bfb72a75b0ebc38505))
+
 ## [1.0.40](https://github.com/lc-cn/qq-group-bot/compare/v1.0.39...v1.0.40) (2024-03-24)
 
 
