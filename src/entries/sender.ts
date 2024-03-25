@@ -1,4 +1,4 @@
-import {AudioElem, Dict, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} from "@";
+import {AudioElem, Dict, getFileBase64, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
 import fs from "node:fs/promises";
 import {Blob} from "formdata-node"
@@ -60,21 +60,6 @@ export class Sender {
             })
         }
         return result
-    }
-    async #getBase64FromWeb(url:string){
-        const res = await axios.get(url,{
-            responseType:'arraybuffer'
-        })
-        return Buffer.from(res.data).toString('base64')
-    }
-    async #getBase64FromLocal(file_path:string){
-        return (await fs.readFile(file_path.replace("file://", ""))).toString('base64')
-    }
-    private async fixGroupOrC2cMediaData(elem:ImageElem|VideoElem|AudioElem):Promise<string>{
-        if(Buffer.isBuffer(elem.file)) return elem.file.toString('base64')
-        if(elem.file.startsWith('http')) return await this.#getBase64FromWeb(elem.file)
-        try { return await this.#getBase64FromLocal(elem.file) } catch {}
-        return elem.file
     }
     private async fixGuildMediaData(elem: ImageElem | VideoElem | AudioElem) {
         if (elem.url) return elem.url
@@ -146,9 +131,9 @@ export class Sender {
                                 this.messagePayload.image = elem.file
                             }
                         } else {
-                            const fileBase64=await this.fixGroupOrC2cMediaData(elem)
                             this.messagePayload.msg_type = 7
-                            const result = await this.uploadMedia(fileBase64, this.getType(elem.type))
+                            const [_,_version,target_type,target_id]=this.baseUrl.split('/')
+                            const result = await this.bot.uploadMedia(target_id,target_type.slice(0,-1) as 'user'|'group',elem.file,this.getType(elem.type))
                             this.messagePayload.media = {file_info: result.file_info}
                         }
                     } else {
@@ -161,7 +146,8 @@ export class Sender {
                             }
                         } else {
                             this.filePayload.file_type = this.getType(elem.type)
-                            this.filePayload.file_data=await this.fixGroupOrC2cMediaData(elem)
+                            const [_,_version,target_type,target_id]=this.baseUrl.split('/')
+                            this.filePayload.file_data=await this.bot.uploadMedia(target_id,target_type.slice(0,-1) as 'user'|'group',elem.file,this.getType(elem.type))
                             this.isFile = true
                         }
                     }
@@ -215,15 +201,6 @@ export class Sender {
                 bot_appid: this.bot.config.appid
             }
         }
-    }
-
-    async uploadMedia(file_data: string, file_type: 1 | 2 | 3) {
-        const {data: result} = await this.bot.request.post(this.baseUrl + '/files', {
-            file_type,
-            file_data,
-            srv_send_msg: false,
-        })
-        return result
     }
 
     async sendMsg() {

@@ -8,6 +8,7 @@ import {Dict, LogLevel} from "@/types";
 import {EventMap, EventParserMap, GroupMessageEvent, GuildMessageEvent, PrivateMessageEvent, QQEvent} from "@/event";
 import {Bot} from "./bot";
 import {Intent} from "@/constans";
+import { getFileBase64 } from "./utils";
 
 export class QQBot extends EventEmitter {
     request: AxiosInstance
@@ -89,7 +90,23 @@ export class QQBot extends EventEmitter {
         if(!result) return this.logger.debug('解析事件失败',wsRes)
         this.em(transformEvent, result);
     }
-
+    /**
+     * 上传多媒体文件
+     * @param target_id 接受者id
+     * @param target_type  接受者类型：user|group
+     * @param file_data 文件数据：可以是本地文件(file://)或网络地址(http://)或base64或Buffer
+     * @param file_type 数据类型：1 image;2 video; 3 audio
+     * @returns 
+     */
+    async uploadMedia(target_id:string,target_type:'user'|'group',file_data: string|Buffer, file_type: 1 | 2 | 3,decode:boolean=false) {
+        file_data= await getFileBase64(file_data)
+        const {data: result} = await this.request.post(`/v2/${target_type}s/${target_id}/files`, {
+            file_type,
+            file_data,
+            srv_send_msg: false,
+        })
+        if(!decode) return result
+    }
     em(event: string, payload: Dict) {
         const eventNames = event.split('.')
         const [post_type, detail_type, ...sub_type] = eventNames
