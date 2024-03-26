@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.42](https://github.com/lc-cn/qq-group-bot/compare/v1.0.41...v1.0.42) (2024-03-26)
+
+
+### Bug Fixes
+
+* uploadMedia接口对base64://的支持 ([5d8945f](https://github.com/lc-cn/qq-group-bot/commit/5d8945fb5ed5bd0a84ebc0cec2d2b6fcf55356f3))
+
 ## [1.0.41](https://github.com/lc-cn/qq-group-bot/compare/v1.0.40...v1.0.41) (2024-03-25)
 
 
