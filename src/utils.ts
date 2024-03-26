@@ -32,6 +32,7 @@ export async function getBase64FromWeb(url:string){
 export function getFileBase64(file:string|Buffer){
     if(Buffer.isBuffer(file)) return file.toString('base64')
     if(file.startsWith('http')) return getBase64FromWeb(file)
+    if(file.startsWith('base64://')) return file.replace('base64://', '')
     try { return getBase64FromLocal(file) } catch {}
     return file
 }
