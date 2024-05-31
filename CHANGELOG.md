@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.0](https://github.com/lc-cn/qq-group-bot/compare/v1.0.42...v1.1.0) (2024-05-31)
+
+
+### Features
+
+* reply event_id ([e3d02cc](https://github.com/lc-cn/qq-group-bot/commit/e3d02cc0d4314b51b54e655c2c7f3a1f09629719))
+
 ## [1.0.42](https://github.com/lc-cn/qq-group-bot/compare/v1.0.41...v1.0.42) (2024-03-26)
 
 
