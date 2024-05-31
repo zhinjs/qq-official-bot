@@ -96,12 +96,16 @@ export class Sender {
             const {type, ...data} = elem
             switch (elem.type) {
                 case 'reply':
-                    this.messagePayload.msg_id = elem.id
-                    this.filePayload.msg_id = elem.id
-                    this.messagePayload.message_reference = {
-                        message_id: elem.id
+                    if (elem.event_id) {
+                        this.messagePayload.event_id = elem.event_id
+                        this.brief += `<reply,event_id=${elem.event_id}>`
+                    } else {
+                        this.messagePayload.msg_id = elem.id
+                        this.messagePayload.message_reference = {
+                            message_id: elem.id
+                        }
+                        this.brief += `<reply,msg_id=${elem.id}>`
                     }
-                    this.brief += `<reply,msg_id=${elem.id}>`
                     break;
                 case "at":
                     this.messagePayload.content += `<@${elem.user_id === 'all' ? 'everyone' : elem.user_id}>`
