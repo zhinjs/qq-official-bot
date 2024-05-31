@@ -7,6 +7,7 @@ export enum MusicPlatform {
 
 export interface Quotable {
     id?: string
+    event_id?: string
 }
 
 export interface MessageElemMap {

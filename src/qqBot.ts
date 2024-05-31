@@ -43,7 +43,8 @@ export class QQBot extends EventEmitter {
                 delete config.data.message_reference
                 const formData=new FormData()
                 for(const key in config.data)
-                    formData.set(key,config.data[key])
+                    if (config.data[key] !== undefined)
+                        formData.set(key,config.data[key])
                 config.data=formData
             }
             return config

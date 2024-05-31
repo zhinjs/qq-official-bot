@@ -19,6 +19,7 @@ export namespace NoticeEvent {
 }
 
 export class ActionNoticeEvent extends NoticeEvent {
+    event_id: string
     notice_id: string
     data: ActionNoticeEvent.ActionData
     private replied: boolean = false
@@ -26,9 +27,9 @@ export class ActionNoticeEvent extends NoticeEvent {
     constructor(bot: Bot, payload: Dict) {
         super(bot, payload);
         this.sub_type = 'action'
+        this.event_id = payload.event_id
         this.notice_id = payload.id
         this.data = payload.data
-
     }
 
     /**
