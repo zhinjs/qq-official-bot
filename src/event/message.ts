@@ -1,4 +1,4 @@
-import {Announce, Bot, FaceType, PinsMessage, Sendable} from "@";
+import {Announce, Bot, EmojiType, PinsMessage, Sendable} from "@";
 import {Message} from "@/message"
 import {EventParser} from "@/event";
 
@@ -85,7 +85,7 @@ export class GuildMessageEvent extends Message implements MessageEvent {
      * @param type {1|2} 表情类型
      * @param id {`${number}`} 表态表情id
      */
-    async reaction(type: FaceType, id: `${number}`) {
+    async reaction(type: EmojiType, id: `${number}`) {
         return this.bot.reactionGuildMessage(this.channel_id, this.message_id, type, id)
     }
 
@@ -94,7 +94,7 @@ export class GuildMessageEvent extends Message implements MessageEvent {
      * @param type {1|2} 表情类型
      * @param id {`${number}`} 表态表情id
      */
-    async deleteReaction(type: FaceType, id: `${number}`) {
+    async deleteReaction(type: EmojiType, id: `${number}`) {
         return this.bot.deleteGuildMessageReaction(this.channel_id, this.message_id, type, id)
     }
 
@@ -103,7 +103,7 @@ export class GuildMessageEvent extends Message implements MessageEvent {
      * @param type {1|2} 表情类型
      * @param id {`${number}`} 表态表情id
      */
-    async getReactionMembers(type: FaceType, id: `${number}`) {
+    async getReactionMembers(type: EmojiType, id: `${number}`) {
         return this.bot.getGuildMessageReactionMembers(this.channel_id, this.message_id, type, id)
     }
 }
