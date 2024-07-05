@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.1](https://github.com/lc-cn/qq-group-bot/compare/v1.1.0...v1.1.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* change reactionGuildMessage to addGuildMessageReaction ([8ffbdc4](https://github.com/lc-cn/qq-group-bot/commit/8ffbdc41ade6fdb309c569df494a82c824f5fa31))
+* 支持频道消息表态添加删除事件 ([0d8aabd](https://github.com/lc-cn/qq-group-bot/commit/0d8aabdf12c5b161fa7b7f4b3a1fafb6d7b0fbf8))
+
 ## [1.1.0](https://github.com/lc-cn/qq-group-bot/compare/v1.0.42...v1.1.0) (2024-05-31)
 
 
