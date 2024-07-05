@@ -1,4 +1,4 @@
-import {AuditType, Bot, Dict} from "@";
+import {AuditType, Bot, Dict, Emoji, ReactionTargetType} from "@";
 import {EventParser} from "@/event/index";
 
 export class NoticeEvent {
@@ -483,5 +483,41 @@ export class AuditNoticeEvent extends ForumNoticeEvent {
         this.result = payload.result
         this.message = payload.err_msg
         bot.logger.info(`${this.typeText}审核${this.result===0?'通过':'拒绝'}. ${this.message||''}`)
+    }
+}
+
+export class MessageReactionNoticeEvent extends NoticeEvent{
+    user_id:string
+    message_id:string
+    channel_id:string
+    sub_type:'add'|'remove'
+    guild_id:string
+    emoji:Emoji
+    constructor(bot:Bot,sub_type:'add'|'remove',payload:Dict) {
+        super(bot,payload);
+        this.notice_type='channel'
+        this.sub_type = sub_type
+        this.guild_id = payload.guild_id
+        this.channel_id = payload.channel_id
+        this.user_id = payload.user_id
+        if(payload.target.type!==ReactionTargetType.Message) throw new Error(`unsupported reaction target type: ${payload.target.type}`)
+        this.message_id = payload.target.id
+        this.emoji = payload.emoji
+    }
+}
+export namespace MessageReactionNoticeEvent{
+    export const parse: EventParser = function (this: Bot, event, payload) {
+        switch (event) {
+            case "notice.reaction.add":
+                const addEvent=new MessageReactionNoticeEvent(this,'add', payload)
+                this.logger.info(`用户:${addEvent.user_id}创建了表情表态`)
+                return addEvent
+            case 'notice.reaction.remove':
+                const removeEvent=new MessageReactionNoticeEvent(this,'remove', payload)
+                this.logger.info(`用户:${removeEvent.user_id}删除了表情表态`)
+                return removeEvent
+            default:
+                throw new Error(`can not parse event ${event}`)
+        }
     }
 }

@@ -14,6 +14,7 @@ import {
     GuildActionNoticeEvent,
     GuildChangeNoticeEvent,
     GuildMemberChangeNoticeEvent,
+    MessageReactionNoticeEvent,
     NoticeEvent,
     PostChangeNoticeEvent,
     ReplyChangeNoticeEvent,
@@ -26,6 +27,8 @@ export enum QQEvent {
     DIRECT_MESSAGE_CREATE = 'message.private.direct',
     AT_MESSAGE_CREATE = 'message.guild',
     MESSAGE_CREATE = 'message.guild',
+    MESSAGE_REACTION_ADD='notice.reaction.add',
+    MESSAGE_REACTION_REMOVE = 'notice.reaction.remove',
     GUILD_CREATE = 'notice.guild.increase',
     GUILD_UPDATE = 'notice.guild.update',
     GUILD_DELETE = 'notice.guild.decrease',
@@ -108,6 +111,8 @@ EventParserMap.set(QQEvent.OPEN_FORUM_POST_CREATE, ForumNoticeEvent.parse)
 EventParserMap.set(QQEvent.OPEN_FORUM_POST_DELETE, ForumNoticeEvent.parse)
 EventParserMap.set(QQEvent.OPEN_FORUM_REPLY_CREATE, ForumNoticeEvent.parse)
 EventParserMap.set(QQEvent.OPEN_FORUM_REPLY_DELETE, ForumNoticeEvent.parse)
+EventParserMap.set(QQEvent.MESSAGE_REACTION_ADD,MessageReactionNoticeEvent.parse)
+EventParserMap.set(QQEvent.MESSAGE_REACTION_REMOVE,MessageReactionNoticeEvent.parse)
 
 export interface EventMap {
     'message'(e: PrivateMessageEvent | GroupMessageEvent | GuildMessageEvent): void
@@ -133,6 +138,8 @@ export interface EventMap {
     'notice.friend.receive_close'(e: FriendReceiveNoticeEvent): void
 
     'notice.friend.receive_open'(e: FriendReceiveNoticeEvent): void
+    'notice.reaction.add'(e:MessageReactionNoticeEvent):void
+    'notice.reaction.remove'(e: MessageReactionNoticeEvent): void
 
     'notice.group'(e: ActionNoticeEvent | GroupChangeNoticeEvent | GroupReceiveNoticeEvent): void
 

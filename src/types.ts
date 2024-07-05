@@ -1,4 +1,3 @@
-import {ChannelSubType, ChannelType, PrivateType, SpeakPermission} from "./constans";
 import {Channel} from "@/entries/channel";
 import {Guild} from "@/entries/guild";
 import {GuildMember} from "@/entries/guildMember";
@@ -150,6 +149,24 @@ export type RecommendInfo = {
 export enum AuditType{
     Thread=1,
     Post,
+    Reply
+}
+export type ReactionTarget={
+    id:string
+    type:ReactionTargetType
+}
+export type Emoji={
+    id:string
+    type:EmojiType
+}
+export enum EmojiType{
+    System=1,
+    Emoji
+}
+export enum ReactionTargetType{
+    Message,
+    Thread,
+    Comment,
     Reply
 }
 
