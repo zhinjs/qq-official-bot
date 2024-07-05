@@ -10,7 +10,7 @@ import {
     ChannelRolePermissions,
     ChannelUpdateInfo,
     DMS,
-    FaceType,
+    EmojiType,
     PinsMessage,
     RoleCreateParam,
     RoleUpdateParam,
@@ -627,25 +627,37 @@ export class Bot extends QQBot {
         return result.status === 200
     }
     /**
-     * 对频道消息进行表态
+     * 添加频道消息表态
      * @param channel_id {string} 子频道id
      * @param message_id {string} 消息id
      * @param type {0|1} 表情类型
      * @param id {`${number}`} 表情id
      */
-    async reactionGuildMessage(channel_id: string, message_id: string, type: FaceType, id: `${number}`) {
+    async addGuildMessageReaction(channel_id: string, message_id: string, type:EmojiType,id:`${number}`){
         const result = await this.request.put(`/channels/${channel_id}/messages/${message_id}/reactions/${type}/${id}`)
         return result.status === 200
+    }
+
+    /**
+     * 添加频道消息表态
+     * @deprecated use addGuildMessageReaction instead
+     * @param channel_id {string} 子频道id
+     * @param message_id {string} 消息id
+     * @param type {0|1} 表情类型
+     * @param id {`${number}`} 表情id
+     */
+    async reactionGuildMessage(channel_id: string, message_id: string, type: EmojiType, id: `${number}`) {
+        return this.addGuildMessageReaction(channel_id,message_id,type,id)
     }
 
     /**
      * 删除频道消息表态
      * @param channel_id {string} 子频道id
      * @param message_id {string} 消息id
-     * @param type {0|1} 表情类型
+     * @param type {EmojiType} 表情类型
      * @param id {`${number}`} 表情id
      */
-    async deleteGuildMessageReaction(channel_id: string, message_id: string, type: FaceType, id: `${number}`) {
+    async deleteGuildMessageReaction(channel_id: string, message_id: string, type: EmojiType, id: `${number}`) {
         const result = await this.request.delete(`/channels/${channel_id}/messages/${message_id}/reactions/${type}/${id}`)
         return result.status === 204
     }
@@ -657,7 +669,7 @@ export class Bot extends QQBot {
      * @param type {0|1} 表情类型
      * @param id {`${number}`} 表情id
      */
-    async getGuildMessageReactionMembers(channel_id: string, message_id: string, type: FaceType, id: `${number}`) {
+    async getGuildMessageReactionMembers(channel_id: string, message_id: string, type: EmojiType, id: `${number}`) {
         const formatUser = (users: User.Info[]) => {
             return users.map(user => {
                 return {

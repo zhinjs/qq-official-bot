@@ -50,7 +50,6 @@ export type UpdatePermissionParams = {
     add?: string
     remove?: string
 }
-export type FaceType=1|2
 export type ChannelUpdateInfo = Partial<Pick<Channel.Info, 'name' | 'position' | 'parent_id' | 'private_type' | 'speak_permission'>>
 export type RoleCreateParam = {
     name?: string
