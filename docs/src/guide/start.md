@@ -2,7 +2,7 @@
 layout: doc
 ---
 # 快速开始
-由于 `qq-group-bot` 是基于 `NodeJS` 编写，要使用 "qq-group-bot"，你可以按照以下步骤进行操作：
+由于 `qq-official-bot` 是基于 `NodeJS` 编写，要使用 "qq-official-bot"，你可以按照以下步骤进行操作：
 ## 1. 安装 Node.js
 首先，确保你的计算机上已经安装了 Node.js。你可以在 Node.js 的官方网站上下载并安装适合你操作系统的版本。
 ## 2. 创建新项目
@@ -10,15 +10,15 @@ layout: doc
 ```shell
 npm init # 这将会引导你创建一个新的 `package.json` 文件，用于管理你的项目依赖和配置。
 ```
-## 3. 安装 `qq-group-bot` 包
-运行以下命令来安装 `qq-group-bot` 包:
+## 3. 安装 `qq-official-bot` 包
+运行以下命令来安装 `qq-official-bot` 包:
 ```shell
-npm install qq-group-bot
+npm install qq-official-bot
 ```
 ## 4. 编写代码
 创建一个 JavaScript 或 TypeScript 文件（例如 bot.js），并在其中编写你的 QQ 群机器人代码。你可以使用下面的示例代码作为起点：
 ```javascript
-const {Bot} = require('qq-group-bot');
+const {Bot} = require('qq-official-bot');
 
 const bot = new Bot({
 	// 在这里配置你的 QQ 机器人的appid和secret等信息

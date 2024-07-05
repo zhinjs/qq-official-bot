@@ -1,6 +1,6 @@
 {
-    "name": "qq-group-bot",
-    "version": "1.1.1",
+    "name": "qq-official-bot",
+    "version": "0.0.1",
     "description": "qq机器人开发SDK",
     "main": "lib/index.js",
     "engines": {
@@ -25,7 +25,7 @@
         "README.md"
     ],
     "repository": {
-        "url": "https://github.com/lc-cn/qq-group-bot.git",
+        "url": "https://github.com/zhinjs/qq-official-bot.git",
         "type": "git"
     },
     "keywords": [

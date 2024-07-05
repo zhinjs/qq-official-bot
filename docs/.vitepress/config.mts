@@ -1,7 +1,7 @@
 import {defineConfig} from 'vitepress'
 
 export default defineConfig({
-    base:"/qq-group-bot/",
+    base:"/qq-official-bot/",
     themeConfig: {
         returnToTopLabel:'返回顶部',
         lastUpdated:{
@@ -14,7 +14,7 @@ export default defineConfig({
             }
         },
         editLink: {
-          pattern: 'https://github.com/lc-cn/qq-group-bot/edit/main/docs/src/:path',
+          pattern: 'https://github.com/lc-cn/qq-official-bot/edit/main/docs/src/:path',
           text: '修改'
         },
         nav: [
@@ -41,7 +41,7 @@ export default defineConfig({
                     { text: '频道消息事件', link: '/event/guildMessage' },
                 ]
             },
-            { text: '更新日志', link: 'https://github.com/lc-cn/qq-group-bot/blob/master/CHANGELOG.md', target: '_blank', }
+            { text: '更新日志', link: 'https://github.com/lc-cn/qq-official-bot/blob/master/CHANGELOG.md', target: '_blank', }
         ],
         sidebar: [
             {
@@ -81,11 +81,11 @@ export default defineConfig({
             }
         ],
         footer: {
-            message: 'Released under the <a href="https://github.com/lc-cn/qq-group-bot/blob/master/LICENSE">MIT License</a>.',
+            message: 'Released under the <a href="https://github.com/lc-cn/qq-official-bot/blob/master/LICENSE">MIT License</a>.',
             copyright: 'Copyright © 2023-present <a href="https://github.com/lc-cn">lc-cn</a>'
         }
     },
-    title: 'qq-group-bot',
+    title: 'qq-official-bot',
     srcDir: './src',
     outDir: "./dist",
     lastUpdated: true,

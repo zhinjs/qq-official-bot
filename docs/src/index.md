@@ -2,7 +2,7 @@
 layout: home
 
 hero:
-  name: qq-group-bot
+  name: qq-official-bot
   text: 基于NodeJS的qq官方机器人开发SDK
   actions:
     - theme: brand
@@ -10,7 +10,7 @@ hero:
       link: /guide/start
     - theme: alt
       text: View on GitHub
-      link: https://github.com/lc-cn/qq-group-bot
+      link: https://github.com/lc-cn/qq-official-bot
 features:
   - title: 上手简单
     details: 方法使用参考icqq设计，更容易上手

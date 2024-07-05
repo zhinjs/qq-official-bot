@@ -5,9 +5,9 @@
 \{ type: 消息段类型, data: 消息段数据 \}
 - 在使用 **icqq** 的时候，发送消息时，你可以直接发送 **string** 类型的消息，也可以发送指定类型的 **segment**，也可以发送包含 **string** 或 **segment** 的数组
 - 但是在使用过程中，我们发现其实某些 **segment** 其实不能同时发送，比如同时发送 **audio** 和 **video**，而 icqq 的 **Sendable** 并不能正确的提示用户该错误的发生
-- 在 **qq-group-bot** 中，我们重新定义了 **Sendable** 的约束范围，使得其能获得正确的类型提示
+- 在 **qq-official-bot** 中，我们重新定义了 **Sendable** 的约束范围，使得其能获得正确的类型提示
 ## Sendable
-**qq-group-bot** 中 **Sendable** 定义如下：
+**qq-official-bot** 中 **Sendable** 定义如下：
 ```typescript
 // 重复组合的消息元素
 type RepeatableCombineElem = TextElem // 文本消息段
