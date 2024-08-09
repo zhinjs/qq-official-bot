@@ -126,7 +126,7 @@ export class Sender {
                 case 'image':
                 case 'audio':
                 case 'video':
-                    if (this.messagePayload.msg_id) {
+                    if (this.messagePayload.msg_id || this.messagePayload.event_id) {
                         if (!this.baseUrl.startsWith('/v2')) {
                             const fileData = await this.fixGuildMediaData(elem)
                             if (typeof fileData !== 'string') {
