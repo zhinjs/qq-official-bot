@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/zhinjs/qq-official-bot/compare/v1.0.0...v1.0.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* event_id不能发送media富媒体 ([1d45ae3](https://github.com/zhinjs/qq-official-bot/commit/1d45ae31817b89813c98f7574be446a837cac927))
+
 ## 1.0.0 (2024-07-05)
 
 
