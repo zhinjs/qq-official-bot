@@ -500,7 +500,7 @@ export class MessageReactionNoticeEvent extends NoticeEvent{
         this.guild_id = payload.guild_id
         this.channel_id = payload.channel_id
         this.user_id = payload.user_id
-        if(payload.target.type!==ReactionTargetType.Message) throw new Error(`unsupported reaction target type: ${payload.target.type}`)
+        if(![ReactionTargetType.Message, ReactionTargetType.ReactionTargetType_MSG].includes(payload.target.type)) throw new Error(`unsupported reaction target type: ${payload.target.type}`)
         this.message_id = payload.target.id
         this.emoji = payload.emoji
     }
