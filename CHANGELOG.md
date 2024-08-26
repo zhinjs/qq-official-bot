@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/zhinjs/qq-official-bot/compare/v1.0.1...v1.0.2) (2024-08-26)
+
+
+### Bug Fixes
+
+* 接收频道消息表态后无法响应消息 ([9ed7cb9](https://github.com/zhinjs/qq-official-bot/commit/9ed7cb942c6cafc745807ebce579d080ca298648))
+
 ## [1.0.1](https://github.com/zhinjs/qq-official-bot/compare/v1.0.0...v1.0.1) (2024-08-09)
 
 
