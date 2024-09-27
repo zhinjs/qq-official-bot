@@ -166,6 +166,7 @@ export enum ReactionTargetType{
     Message,
     Thread,
     Comment,
-    Reply
+    Reply,
+    ReactionTargetType_MSG = 'ReactionTargetType_MSG'
 }
 

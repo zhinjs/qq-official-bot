@@ -94,9 +94,14 @@ export class QQBot extends EventEmitter {
         const event_id = wsRes.id || '';
         if (!payload || !event) return;
         const transformEvent = QQEvent[event] || 'system'
-        const result=this.processPayload(event_id,transformEvent,payload)
-        if(!result) return this.logger.debug('解析事件失败',wsRes)
-        this.em(transformEvent, result);
+
+        try {
+            const result=this.processPayload(event_id,transformEvent,payload)
+            if(!result) return this.logger.debug('解析事件失败',wsRes)
+            this.em(transformEvent, result);
+        } catch (error) {
+            return this.logger.debug('解析事件失败',wsRes)
+        }
     }
     /**
      * 上传多媒体文件
