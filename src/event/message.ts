@@ -21,7 +21,26 @@ export class PrivateMessageEvent extends Message implements MessageEvent {
             this.bot.sendPrivateMessage(this.user_id, message, this)
     }
 }
-
+export class MessageAuditEvent{
+    audit_id:string
+    audit_time:number
+    guild_id:string
+    channel_id:string
+    create_time:number
+    message_id:string
+    constructor(public bot:Bot,payload:Partial<MessageAuditEvent>,public is_passed:boolean=false){
+        Object.assign(this,{
+            ...payload,
+            audit_time:new Date(payload.audit_time).getTime()/1000,
+            create_time:new Date(payload.create_time).getTime()/1000
+        })
+    }
+}
+export namespace MessageAuditEvent{
+    export const parse: EventParser = function (this: Bot, event, payload) {
+        return new MessageAuditEvent(this, payload,event==='message.audit.pass')
+    }
+}
 export class GroupMessageEvent extends Message implements MessageEvent {
     group_id: string
     group_name: string

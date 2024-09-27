@@ -1,8 +1,8 @@
-import {GroupMessageEvent, GuildMessageEvent, MessageEvent, PrivateMessageEvent} from "./message";
+import {GroupMessageEvent, GuildMessageEvent, MessageAuditEvent, MessageEvent, PrivateMessageEvent} from "./message";
 import {Bot, Dict} from "@";
 import {
     ActionNoticeEvent,
-    AuditNoticeEvent,
+    FormAuditNoticeEvent,
     ChannelChangeNoticeEvent,
     ForumNoticeEvent,
     FriendActionNoticeEvent,
@@ -49,6 +49,8 @@ export enum QQEvent {
     C2C_MSG_REJECT = 'notice.friend.receive_close',
     C2C_MSG_RECEIVE = 'notice.friend.receive_open',
     INTERACTION_CREATE = 'notice',
+    MESSAGE_AUDIT_PASS = 'message.audit.pass',
+    MESSAGE_AUDIT_REJECT = 'message.audit.reject',
     C2C_MESSAGE_CREATE = 'message.private.friend',
     GROUP_AT_MESSAGE_CREATE = 'message.group',
     FORUM_THREAD_CREATE = 'notice.forum.thread.create',
@@ -70,7 +72,8 @@ export enum QQEvent {
 
 export type EventParser<T extends keyof EventMap = keyof EventMap> = (this: Bot, event: T, payload: Dict) => Parameters<EventMap[T]>[0]
 export const EventParserMap: Map<string, EventParser> = new Map<string, EventParser>()
-
+EventParserMap.set(QQEvent.MESSAGE_AUDIT_PASS, MessageAuditEvent.parse)
+EventParserMap.set(QQEvent.MESSAGE_AUDIT_REJECT, MessageAuditEvent.parse)
 EventParserMap.set(QQEvent.AT_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.DIRECT_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.MESSAGE_CREATE, MessageEvent.parse)
@@ -115,8 +118,10 @@ EventParserMap.set(QQEvent.MESSAGE_REACTION_ADD,MessageReactionNoticeEvent.parse
 EventParserMap.set(QQEvent.MESSAGE_REACTION_REMOVE,MessageReactionNoticeEvent.parse)
 
 export interface EventMap {
-    'message'(e: PrivateMessageEvent | GroupMessageEvent | GuildMessageEvent): void
-
+    'message'(e: PrivateMessageEvent | GroupMessageEvent | GuildMessageEvent|MessageAuditEvent): void
+    'message.audit'(e:MessageAuditEvent):void
+    'message.audit.pass'(e:MessageAuditEvent):void
+    'message.audit.reject'(e:MessageAuditEvent):void
     'message.group'(e: GroupMessageEvent): void
 
     'message.private.friend'(e: PrivateMessageEvent): void
@@ -183,7 +188,7 @@ export interface EventMap {
 
     'notice.guild.member.decrease'(e: GuildMemberChangeNoticeEvent): void
 
-    'notice.forum'(e: ThreadChangeNoticeEvent | AuditNoticeEvent | PostChangeNoticeEvent | ReplyChangeNoticeEvent | ForumNoticeEvent): void
+    'notice.forum'(e: ThreadChangeNoticeEvent | FormAuditNoticeEvent | PostChangeNoticeEvent | ReplyChangeNoticeEvent | ForumNoticeEvent): void
 
     'notice.forum.thread'(e: ThreadChangeNoticeEvent): void
 
@@ -193,7 +198,7 @@ export interface EventMap {
 
     'notice.forum.thread.delete'(e: ThreadChangeNoticeEvent): void
 
-    'notice.forum.audit'(e: AuditNoticeEvent): void
+    'notice.forum.audit'(e: FormAuditNoticeEvent): void
 
     'notice.forum.post'(e: PostChangeNoticeEvent): void
 

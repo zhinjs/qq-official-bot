@@ -55,7 +55,6 @@ export class FriendActionNoticeEvent extends ActionNoticeEvent {
         bot.logger.info(`好友${this.operator_id} 点击了消息按钮：${this.data.resolved.button_id}`)
     }
 }
-
 export class GroupActionNoticeEvent extends ActionNoticeEvent {
     group_id: string
     operator_id: string
@@ -396,7 +395,7 @@ export namespace ForumNoticeEvent {
             case "notice.forum.reply.delete":
                 return new ReplyChangeNoticeEvent(this, 'create', payload)
             case "notice.forum.audit":
-                return new AuditNoticeEvent(this, payload)
+                return new FormAuditNoticeEvent(this, payload)
         }
     }
 }
@@ -460,7 +459,7 @@ export class ReplyChangeNoticeEvent extends ForumNoticeEvent {
     }
 }
 
-export class AuditNoticeEvent extends ForumNoticeEvent {
+export class FormAuditNoticeEvent extends ForumNoticeEvent {
     thread_id: string
     post_id: string
     reply_id: string

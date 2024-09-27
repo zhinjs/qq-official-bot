@@ -58,7 +58,21 @@ export namespace Message {
         user_name: string
         permissions: User.Permission[]
     }
-
+    export type Ret=MessageRet|FileInfo
+    export type MessageRet={
+        id:string
+        timestamp:number
+    }
+    export type Audit={
+        message_audit:{
+            audit_id:string
+        }
+    }
+    export type FileInfo={
+        file_uuid: string
+        file_info: string
+        ttl: number
+    }
     export type Type = 'private' | 'group' | 'guild'
     export type SubType = 'direct'|'friend'|'temp'|'normal'
 

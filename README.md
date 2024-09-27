@@ -27,6 +27,7 @@ const bot = new Bot({
 		'GUILD_MESSAGES', // 私域机器人频道消息事件 公域机器人请注释
 		'PUBLIC_GUILD_MESSAGES', // 公域机器人频道消息事件 私域机器人请注释
 		'DIRECT_MESSAGE', // 频道私信事件
+        'MESSAGE_AUDIT', // 消息审核事件
 		'GUILD_MESSAGE_REACTIONS', // 频道消息表态事件
 		'GUILDS', // 频道变更事件
 		'GUILD_MEMBERS', // 频道成员变更事件

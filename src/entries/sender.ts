@@ -1,9 +1,9 @@
-import {AudioElem, Dict, getFileBase64, ImageElem, md5, QQBot, Quotable, Sendable, VideoElem} from "@";
+import {AudioElem, Dict, ImageElem, md5, Message, QQBot, Quotable, Sendable, VideoElem} from "@";
 import {randomInt} from "crypto";
 import fs from "node:fs/promises";
 import {Blob} from "formdata-node"
-import axios from "axios";
-import path from "node:path";
+import FileInfo = Message.FileInfo;
+import {MessageAuditEvent} from "@/event";
 
 export class Sender {
     brief: string = ''
@@ -206,22 +206,37 @@ export class Sender {
             }
         }
     }
-
-    async sendMsg() {
+    async waitAudit(id:string):Promise<Message.Ret> {
+        if(!this.bot.config.intents?.includes('MESSAGE_AUDIT')) throw new Error(`message is waiting for audit:${id}`);
+        return new Promise(resolve=>{
+            const listener=async (event:MessageAuditEvent)=>{
+                if(event.audit_id!==id) return
+                this.bot.off('message.audit',listener)
+                resolve({
+                    id:event.message_id,
+                    timestamp:event.create_time
+                })
+            }
+            this.bot.on('message.audit',listener)
+        })
+    }
+    async sendMsg():Promise<Message.Ret> {
         await this.processMessage()
         if (this.isFile) {
-            const {data: result} = await this.bot.request.post<{
-                file_uuid: string
-                file_info: string
-                ttl: number
-            }>(this.baseUrl + '/files', this.filePayload)
+            const {data: result} = await this.bot.request.post<FileInfo>(this.baseUrl + '/files', this.filePayload)
             return result
         }
-        const {data: result} = await this.bot.request.post(this.baseUrl + '/messages', this.messagePayload, {
+        const {data: result} = await this.bot.request.post<Message.MessageRet|Message.Audit>(this.baseUrl + '/messages', this.messagePayload, {
             headers: {
                 'Content-Type': this.contentType
             }
         })
-        return result
+        if(Reflect.has(result,'message_audit')) return this.waitAudit((result as Message.Audit).message_audit.audit_id)
+        const {id,timestamp,...other} = result as Message.MessageRet
+        return {
+            id,
+            timestamp:new Date(timestamp).getTime()/1000,
+            ...other
+        }
     }
 }

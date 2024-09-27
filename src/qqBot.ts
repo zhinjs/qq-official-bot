@@ -51,7 +51,11 @@ export class QQBot extends EventEmitter {
         })
         this.request.interceptors.response.use((res) => res,(res)=>{
             if(!res || !res.response || !res.response.data)  return Promise.reject(res)
-            const {code=res?.response.status,message=res?.response.statusText}=res?.response?.data||{}
+            const {code=res?.response.status,message=res?.response.statusText,data}=res?.response?.data||{}
+            if([304023,304024].includes(code)) {
+                this.logger.warn(message)
+                return Promise.resolve(res.response.data)
+            }
             const err=new Error(`request "${res.config.url}" error with code(${code}): ${message}`)
             return Promise.reject(err)
         })
@@ -76,7 +80,10 @@ export class QQBot extends EventEmitter {
             ...payload
         }
         const parser = EventParserMap.get(event)
-        if (!parser) return result
+        if (!parser){
+            this.logger.warn('unhandled event', event)
+            return result
+        }
         return parser.apply(this as unknown as Bot, [event, result])
     }
 
@@ -97,7 +104,7 @@ export class QQBot extends EventEmitter {
      * @param target_type  接受者类型：user|group
      * @param file_data 文件数据：可以是本地文件(file://)或网络地址(http://)或base64或Buffer
      * @param file_type 数据类型：1 image;2 video; 3 audio
-     * @returns 
+     * @returns
      */
     async uploadMedia(target_id:string,target_type:'user'|'group',file_data: string|Buffer, file_type: 1 | 2 | 3,decode:boolean=false) {
         file_data= await getFileBase64(file_data)
