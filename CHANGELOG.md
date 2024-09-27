@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/zhinjs/qq-official-bot/compare/v1.0.2...v1.0.3) (2024-09-27)
+
+
+### Bug Fixes
+
+* optimize the return value of active message audit ([deb57d1](https://github.com/zhinjs/qq-official-bot/commit/deb57d1c31a35d04d474891017233c5dd5add231))
+
 ## [1.0.2](https://github.com/zhinjs/qq-official-bot/compare/v1.0.1...v1.0.2) (2024-08-26)
 
 

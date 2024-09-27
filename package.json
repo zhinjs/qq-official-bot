@@ -1,6 +1,6 @@
 {
     "name": "qq-official-bot",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "qq机器人开发SDK",
     "main": "lib/index.js",
     "engines": {
