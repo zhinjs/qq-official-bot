@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.12](https://github.com/zhinjs/qq-official-bot/compare/v1.0.11...v1.0.12) (2026-01-21)
+
+
+### Bug Fixes
+
+* trim whitespace from payload content in message parser ([63239ee](https://github.com/zhinjs/qq-official-bot/commit/63239eecc0b665702c126451281fc43905e9fc57))
+
 ## [1.0.11](https://github.com/zhinjs/qq-official-bot/compare/v1.0.10...v1.0.11) (2025-09-09)
 
 
