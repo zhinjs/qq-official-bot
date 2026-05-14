@@ -77,7 +77,7 @@ export class Session<T extends ReceiverMode, M extends ApplicationPlatform = nev
             secret: bot.config.secret,
             maxRetries: 3,
             tokenRefreshBuffer: 60
-        },bot.logger,bot.request);
+        },bot);
 
         // 初始化连接管理器
         this.connectionManager = new Connection(bot, {

@@ -32,7 +32,7 @@ export class Auth {
   private refreshTimer?: NodeJS.Timeout;
   private gatewayInfo?: GatewayInfo;
 
-  constructor(config: AuthConfig,public logger: Client['logger'],public request:AxiosInstance) {
+  constructor(config: AuthConfig,public bot: Client) {
     this.config = {
       tokenRefreshBuffer: 60, // 提前60秒刷新
       maxRetries: 3,
@@ -59,7 +59,7 @@ export class Auth {
    * 强制刷新访问令牌
    */
   async refreshAccessToken(): Promise<TokenInfo> {
-    this.logger.debug("[AUTH] 强制刷新访问令牌");
+    this.bot.logger.debug("[AUTH] 强制刷新访问令牌");
     const tokenInfo = await this.fetchNewToken();
     this.setToken(tokenInfo);
     return tokenInfo;
@@ -96,9 +96,9 @@ export class Auth {
 
     for (let attempt = 1; attempt <= this.config.maxRetries!; attempt++) {
       try {
-        this.logger.debug(`[AUTH] 获取访问令牌，尝试次数: ${attempt}`);
+        this.bot.logger.debug(`[AUTH] 获取访问令牌，尝试次数: ${attempt}`);
 
-        const response: AxiosResponse<Client.Token> = await this.request.post(
+        const response: AxiosResponse<Client.Token> = await this.bot.request.post(
           "https://bots.qq.com/app/getAppAccessToken",
           {
             appId: appid,
@@ -120,7 +120,7 @@ export class Auth {
             expires_at: Date.now() + (response.data.expires_in * 1000)
           };
 
-          this.logger.debug("[AUTH] 访问令牌获取成功", {
+          this.bot.logger.debug("[AUTH] 访问令牌获取成功", {
             expires_in: tokenInfo.expires_in,
             expires_at: new Date(tokenInfo.expires_at).toISOString()
           });
@@ -130,7 +130,7 @@ export class Auth {
           throw new Error(`无效的响应: ${response.status} ${JSON.stringify(response.data)}`);
         }
       } catch (error) {
-        this.logger.error(`[AUTH] 获取访问令牌失败 (尝试 ${attempt}/${this.config.maxRetries}):`, error);
+        this.bot.logger.error(`[AUTH] 获取访问令牌失败 (尝试 ${attempt}/${this.config.maxRetries}):`, error);
 
         if (attempt === this.config.maxRetries) {
           throw new Error(`获取访问令牌失败，已重试 ${this.config.maxRetries} 次: ${error}`);
@@ -152,9 +152,9 @@ export class Auth {
 
     for (let attempt = 1; attempt <= this.config.maxRetries!; attempt++) {
       try {
-        this.logger.debug(`[AUTH] 获取网关信息，尝试次数: ${attempt}`);
+        this.bot.logger.debug(`[AUTH] 获取网关信息，尝试次数: ${attempt}`);
 
-        const response = await this.request.get("/gateway/bot", {
+        const response = await this.bot.request.get("/gateway/bot", {
           headers: {
             Accept: "*/*",
             "Accept-Encoding": "utf-8",
@@ -173,13 +173,13 @@ export class Auth {
             session_start_limit: response.data.session_start_limit
           };
 
-          this.logger.debug("[AUTH] 网关信息获取成功", gatewayInfo);
+          this.bot.logger.debug("[AUTH] 网关信息获取成功", gatewayInfo);
           return gatewayInfo;
         } else {
           throw new Error(`无效的网关响应: ${JSON.stringify(response.data)}`);
         }
       } catch (error) {
-        this.logger.error(`[AUTH] 获取网关信息失败 (尝试 ${attempt}/${this.config.maxRetries}):`, error);
+        this.bot.logger.error(`[AUTH] 获取网关信息失败 (尝试 ${attempt}/${this.config.maxRetries}):`, error);
 
         if (attempt === this.config.maxRetries) {
           throw new Error(`获取网关信息失败，已重试 ${this.config.maxRetries} 次: ${error}`);
@@ -199,7 +199,7 @@ export class Auth {
     this.currentToken = tokenInfo;
     this.scheduleTokenRefresh();
 
-    this.logger.info("[AUTH] 访问令牌已设置", {
+    this.bot.logger.info("[AUTH] 访问令牌已设置", {
       expires_in: tokenInfo.expires_in,
       expires_at: tokenInfo.expires_at ? new Date(tokenInfo.expires_at).toISOString() : 'unknown'
     });
@@ -223,16 +223,16 @@ export class Auth {
     if (refreshTime > 0) {
       this.refreshTimer = setTimeout(async () => {
         try {
-          this.logger.debug("[AUTH] 自动刷新访问令牌");
+          this.bot.logger.debug("[AUTH] 自动刷新访问令牌");
           await this.refreshAccessToken();
         } catch (error) {
-          this.logger.error("[AUTH] 自动刷新令牌失败:", error);
+          this.bot.logger.error("[AUTH] 自动刷新令牌失败:", error);
           // 如果自动刷新失败，可以设置一个较短的重试时间
           setTimeout(() => this.scheduleTokenRefresh(), 10000);
         }
       }, refreshTime);
 
-      this.logger.debug(`[AUTH] 令牌刷新已计划，将在 ${refreshTime / 1000} 秒后执行`);
+      this.bot.logger.debug(`[AUTH] 令牌刷新已计划，将在 ${refreshTime / 1000} 秒后执行`);
     }
   }
 
@@ -275,7 +275,7 @@ export class Auth {
     this.currentToken = undefined;
     this.gatewayInfo = undefined;
 
-    this.logger.debug("[AUTH] 认证信息已清除");
+    this.bot.logger.debug("[AUTH] 认证信息已清除");
   }
 
   /**
@@ -290,6 +290,6 @@ export class Auth {
    */
   destroy(): void {
     this.clearAuth();
-    this.logger.debug("[AUTH] 认证管理器已销毁");
+    this.bot.logger.debug("[AUTH] 认证管理器已销毁");
   }
 }
