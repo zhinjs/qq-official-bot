@@ -54,6 +54,7 @@ export enum QQEvent {
     MESSAGE_AUDIT_PASS = 'message.audit.pass',
     MESSAGE_AUDIT_REJECT = 'message.audit.reject',
     C2C_MESSAGE_CREATE = 'message.private.friend',
+    GROUP_MESSAGE_CREATE = 'message.group',
     GROUP_AT_MESSAGE_CREATE = 'message.group',
     FORUM_THREAD_CREATE = 'notice.forum.thread.create',
     FORUM_THREAD_UPDATE = 'notice.forum.thread.update',
@@ -79,6 +80,7 @@ EventParserMap.set(QQEvent.MESSAGE_AUDIT_REJECT, MessageAuditEvent.parse)
 EventParserMap.set(QQEvent.AT_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.DIRECT_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.MESSAGE_CREATE, MessageEvent.parse)
+EventParserMap.set(QQEvent.GROUP_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.GROUP_AT_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.C2C_MESSAGE_CREATE, MessageEvent.parse)
 EventParserMap.set(QQEvent.INTERACTION_CREATE, ActionNoticeEvent.parse)
