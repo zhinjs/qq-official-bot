@@ -21,6 +21,9 @@ interface Config<T extends ReceiverMode, M extends ApplicationPlatform> {
     // 可选项
     sandbox?: boolean                       // 已废弃，保留用于兼容旧配置
     apiBaseUrl?: string                     // OpenAPI 根地址，默认 https://api.bot.qq.com
+    groupMemberCache?: boolean | GroupMemberCacheOptions // 群成员缓存，默认 false
+    guildMemberCache?: boolean | GuildMemberCacheOptions // 频道成员缓存，默认 false
+    guildCache?: boolean | GuildCacheOptions             // 频道列表缓存，默认 false
     logLevel?: LogLevel                     // 日志级别，默认 'info'
     removeAt?: boolean                      // 是否移除消息中的 @机器人，默认 false
     maxRetry?: number                       // 最大重连次数，默认 10
@@ -51,10 +54,101 @@ interface Config<T extends ReceiverMode, M extends ApplicationPlatform> {
 | `mode` | `ReceiverMode` | ✅ | 连接模式 | - |
 | `sandbox` | `boolean` | ❌ | 已废弃；QQ OpenAPI 已统一域名 | - |
 | `apiBaseUrl` | `string` | ❌ | OpenAPI 根地址，可用于代理或 mock | `https://api.bot.qq.com` |
+| `groupMemberCache` | `boolean \| GroupMemberCacheOptions` | ❌ | 群成员列表缓存；`true` 使用内存缓存 | `false` |
+| `guildMemberCache` | `boolean \| GuildMemberCacheOptions` | ❌ | 频道成员列表缓存；`true` 使用内存缓存 | `false` |
+| `guildCache` | `boolean \| GuildCacheOptions` | ❌ | 频道列表缓存；`true` 使用内存缓存 | `false` |
 | `logLevel` | `LogLevel` | ❌ | 日志输出级别 | `'info'` |
 | `removeAt` | `boolean` | ❌ | 自动移除消息中的@机器人 | `false` |
 | `maxRetry` | `number` | ❌ | 最大重连次数 | `10` |
 | `timeout` | `number` | ❌ | 请求超时时间(毫秒) | `5000` |
+
+### 群成员缓存
+
+群成员缓存默认关闭，不改变现有请求行为：
+
+```typescript
+// 默认：不缓存，每次 getGroupMemberList 都重新拉取
+groupMemberCache: false
+
+// 仅内存缓存
+groupMemberCache: true
+
+// 内存缓存 + 本地 JSON 持久化
+groupMemberCache: {
+    persist: true,
+    path: './data/group-members.json', // 可选
+    maxAge: 24 * 60 * 60 * 1000,      // 可选，毫秒；默认不过期
+}
+```
+
+配置 `persist: true` 且未指定 `path` 时，缓存默认写入 `dataDir`（未设置则为 `.qq-official-bot`）下的 `<appid>-group-members.json`。
+
+缓存开启后：
+
+- 首次读取仍会自动拉取全部分页，后续读取直接返回缓存。
+- `GROUP_MEMBER_ADD` 会查询新增成员详情并写入已有群缓存。
+- `GROUP_MEMBER_REMOVE` 会从缓存删除对应成员。
+- `GROUP_ADD_ROBOT` / `GROUP_DEL_ROBOT` 会清除对应群的旧缓存，下次读取重新拉取。
+- SDK 成功调用批量移除成员接口后，会立即同步删除缓存中的成员。
+
+若要依靠成员事件长期维护缓存，应订阅 `GROUP_MEMBER` 和 `GROUP_AND_C2C_EVENT`。也可以随时强制刷新或清除：
+
+```typescript
+await bot.getGroupMemberList(group_openid, true) // force = true，强制刷新
+await bot.group(group_openid).refreshMembers()
+await bot.group(group_openid).clearMemberCache()
+
+// 或直接使用服务
+await bot.groupService.getMembers(group_openid, { forceRefresh: true })
+await bot.groupService.clearMemberCache() // 清空所有群
+```
+
+### 频道成员缓存
+
+频道成员缓存与群成员缓存采用相同配置，默认同样关闭：
+
+```typescript
+guildMemberCache: true
+
+// 或启用本地 JSON 持久化
+guildMemberCache: {
+    persist: true,
+    path: './data/guild-members.json',
+    maxAge: 24 * 60 * 60 * 1000,
+}
+```
+
+未指定 `path` 时，持久化文件为 `dataDir` 下的 `<appid>-guild-members.json`。`GUILD_MEMBER_ADD / UPDATE / REMOVE` 会增量维护缓存，`GUILD_CREATE / DELETE` 会使对应缓存失效；SDK 主动踢出成员或修改成员角色成功后也会同步缓存。事件同步需要订阅 `GUILD_MEMBERS` 和 `GUILDS`。
+
+```typescript
+await bot.getGuildMemberList(guild_id, true) // force = true，强制刷新
+await bot.guild(guild_id).refreshMembers()
+await bot.guild(guild_id).clearMemberCache()
+await bot.memberService.clearMemberCache() // 清空所有频道
+```
+
+### 频道列表缓存
+
+`getGuildList()` 也支持默认关闭的内存或持久化缓存：
+
+```typescript
+guildCache: true
+
+// 或启用本地 JSON 持久化
+guildCache: {
+    persist: true,
+    path: './data/guild-list.json',
+    maxAge: 24 * 60 * 60 * 1000,
+}
+```
+
+未指定 `path` 时，持久化文件为 `dataDir` 下的 `<appid>-guild-list.json`。`GUILD_CREATE / UPDATE / DELETE` 会增量维护已有缓存，需要订阅 `GUILDS`。
+
+```typescript
+await bot.getGuildList()       // 优先读取缓存
+await bot.getGuildList(true)   // 忽略缓存，重新拉取全部分页
+await bot.guildService.clearCache()
+```
 
 ### 连接模式配置
 

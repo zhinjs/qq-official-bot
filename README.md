@@ -186,7 +186,7 @@ await bot.updateChannelMemberPermission(channel_id, user_id, { add: 'permission'
 | **ThreadService** | 帖子管理 | `getChannelThreads()`, `publishThread()`, `deleteThread()` |
 | **AudioService** | 音频控制 | `controlChannelAudio()`, `setOnlineMic()`, `setOfflineMic()` |
 | **BotService** | 机器人信息 | `getSelfInfo()`, `replyAction()` |
-| **GroupService** | 群聊管理 | `getInfo()`, `getBotState()`, `getJoinRequests()`, `setMemberMute()` |
+| **GroupService** | 群聊管理 | `getInfo()`, `getMembers()`, `removeMembers()`, `getMemberBlacklist()`, `getJoinRequests()` |
 | **MenuPanelService** | 自定义菜单与指令面板 | `getCustomMenu()`, `updateCustomMenu()`, `getCommandPanels()`, `createCommandPanel()` |
 
 ### 服务特性
@@ -284,6 +284,21 @@ interface BotConfig {
     secret: string             // 机器人 App Secret
     sandbox?: boolean          // 已废弃，保留用于兼容旧配置
     apiBaseUrl?: string        // OpenAPI 根地址，默认 https://api.bot.qq.com
+    groupMemberCache?: boolean | {
+        persist?: boolean      // 是否持久化为本地 JSON
+        path?: string          // 自定义缓存文件路径
+        maxAge?: number        // 最长有效期（毫秒），默认不过期
+    }
+    guildMemberCache?: boolean | {
+        persist?: boolean      // 频道成员缓存持久化
+        path?: string
+        maxAge?: number
+    }
+    guildCache?: boolean | {
+        persist?: boolean      // 频道列表缓存持久化
+        path?: string
+        maxAge?: number
+    }
     removeAt?: boolean         // 是否移除消息中的 @，默认 false
     logLevel?: string          // 日志级别，默认 'info'
     maxRetry?: number          // 最大重连次数，默认 10

@@ -12,7 +12,7 @@ layout: doc
 
 获取机器人加入的频道列表。
 
-**方法名**: `bot.guildService.getList()` / `bot.getGuildList()`
+**方法名**: `bot.guildService.getList(force?)` / `bot.getGuildList(force?)`
 
 **返回类型**: `Promise<ApiResponse<Guild.ApiInfo[]>>`
 
@@ -25,7 +25,10 @@ if (result.success) {
 
 // 使用传统方法（向后兼容）
 const guilds = await bot.getGuildList()
+const refreshed = await bot.getGuildList(true)
 ```
+
+接口会按照 `after` 自动拉取全部分页。配置 `guildCache: true` 后，后续读取优先返回缓存；`force` 传 `true` 可强制刷新。缓存支持本地持久化，并由 `GUILD_CREATE / UPDATE / DELETE` 事件增量维护，完整配置参见[频道列表缓存](../config.md#频道列表缓存)。
 
 **返回数据结构**:
 ```typescript
@@ -69,23 +72,25 @@ const guildInfo = await bot.getGuildInfo(guild_id)
 
 获取频道的成员列表（仅私域机器人可用）。
 
-**方法名**: `bot.memberService.getGuildMemberList(guildId)` / `bot.getGuildMemberList(guildId)`
+**方法名**: `bot.memberService.getGuildMemberList(guildId, force?)` / `bot.getGuildMemberList(guildId, force?)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
 |-------|------|------|------|
 | `guildId` | `string` | ✅ | 频道 ID |
+| `force` | `boolean` | ❌ | 是否忽略缓存并重新拉取，默认 `false` |
 
 ```typescript
 // 使用服务模块
 const result = await bot.memberService.getGuildMemberList(guild_id)
-if (result.success) {
-    console.log('成员列表:', result.data)
-}
+console.log('成员列表:', result)
 
 // 使用传统方法
 const members = await bot.getGuildMemberList(guild_id)
+const refreshed = await bot.getGuildMemberList(guild_id, true)
 ```
+
+接口会按照 `after` 自动拉取全部分页，每页最多 100 人。配置 `guildMemberCache: true` 后，后续读取优先返回缓存；也可以使用 `bot.guild(guild_id).refreshMembers()` 强制刷新，或使用 `clearMemberCache()` 清除缓存。持久化与事件同步配置参见[频道成员缓存](../config.md#频道成员缓存)。
 
 **返回数据结构**:
 ```typescript
@@ -302,7 +307,5 @@ await bot.guildService.applyAccess(guild_id, channel_id, {
 2. **私域限制**: 获取成员列表等敏感操作仅限私域机器人使用
 3. **频率限制**: 请遵守 API 调用频率限制，避免被限流
 4. **错误处理**: 建议使用服务模块的方法，因为它们提供了统一的错误处理和响应格式
-
-
 
 

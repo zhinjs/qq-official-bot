@@ -5,8 +5,12 @@ import type { FileProcessor } from "@/message"
 import type {
     ApproveJoinRequestOptions,
     CommandPanel,
+    GroupMemberListOptions,
+    GetGroupMembersOptions,
     PageOptions,
+    RemoveGroupMembersOptions,
     SetMemberMuteState,
+    UpdateGroupMemberBlacklistOptions,
 } from "@/services"
 
 export class Group {
@@ -37,6 +41,46 @@ export class Group {
 
     botState() {
         return this.bot.groupService.getBotState(this.id)
+    }
+
+    members(options: GetGroupMembersOptions = {}) {
+        return this.bot.groupService.getMembers(this.id, options)
+    }
+
+    membersPage(options: GroupMemberListOptions = {}) {
+        return this.bot.groupService.getMembersPage(this.id, options)
+    }
+
+    refreshMembers() {
+        return this.members({ forceRefresh: true })
+    }
+
+    clearMemberCache() {
+        return this.bot.groupService.clearMemberCache(this.id)
+    }
+
+    member(memberOpenid: string) {
+        return this.bot.groupService.getMemberInfo(this.id, memberOpenid)
+    }
+
+    removeMembers(options: RemoveGroupMembersOptions) {
+        return this.bot.groupService.removeMembers(this.id, options)
+    }
+
+    blacklist(options: PageOptions = {}) {
+        return this.bot.groupService.getMemberBlacklist(this.id, options)
+    }
+
+    updateBlacklist(options: UpdateGroupMemberBlacklistOptions) {
+        return this.bot.groupService.updateMemberBlacklist(this.id, options)
+    }
+
+    blockMembers(memberOpenids: string[]) {
+        return this.updateBlacklist({ op: 'add', member_openids: memberOpenids })
+    }
+
+    unblockMembers(memberOpenids: string[]) {
+        return this.updateBlacklist({ op: 'del', member_openids: memberOpenids })
     }
 
     joinRequests(options: PageOptions = {}) {

@@ -3,11 +3,11 @@
  * 集中导出所有API服务类
  */
 
-export { GuildService } from './guild'
+export * from './guild'
 export { ChannelService } from './channel'
 export { MessageService } from './message'
 export type { SendTarget, SendOptions, SendResult } from './message'
-export { MemberService } from './member'
+export * from './member'
 export { PermissionService } from './permission'
 export { ReactionService } from './reaction'
 export { ScheduleService } from './schedule'

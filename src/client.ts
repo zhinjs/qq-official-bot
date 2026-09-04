@@ -9,6 +9,9 @@ import { EventMap, EventParserMap, resolveGatewayEvent } from "./events";
 import { Intent } from "./constants";
 import type { ApplicationPlatform } from "@/receivers/middleware";
 import {ReceiverMode,ReceiveModeConfig} from "@/receivers";
+import type { GroupMemberCacheOptions } from '@/services/group'
+import type { GuildMemberCacheOptions } from '@/services/member'
+import type { GuildCacheOptions } from '@/services/guild'
 
 export class Client<T extends ReceiverMode, M extends ApplicationPlatform = ApplicationPlatform> extends EventEmitter {
     readonly request: AxiosInstance;
@@ -206,6 +209,12 @@ export namespace Client {
         timeout?: number;
         maxRetry?: number;
         dataDir?: string;
+        /** 群成员缓存。默认关闭；true 为内存缓存，对象形式可配置持久化和过期时间。 */
+        groupMemberCache?: boolean | GroupMemberCacheOptions;
+        /** 频道成员缓存。默认关闭；true 为内存缓存，对象形式可配置持久化和过期时间。 */
+        guildMemberCache?: boolean | GuildMemberCacheOptions;
+        /** 频道列表缓存。默认关闭；true 为内存缓存，对象形式可配置持久化和过期时间。 */
+        guildCache?: boolean | GuildCacheOptions;
         /** Whether to remove the first @ mention */
         removeAt?: boolean;
         delay?: Dict<number>;

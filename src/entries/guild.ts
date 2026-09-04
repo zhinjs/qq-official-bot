@@ -81,8 +81,16 @@ export class Guild {
         return this.bot.memberService.removeMemberRole(this.id, channelId, memberId, roleId)
     }
 
-    members() {
-        return this.bot.memberService.getGuildMemberList(this.id)
+    members(force = false) {
+        return this.bot.memberService.getGuildMemberList(this.id, force)
+    }
+
+    refreshMembers() {
+        return this.members(true)
+    }
+
+    clearMemberCache() {
+        return this.bot.memberService.clearMemberCache(this.id)
     }
 
     member(memberId: string) {

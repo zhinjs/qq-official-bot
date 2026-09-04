@@ -47,6 +47,24 @@ test('Group.mute binds the entity id into restrict_chat_setting', async () => {
     })
 })
 
+test('Group member management binds the entity id into official paths', async () => {
+    const { group, calls } = createGroup('bound-group')
+
+    await group.membersPage({ cursor: 'next-page' })
+    await group.member('member-openid')
+    await group.removeMembers({ member_openids: ['member-openid'] })
+    await group.blockMembers(['member-openid'])
+
+    assert.deepEqual(calls.map(call => call.url), [
+        '/v2/groups/bound-group/members',
+        '/v2/groups/bound-group/members/member-openid',
+        '/v2/groups/bound-group/batch_remove_members',
+        '/v2/groups/bound-group/member_blacklist',
+    ])
+    assert.deepEqual(calls[0].params, { cursor: 'next-page' })
+    assert.deepEqual(calls[3].data, { op: 'add', member_openids: ['member-openid'] })
+})
+
 test('Group.createPanel binds the entity id as group_openids', async () => {
     const { group } = createGroup('bound-group')
     const created = await group.createPanel({ items: [] })

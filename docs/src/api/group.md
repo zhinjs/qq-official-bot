@@ -86,6 +86,92 @@ const state = await bot.getGroupBotState(group_openid)
 console.log(state.member_role, state.recv_msg_setting, state.allow_proactive_msg)
 ```
 
+### 群成员查询
+
+`members()` 和兼容方法 `getGroupMemberList()` 会自动沿 `next_cursor` 拉取所有分页，最终返回完整成员数组：
+
+```typescript
+const members = await bot.group(group_openid).members()
+
+for (const member of members) {
+    console.log(member.member_openid, member.username, member.member_role)
+}
+
+const member = await bot.group(group_openid).member(member_openid)
+console.log(member.joined_at, member.bot, member.union_openid)
+
+// 等价的 Bot 快捷方法，同样返回全部成员
+await bot.getGroupMemberList(group_openid)
+await bot.getGroupMemberList(group_openid, true) // 忽略缓存，强制重新拉取
+await bot.getGroupMemberInfo(group_openid, member_openid)
+```
+
+如果需要自行控制请求节奏，可使用单页方法；官方每页最多返回 30 条：
+
+```typescript
+const page = await bot.group(group_openid).membersPage({ cursor: '' })
+const nextPage = await bot.group(group_openid).membersPage({
+    cursor: page.next_cursor,
+})
+```
+
+成员角色为 `member`、`owner` 或 `admin`，`joined_at` 使用 RFC3339 格式。
+
+#### 可选缓存
+
+配置 `groupMemberCache: true` 后，完整成员列表会缓存在内存中，避免每次调用都重新拉取全部分页；默认不缓存。需要主动更新时：
+
+```typescript
+await bot.getGroupMemberList(group_openid, true)
+await bot.group(group_openid).refreshMembers()
+await bot.group(group_openid).clearMemberCache()
+```
+
+缓存支持本地 JSON 持久化，并会根据机器人进退群、成员增加/减少事件增量更新或失效。完整配置参见[群成员缓存](../config.md#群成员缓存)。
+
+### 批量移除群成员
+
+```typescript
+const result = await bot.group(group_openid).removeMembers({
+    member_openids: ['member-openid-1', 'member-openid-2'],
+    add_to_member_blacklist: true,
+})
+
+console.log(result.remove_members_result)
+console.log(result.add_to_member_blacklist_fail_openids)
+
+// 等价的 Bot 快捷方法
+await bot.removeGroupMembers(group_openid, {
+    member_openids: ['member-openid-1'],
+})
+```
+
+单次最多移除 20 名成员。开启 `add_to_member_blacklist` 后，应检查返回的 `add_to_member_blacklist_fail_openids`。
+
+### 群黑名单
+
+```typescript
+const blacklist = await bot.group(group_openid).blacklist({
+    cursor: '',
+    limit: 100,
+})
+
+await bot.group(group_openid).blockMembers(['member-openid-1'])
+await bot.group(group_openid).unblockMembers(['member-openid-1'])
+
+// 也可以直接指定官方操作结构
+await bot.updateGroupMemberBlacklist(group_openid, {
+    op: 'add',
+    member_openids: ['member-openid-1'],
+})
+```
+
+黑名单查询默认每页 20 条，最大 100 条；增删单次最多 20 人。只有目标用户已不在群中时才能加入黑名单，可使用批量移除接口的 `add_to_member_blacklist` 一次完成移除和拉黑。
+
+::: warning 内邀能力
+群成员列表、成员详情、批量移除及黑名单接口目前均处于官方内邀阶段，未开通的机器人会收到错误码 `11253`。
+:::
+
 ### 入群申请拉取与审批
 
 ```typescript

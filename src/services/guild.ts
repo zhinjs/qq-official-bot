@@ -3,6 +3,8 @@
  */
 import { AxiosResponse, AxiosInstance } from 'axios'
 import { Guild } from '@'
+import { resolve } from 'node:path'
+import { ListCacheStore } from './member-cache'
 import {
     RoleCreateParam,
     RoleUpdateParam,
@@ -10,15 +12,102 @@ import {
     ApiPermissionDemand
 } from '@'
 
+export interface GuildCacheOptions {
+    /** 将缓存写入 JSON 文件；也可直接配置 path 启用持久化。 */
+    persist?: boolean;
+    /** 缓存文件路径。相对路径基于当前工作目录解析。 */
+    path?: string;
+    /** 缓存最长有效期（毫秒）；0 或不传表示不过期，由事件保持同步。 */
+    maxAge?: number;
+}
+
+export interface GuildServiceOptions {
+    cache?: boolean | GuildCacheOptions;
+    dataDir?: string;
+    appid?: string;
+}
+
+const GUILD_LIST_CACHE_KEY = 'guilds'
+
 export class GuildService {
-    constructor(private request: AxiosInstance) {}
+    private readonly cache?: ListCacheStore<Guild.ApiInfo>
+    private pendingListRequest?: Promise<Guild.ApiInfo[]>
+    private pendingMutation?: Promise<void>
+
+    constructor(private request: AxiosInstance, options: GuildServiceOptions = {}) {
+        const cache = resolveGuildCacheOptions(options)
+        if (cache) this.cache = new ListCacheStore(cache, guild => guild.guild_id)
+    }
 
     /**
      * 获取频道列表
      */
-    async getList(): Promise<Guild.ApiInfo[]> {
-        const result = await this._getGuildList()
-        return result
+    async getList(force = false): Promise<Guild.ApiInfo[]> {
+        await this.pendingMutation?.catch(() => undefined)
+        if (!force && this.cache) {
+            const cached = await this.cache.get(GUILD_LIST_CACHE_KEY)
+            if (cached) return cached
+        }
+        if (!force && this.pendingListRequest) return this.pendingListRequest
+
+        const request = (async () => {
+            const { guilds, cacheable } = await this.fetchGuildList()
+            if (cacheable) await this.cache?.set(GUILD_LIST_CACHE_KEY, guilds)
+            return guilds
+        })()
+        this.pendingListRequest = request
+        try {
+            return await request
+        } finally {
+            if (this.pendingListRequest === request) this.pendingListRequest = undefined
+        }
+    }
+
+    async clearCache(): Promise<void> {
+        if (!this.cache) return
+        const pendingRequest = this.pendingListRequest
+        return this.queueMutation(async () => {
+            await pendingRequest?.catch(() => undefined)
+            await this.cache!.delete(GUILD_LIST_CACHE_KEY)
+        })
+    }
+
+    handleGuildChanged(guildId: string): Promise<void> {
+        if (!this.cache) return Promise.resolve()
+        return this.queueMutation(async () => {
+            await this.pendingListRequest?.catch(() => undefined)
+            if (!await this.cache!.has(GUILD_LIST_CACHE_KEY)) return
+            try {
+                const guild = await this.getInfo(guildId)
+                await this.cache!.upsert(GUILD_LIST_CACHE_KEY, guild)
+            } catch (error) {
+                await this.cache!.delete(GUILD_LIST_CACHE_KEY)
+                throw error
+            }
+        })
+    }
+
+    handleGuildRemoved(guildId: string): Promise<void> {
+        if (!this.cache) return Promise.resolve()
+        return this.queueMutation(async () => {
+            await this.pendingListRequest?.catch(() => undefined)
+            await this.cache!.removeMembers(GUILD_LIST_CACHE_KEY, [guildId])
+        })
+    }
+
+    private queueMutation(mutation: () => Promise<void>): Promise<void> {
+        const previous = this.pendingMutation ?? Promise.resolve()
+        const current = previous.catch(() => undefined).then(mutation)
+        this.pendingMutation = current
+        current.then(
+            () => this.finishMutation(current),
+            () => this.finishMutation(current)
+        )
+        return current
+    }
+
+    private finishMutation(mutation: Promise<void>): void {
+        if (this.pendingMutation === mutation) this.pendingMutation = undefined
     }
 
     /**
@@ -139,29 +228,57 @@ export class GuildService {
     /**
      * 私有方法：获取频道列表的实现
      */
-    private async _getGuildList(after?: string): Promise<Guild.ApiInfo[]> {
-        const res = await this.request.get('/users/@me/guilds', {
-            params: { after }
-        }).catch(() => ({ data: [] })) // 私域不支持获取频道列表，做个兼容
+    private async fetchGuildList(): Promise<{ guilds: Guild.ApiInfo[]; cacheable: boolean }> {
+        const guilds: Guild.ApiInfo[] = []
+        const seenGuildIds = new Set<string>()
+        let after: string | undefined
 
-        if (!res.data?.length) return []
-
-        const result = (res.data || []).map(g => {
-            const { id: guild_id, name: guild_name, joined_at, ...guild } = g
-            return {
-                guild_id,
-                guild_name,
-                join_time: new Date(joined_at).getTime() / 1000,
-                ...guild
+        while (true) {
+            let res
+            try {
+                res = await this.request.get('/users/@me/guilds', { params: { after } })
+            } catch {
+                // 私域不支持时保持原有空数组兼容行为，但不缓存失败结果。
+                return { guilds, cacheable: false }
             }
-        })
+            if (!res.data?.length) break
 
-        const last = result[result.length - 1]
-        if (result.length === 100) { // 如果返回了100条，可能还有更多
-            const nextResults = await this._getGuildList(last.guild_id)
-            return [...result, ...nextResults]
+            const page = (res.data || []).map(g => {
+                const { id: guild_id, name: guild_name, joined_at, ...guild } = g
+                return {
+                    guild_id,
+                    guild_name,
+                    join_time: new Date(joined_at).getTime() / 1000,
+                    ...guild
+                }
+            })
+            guilds.push(...page)
+            if (page.length < 100) break
+
+            const nextAfter = page[page.length - 1].guild_id
+            if (seenGuildIds.has(nextAfter)) {
+                throw new Error(`频道列表分页游标重复: ${nextAfter}`)
+            }
+            seenGuildIds.add(nextAfter)
+            after = nextAfter
         }
-
-        return result
+        return { guilds, cacheable: true }
     }
+}
+
+function resolveGuildCacheOptions(options: GuildServiceOptions): { filePath?: string; maxAge?: number } | undefined {
+    const config = options.cache
+    if (!config) return undefined
+    if (config === true) return {}
+
+    const persist = config.persist || !!config.path
+    let filePath: string | undefined
+    if (persist) {
+        const safeAppid = (options.appid || 'default').replace(/[^a-zA-Z0-9_-]/g, '_')
+        filePath = resolve(
+            config.path || options.dataDir || '.qq-official-bot',
+            config.path ? '' : `${safeAppid}-guild-list.json`
+        )
+    }
+    return { filePath, maxAge: config.maxAge }
 }

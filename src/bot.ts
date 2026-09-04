@@ -45,16 +45,28 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
     public readonly fileProcessor: FileProcessor = new FileProcessor(this.request);
 
     // 服务实例
-    public readonly guildService: GuildService = new GuildService(this.request);
+    public readonly guildService: GuildService = new GuildService(this.request, {
+        cache: this.config.guildCache,
+        dataDir: this.config.dataDir,
+        appid: this.config.appid,
+    });
     public readonly channelService: ChannelService = new ChannelService(this.request);
-    public readonly memberService: MemberService = new MemberService(this.request);
+    public readonly memberService: MemberService = new MemberService(this.request, {
+        memberCache: this.config.guildMemberCache,
+        dataDir: this.config.dataDir,
+        appid: this.config.appid,
+    });
     public readonly permissionService: PermissionService = new PermissionService(this.request);
     public readonly reactionService: ReactionService = new ReactionService(this.request);
     public readonly scheduleService: ScheduleService = new ScheduleService(this.request);
     public readonly threadService: ThreadService = new ThreadService(this.request);
     public readonly audioService: AudioService = new AudioService(this.request);
     public readonly botService: BotService = new BotService(this.request);
-    public readonly groupService: GroupService = new GroupService(this.request);
+    public readonly groupService: GroupService = new GroupService(this.request, {
+        memberCache: this.config.groupMemberCache,
+        dataDir: this.config.dataDir,
+        appid: this.config.appid,
+    });
     public readonly menuPanelService: MenuPanelService = new MenuPanelService(this.request);
 
     constructor(config: Bot.Config<T, M>) {
@@ -71,6 +83,63 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
         })
         process.on("unhandledRejection", e => {
             this.logger.debug(e instanceof Error ? e.stack : e)
+        })
+        this.setupGroupMemberCacheEvents()
+        this.setupGuildMemberCacheEvents()
+        this.setupGuildCacheEvents()
+    }
+
+    private setupGroupMemberCacheEvents() {
+        const handleError = (error: unknown) => {
+            this.logger.warn('更新群成员缓存失败', error)
+        }
+        this.on('notice.group.increase', event => {
+            void this.groupService.clearMemberCache(event.group_id).catch(handleError)
+        })
+        this.on('notice.group.decrease', event => {
+            void this.groupService.clearMemberCache(event.group_id).catch(handleError)
+        })
+        this.on('notice.group.member.increase', event => {
+            void this.groupService.handleMemberAdded(event.group_id, event.user_id).catch(handleError)
+        })
+        this.on('notice.group.member.decrease', event => {
+            void this.groupService.handleMemberRemoved(event.group_id, event.user_id).catch(handleError)
+        })
+    }
+
+    private setupGuildMemberCacheEvents() {
+        const handleError = (error: unknown) => {
+            this.logger.warn('更新频道成员缓存失败', error)
+        }
+        this.on('notice.guild.increase', event => {
+            void this.memberService.clearMemberCache(event.guild_id).catch(handleError)
+        })
+        this.on('notice.guild.decrease', event => {
+            void this.memberService.clearMemberCache(event.guild_id).catch(handleError)
+        })
+        this.on('notice.guild.member.increase', event => {
+            void this.memberService.handleMemberChanged(event.guild_id, event.user_id).catch(handleError)
+        })
+        this.on('notice.guild.member.update', event => {
+            void this.memberService.handleMemberChanged(event.guild_id, event.user_id).catch(handleError)
+        })
+        this.on('notice.guild.member.decrease', event => {
+            void this.memberService.handleMemberRemoved(event.guild_id, event.user_id).catch(handleError)
+        })
+    }
+
+    private setupGuildCacheEvents() {
+        const handleError = (error: unknown) => {
+            this.logger.warn('更新频道列表缓存失败', error)
+        }
+        this.on('notice.guild.increase', event => {
+            void this.guildService.handleGuildChanged(event.guild_id).catch(handleError)
+        })
+        this.on('notice.guild.update', event => {
+            void this.guildService.handleGuildChanged(event.guild_id).catch(handleError)
+        })
+        this.on('notice.guild.decrease', event => {
+            void this.guildService.handleGuildRemoved(event.guild_id).catch(handleError)
         })
     }
 
@@ -346,8 +415,8 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
     /**
      * 获取频道列表
      */
-    async getGuildList() {
-        return this.guildService.getList()
+    async getGuildList(force = false) {
+        return this.guildService.getList(force)
     }
 
     /**
@@ -370,8 +439,8 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * 获取频道成员列表
      * @param guild_id
      */
-    async getGuildMemberList(guild_id: string) {
-        return this.guild(guild_id).members()
+    async getGuildMemberList(guild_id: string, force = false) {
+        return this.guild(guild_id).members(force)
     }
 
     /**
@@ -386,9 +455,10 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
     /**
      * 获取群成员列表
      * @param group_id
+     * @param force 是否忽略缓存并重新拉取，默认 false
      */
-    async getGroupMemberList(group_id: string) {
-        throw UnsupportedMethodError
+    async getGroupMemberList(group_id: string, force = false) {
+        return this.group(group_id).members({ forceRefresh: force })
     }
     /**
      * 获取群成员信息
@@ -396,7 +466,21 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param member_id
      */
     async getGroupMemberInfo(group_id: string, member_id: string) {
-        throw UnsupportedMethodError
+        return this.group(group_id).member(member_id)
+    }
+    /** 批量移除群成员 */
+    async removeGroupMembers(...args: Parameters<GroupService['removeMembers']>) {
+        const [group_id, options] = args
+        return this.group(group_id).removeMembers(options)
+    }
+    /** 查询群黑名单 */
+    async getGroupMemberBlacklist(group_id: string, options?: Parameters<Group['blacklist']>[0]) {
+        return this.group(group_id).blacklist(options)
+    }
+    /** 增删群黑名单成员 */
+    async updateGroupMemberBlacklist(...args: Parameters<GroupService['updateMemberBlacklist']>) {
+        const [group_id, options] = args
+        return this.group(group_id).updateBlacklist(options)
     }
     /** 获取群基本信息（白名单能力） */
     async getGroupInfo(group_id: string) {

@@ -4,6 +4,7 @@ export type FakeCall = {
     method: string
     url: string
     data?: unknown
+    params?: unknown
 }
 
 function parseRequestData(data: unknown): unknown {
@@ -16,7 +17,7 @@ function parseRequestData(data: unknown): unknown {
 }
 
 export function createFakeRequest(
-    handler: (call: FakeCall) => { status?: number; data?: unknown } = () => ({ data: {} })
+    handler: (call: FakeCall) => { status?: number; data?: unknown } | Promise<{ status?: number; data?: unknown }> = () => ({ data: {} })
 ): { request: AxiosInstance; calls: FakeCall[] } {
     const calls: FakeCall[] = []
     const adapter: AxiosAdapter = async (config) => {
@@ -24,9 +25,10 @@ export function createFakeRequest(
             method: (config.method || 'get').toLowerCase(),
             url: String(config.url || '').split('?')[0],
             data: parseRequestData(config.data),
+            params: config.params,
         }
         calls.push(call)
-        const result = handler(call)
+        const result = await handler(call)
         const response: AxiosResponse = {
             data: result.data ?? {},
             status: result.status ?? 200,
