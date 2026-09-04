@@ -182,9 +182,13 @@ export class MessageBuilder {
    * 处理@元素
    */
   private handleAt(elem: AtElem): void {
-    const userId = elem.data.user_id === 'all' ? 'everyone' : elem.data.user_id;
-    this.messagePayload.content += `<@${userId}>`;
-    this.brief += `<at,user=${userId}>`;
+    if (elem.data.user_id === "all") {
+      this.messagePayload.content += `<qqbot-at-everyone />`;
+      this.brief += `<at,user=everyone>`;
+    } else {
+      this.messagePayload.content += `<qqbot-at-user id="${elem.data.user_id}" />`;
+      this.brief += `<at,user=${elem.data.user_id}>`;
+    }
   }
 
   /**
