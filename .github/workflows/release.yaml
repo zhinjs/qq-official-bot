@@ -16,6 +16,7 @@ jobs:
         id: release
         with:
           release-type: node
+          versioning-strategy: always-bump-patch
       # Checkout
       - uses: actions/checkout@v4
         if: ${{ steps.release.outputs.release_created }}
