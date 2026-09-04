@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.1](https://github.com/zhinjs/qq-official-bot/compare/v1.3.0...v1.3.1) (2026-09-04)
+
+
+### Features
+
+* add group APIs and optional list caches ([c4a133e](https://github.com/zhinjs/qq-official-bot/commit/c4a133eafdad64b3764c5919df5328f9990a5de2))
+
+
+### Bug Fixes
+
+* 修复官方弃用的 @ 能力格式 ([c559649](https://github.com/zhinjs/qq-official-bot/commit/c559649109ebae3e18c2c4f5ea37e17cc5a873a0))
+* 修复官方弃用的 @ 能力格式 ([5cb415d](https://github.com/zhinjs/qq-official-bot/commit/5cb415d7c81b19e808a2867ce7568ae471ca360f))
+
 ## [1.3.0](https://github.com/zhinjs/qq-official-bot/compare/v1.2.4...v1.3.0) (2026-08-19)
 
 
