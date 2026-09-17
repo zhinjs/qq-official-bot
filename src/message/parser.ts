@@ -6,6 +6,25 @@ import type { User } from "@/entries/user";
 import type { ApplicationPlatform } from "@/receivers/middleware";
 import { ReceiverMode } from "@/receivers/base";
 
+/** QQ 结构化卡片消息类型。 */
+export type MessageArkType =
+    | 'tuwen'
+    | 'feed'
+    | 'miniapp'
+    | 'map'
+    | 'contact_card'
+    | 'video_share'
+    | 'music_together'
+    | 'picture'
+
+/** 消息事件携带的结构化卡片数据。 */
+export interface MessageArkData {
+    prompt: string;
+    ark_type: MessageArkType;
+    ark_name: string;
+    fields: Dict;
+}
+
 export class Message {
     message_type: Message.Type
     sub_type: Message.SubType = 'normal'
@@ -36,6 +55,7 @@ export class Message {
     readonly raw_message: string;
     readonly source?: { message_id: string; id: string };
     readonly message: Sendable;
+    readonly ark_data?: MessageArkData;
 
 
     get [Symbol.unscopables]() {
@@ -192,4 +212,3 @@ export namespace Message {
         return [result, brief]
     }
 }
-

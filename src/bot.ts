@@ -175,6 +175,13 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
     }
 
     /**
+     * 生成邀请用户添加机器人为好友的分享链接。
+     */
+    async generateUrlLink(...args: Parameters<BotService['generateUrlLink']>) {
+        return this.botService.generateUrlLink(...args)
+    }
+
+    /**
      * 获取频道角色权限信息
      * @param channel_id 频道id
      * @param role_id 角色id

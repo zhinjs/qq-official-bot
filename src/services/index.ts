@@ -14,6 +14,7 @@ export { ScheduleService } from './schedule'
 export { ThreadService } from './thread'
 export { AudioService } from './audio'
 export { BotService } from './bot'
+export type { GenerateUrlLinkOptions, GenerateUrlLinkResponse } from './bot'
 export * from './group'
 export * from './menu-panel'
 

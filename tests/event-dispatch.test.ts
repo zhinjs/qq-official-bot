@@ -5,6 +5,7 @@ import { Bot } from '@/bot'
 import { ReceiverFactory, ReceiverMode } from '@/receivers'
 import type { GroupMessageEvent } from '@/events'
 import type { GroupActionNoticeEvent } from '@/events/notice'
+import type { MessageArkType } from '@/message'
 import { createFakeRequest } from './fake-http'
 
 afterEach(() => {
@@ -42,6 +43,36 @@ test('GROUP_MESSAGE_CREATE emits message.group with the group id', async () => {
     assert.equal(seen.length, 1)
     assert.equal(seen[0].group_id, 'group-openid')
     assert.equal(seen[0].message_id, 'mid-1')
+})
+
+test('message events expose picture ark data', () => {
+    const client = createClient()
+    let arkType: MessageArkType | undefined
+    client.on('message.group.at', (event) => {
+        arkType = event.ark_data?.ark_type
+    })
+
+    client.dispatchEvent('GROUP_AT_MESSAGE_CREATE', {
+        op: 0,
+        s: 1,
+        t: 'GROUP_AT_MESSAGE_CREATE',
+        id: 'evt-ark',
+        d: {
+            id: 'mid-ark',
+            group_id: 'group-openid',
+            content: '',
+            timestamp: '2026-09-16T00:00:00.000Z',
+            author: { id: 'user-1', username: 'alice' },
+            ark_data: {
+                prompt: '[图片]',
+                ark_type: 'picture',
+                ark_name: '图片',
+                fields: { preview: 'https://example.com/image.jpg' },
+            },
+        },
+    })
+
+    assert.equal(arkType, 'picture')
 })
 
 test('INTERACTION_CREATE in a group emits notice.group.action once via em bubbling', async () => {

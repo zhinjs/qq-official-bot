@@ -38,6 +38,36 @@ interface Bot.Info {
 }
 ```
 
+### 生成分享链接
+
+生成邀请用户添加机器人为好友的分享链接。`callback_data` 会在用户通过链接添加机器人时透传给机器人后台，最长 32 字符。
+
+**方法名**: `bot.botService.generateUrlLink(options?)` / `bot.generateUrlLink(options?)`
+
+```typescript
+const result = await bot.generateUrlLink({
+    callback_data: 'campaign_20260916',
+})
+
+console.log(result.data.url)
+```
+
+**请求与响应类型**:
+
+```typescript
+interface GenerateUrlLinkOptions {
+    callback_data?: string
+}
+
+interface GenerateUrlLinkResponse {
+    data: {
+        url: string
+    }
+}
+```
+
+官方文档：[生成分享链接](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_generate_url_link.post.html)
+
 ## 📁 文件上传
 
 群聊、单聊的图片/视频/语音/文件需先上传拿到 `file_info`，再以 `msg_type=7` 发送。官方推荐**分片上传**；公网可访问的地址仍可用 URL 转存。频道消息不受此流程影响。

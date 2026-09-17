@@ -121,6 +121,28 @@ interface MessageEvent {
     reply(message: Sendable, quote?: boolean): Promise<any>
 }
 
+type MessageArkType =
+    | 'tuwen'
+    | 'feed'
+    | 'miniapp'
+    | 'map'
+    | 'contact_card'
+    | 'video_share'
+    | 'music_together'
+    | 'picture'
+
+interface MessageArkData {
+    prompt: string
+    ark_type: MessageArkType
+    ark_name: string
+    fields: Record<string, any>
+}
+
+// 群 @、群聊和单聊消息收到结构化卡片时可用
+interface Message {
+    ark_data?: MessageArkData
+}
+
 // 私聊消息事件
 class PrivateMessageEvent extends Message implements MessageEvent {
     message_type: 'private'
