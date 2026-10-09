@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.1](https://github.com/zhinjs/qq-official-bot/compare/v1.3.0...v1.3.1) (2026-10-09)
+
+
+### Features
+
+* add group APIs and optional list caches ([c4a133e](https://github.com/zhinjs/qq-official-bot/commit/c4a133eafdad64b3764c5919df5328f9990a5de2))
+
+
+### Bug Fixes
+
+* settle startup failures and validate multipart uploads ([f1835dd](https://github.com/zhinjs/qq-official-bot/commit/f1835dd74fc0d37b066cd4ba2fa999f408178ce4))
+* use repository pnpm version in SDK CI ([96b6f27](https://github.com/zhinjs/qq-official-bot/commit/96b6f27127fdd573f94060affea99f3e0adc0740))
+* 修复启动失败传递、停止竞态与分片上传 ([5ae4ce7](https://github.com/zhinjs/qq-official-bot/commit/5ae4ce7e6d2f631ff8e5933a5d366d34daaf4a05))
+* 修复官方弃用的 @ 能力格式 ([c559649](https://github.com/zhinjs/qq-official-bot/commit/c559649109ebae3e18c2c4f5ea37e17cc5a873a0))
+* 修复官方弃用的 @ 能力格式 ([5cb415d](https://github.com/zhinjs/qq-official-bot/commit/5cb415d7c81b19e808a2867ce7568ae471ca360f))
+* 添加生成分享链接功能及相关接口文档 ([048172e](https://github.com/zhinjs/qq-official-bot/commit/048172e4a6faf27c57b70f5321d30373666882bf))
+
 ## [1.3.0](https://github.com/zhinjs/qq-official-bot/compare/v1.2.4...v1.3.0) (2026-08-19)
 
 
