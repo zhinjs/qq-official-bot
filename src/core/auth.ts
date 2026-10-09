@@ -36,6 +36,7 @@ export class Auth {
   private static readonly MIN_REFRESH_DELAY_MS = 1000;
   private static readonly FALLBACK_REFRESH_RATIO = 0.5;
   private static readonly REFRESH_RETRY_DELAY_MS = 10000;
+  private destroyed = false;
   private config: AuthConfig;
   private currentToken?: TokenInfo;
   private refreshTimer?: NodeJS.Timeout;
@@ -60,7 +61,9 @@ export class Auth {
       return this.currentToken!.access_token;
     }
 
+    if (this.destroyed) throw new Error('QQ auth manager destroyed');
     const tokenInfo = await this.fetchNewToken();
+    if (this.destroyed) throw new Error('QQ auth manager destroyed');
     this.setToken(tokenInfo);
     return tokenInfo.access_token;
   }
@@ -70,7 +73,9 @@ export class Auth {
    */
   async refreshAccessToken(): Promise<TokenInfo> {
     this.bot.logger.debug("[AUTH] 强制刷新访问令牌");
+    if (this.destroyed) throw new Error('QQ auth manager destroyed');
     const tokenInfo = await this.fetchNewToken();
+    if (this.destroyed) throw new Error('QQ auth manager destroyed');
     this.setToken(tokenInfo);
     return tokenInfo;
   }
@@ -208,6 +213,7 @@ export class Auth {
    * 设置令牌并启动自动刷新
    */
   private setToken(tokenInfo: TokenInfo): void {
+    if (this.destroyed) return;
     const expiresAt = tokenInfo.expires_at ?? (Date.now() + tokenInfo.expires_in * 1000);
     this.currentToken = {
       ...tokenInfo,
@@ -226,6 +232,7 @@ export class Auth {
    * 计划令牌刷新
    */
   private scheduleTokenRefresh(): void {
+    if (this.destroyed) return;
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
@@ -263,6 +270,7 @@ export class Auth {
   }
 
   private scheduleTokenRefreshRetry(): void {
+    if (this.destroyed) return;
     if (this.refreshTimer) {
       clearTimeout(this.refreshTimer);
     }
@@ -339,6 +347,7 @@ export class Auth {
    * 销毁认证管理器
    */
   destroy(): void {
+    this.destroyed = true;
     this.clearAuth();
     this.bot.logger.debug("[AUTH] 认证管理器已销毁");
   }

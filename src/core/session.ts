@@ -68,7 +68,10 @@ export class Session<T extends ReceiverMode, M extends ApplicationPlatform = nev
             const websocketConfig = ReceiverConfigBuilder.websocket({
                 heartbeatInterval: config.heartbeatInterval,
                 maxRetries: config.maxRetries ?? config.maxRetry,
-                reconnectDelay: config.reconnectDelay
+                reconnectDelay: config.reconnectDelay,
+                socketFactory: config.socketFactory,
+                agent: config.agent,
+                autoReconnect: config.autoReconnect
             });
             return ReceiverFactory.createReceiver(this.bot.config.appid, this.bot.config.mode, websocketConfig as unknown as ResolveConfig<T, M>);
         }
@@ -101,11 +104,23 @@ export class Session<T extends ReceiverMode, M extends ApplicationPlatform = nev
     }
 
     async start() {
-        return new Promise<void>(async (resolve) => {
-            await this.getAccessToken()
-            this.receiver.emit('start',this)
-            this.receiver.on('ready',resolve)
-        })
+        this.userClose = false;
+        await this.getAccessToken();
+        if (this.userClose) throw new Error('QQ SDK startup stopped');
+        return new Promise<void>((resolve, reject) => {
+            const cleanup = () => {
+                this.receiver.removeListener('ready', onReady);
+                this.receiver.removeListener('error', onError);
+                this.receiver.removeListener('stop', onStop);
+            };
+            const onReady = () => { cleanup(); resolve(); };
+            const onError = (error: Error) => { cleanup(); reject(error); };
+            const onStop = () => onError(new Error('QQ SDK startup stopped'));
+            this.receiver.once('ready', onReady);
+            this.receiver.once('error', onError);
+            this.receiver.once('stop', onStop);
+            Promise.resolve().then(() => (this.receiver as unknown as { start(session: Session<T, M>): Promise<void> }).start(this)).catch(onError);
+        });
     }
 
     async stop() {

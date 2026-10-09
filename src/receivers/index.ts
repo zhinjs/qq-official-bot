@@ -17,6 +17,9 @@ export interface ReceiveModeConfig<M extends ApplicationPlatform> {
         heartbeatInterval?: number;
         maxRetries?: number;
         reconnectDelay?: number;
+        socketFactory?: (url: string) => import("ws").WebSocket;
+        agent?: import("node:http").Agent;
+        autoReconnect?: boolean;
         /** 获取 access token 的完整 URL */
         accessTokenUrl?: string;
         /** 获取网关信息的 URL 或路径，响应 url 为 WebSocket 地址 */
@@ -159,6 +162,9 @@ export class ReceiverConfigBuilder {
         heartbeatInterval?: number;
         maxRetries?: number;
         reconnectDelay?: number;
+        socketFactory?: (url: string) => import("ws").WebSocket;
+        agent?: import("node:http").Agent;
+        autoReconnect?: boolean;
         accessTokenUrl?: string;
         gatewayUrl?: string;
     } = {}): WebSocketReceiverConfig {

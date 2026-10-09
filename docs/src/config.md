@@ -19,6 +19,7 @@ interface Config<T extends ReceiverMode, M extends ApplicationPlatform> {
     mode: T                                 // 连接模式
 
     // 可选项
+    handleProcessErrors?: boolean          // 默认 true；嵌入宿主时设 false，不注册全局错误监听
     sandbox?: boolean                       // 已废弃，保留用于兼容旧配置
     apiBaseUrl?: string                     // OpenAPI 根地址，默认 https://api.bot.qq.com
     groupMemberCache?: boolean | GroupMemberCacheOptions // 群成员缓存，默认 false
@@ -30,6 +31,9 @@ interface Config<T extends ReceiverMode, M extends ApplicationPlatform> {
     timeout?: number                        // 请求超时时间(ms)，默认 5000
 
     // WebSocket 模式专用
+    autoReconnect?: boolean              // 默认 true；false 时由宿主负责重连
+    socketFactory?: (url: string) => WebSocket // 实例级自定义传输
+    agent?: import("node:http").Agent     // 默认 WebSocket 使用的连接代理
     accessTokenUrl?: string               // 获取 token 的完整 URL，默认官方地址
     gatewayUrl?: string                   // 获取网关信息的 URL 或路径，响应 url 为 WebSocket 地址
 
@@ -377,3 +381,9 @@ const bot = new Bot({
     mode: ReceiverMode.WEBSOCKET,
     intents: ['GUILD_MESSAGES'],
 })
+
+## 嵌入宿主与停止语义
+
+`handleProcessErrors: false` 保留宿主的进程错误处理器。`autoReconnect: false` 禁用 SDK 内部重连，并通过接收器关闭事件通知宿主。`socketFactory` 仅作用于当前实例，提供工厂时由工厂负责连接参数。启动认证或网关请求失败会拒绝 `start()`；停止期间完成的认证或网关请求不会重新建立连接。认证管理器销毁后不能再次使用。
+
+分片上传接受完整连续的零基或一基索引，保留服务端索引用于确认；缺失、重复、非连续索引和不匹配的分片长度会在上传前拒绝。

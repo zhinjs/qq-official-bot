@@ -17,7 +17,7 @@
         "docs:dev": "vitepress dev docs --port 5566",
         "docs:build": "vitepress build docs",
         "docs:serve": "vitepress serve docs",
-        "test": "TS_NODE_PROJECT=tsconfig.test.json node -r tsconfig-paths/register -r ts-node/register --test tests/*.test.ts"
+        "test": "pnpm run compile && TS_NODE_PROJECT=tsconfig.test.json node -r tsconfig-paths/register -r ts-node/register --test tests/*.test.ts && node --test tests/*.test.cjs"
     },
     "files": [
         "lib",

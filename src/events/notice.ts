@@ -77,7 +77,7 @@ export class GuildActionNoticeEvent extends ActionNoticeEvent {
         super(bot, payload)
         this.guild_id = payload.guild_id
         this.channel_id = payload.channel_id
-        this.operator_id = payload.data.resoloved.user_id
+        this.operator_id = payload.data.resolved?.user_id ?? payload.data.resoloved?.user_id
         bot.logger.info(`频道(${this.guild_id})成员${this.operator_id}在子频道(${this.channel_id})点击了消息按钮：${this.data.resolved.button_id}`)
     }
 }
