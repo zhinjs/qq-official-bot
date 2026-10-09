@@ -1,0 +1,41 @@
+.github/workflows/ci.yml
+  s_a5dc81d701255f::t_4064daefc7b547 1-25
+docs/src/config.md
+  s_a5dc81d701255f::t_0f8ad19e64fcb5 22,34-36,384-389
+package.json
+  s_a5dc81d701255f::t_1a327facfc4438 20
+src/bot.ts
+  s_a5dc81d701255f::t_7b15c36db7d5e4 81-88
+src/client.ts
+  s_a5dc81d701255f::t_0c213768b56aee 203
+src/core/auth.ts
+  s_a5dc81d701255f::t_c1e45ed3346a3d 39,64,66,76,78,216,235,273,350
+src/core/session.ts
+  s_a5dc81d701255f::t_7316d04a676bba 71-74,107-123
+src/events/notice.ts
+  s_a5dc81d701255f::t_c302b7a4409d14 80
+src/message/file-processor.ts
+  s_a5dc81d701255f::t_160eadf2f9867c 241-257
+src/receivers/index.ts
+  s_a5dc81d701255f::t_1c6cbeb1cf3be6 20-22,165-167
+src/receivers/websocket.ts
+  s_a5dc81d701255f::t_87bc3f672e6eae 2,16-18,24-26,32-34,62,94,137,140-143,466-469,496-497,508,528
+tests/sdk-lifecycle.test.cjs
+  s_a5dc81d701255f::t_0197326c1eeeeb 1-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f1835dd74fc0d37b066cd4ba2fa999f408178ce4",
+  "prompts": {},
+  "sessions": {
+    "s_a5dc81d701255f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0f03c-6e20-75c3-9d29-86f6fd1ed79b",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    }
+  }
+}
