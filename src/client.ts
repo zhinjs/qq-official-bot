@@ -200,6 +200,7 @@ export namespace Client {
     }
 
     export type Config<T extends ReceiverMode=ReceiverMode, M extends ApplicationPlatform = ApplicationPlatform> = {
+        handleProcessErrors?: boolean;
         appid: string;
         secret: string;
         /** @deprecated QQ OpenAPI 已统一使用 api.bot.qq.com；如需自定义地址请使用 apiBaseUrl。 */

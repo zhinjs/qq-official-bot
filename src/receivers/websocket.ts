@@ -1,4 +1,5 @@
 import { WebSocket } from "ws";
+import type { Agent } from "node:http";
 import { BaseReceiver, BaseReceiverConfig, ReceiverMode } from "./base";
 import { Session } from "@/core/session";
 import { toObject } from "@/utils/object";
@@ -12,16 +13,25 @@ export class WebSocketReceiverConfig extends BaseReceiverConfig {
     public readonly heartbeatInterval: number;
     public readonly maxRetries: number;
     public readonly reconnectDelay: number;
+    public readonly socketFactory?: (url: string) => WebSocket;
+    public readonly agent?: Agent;
+    public readonly autoReconnect: boolean;
 
     constructor(options: {
         heartbeatInterval?: number;
         maxRetries?: number;
         reconnectDelay?: number;
+        socketFactory?: (url: string) => WebSocket;
+        agent?: Agent;
+        autoReconnect?: boolean;
     } = {}) {
         super(ReceiverMode.WEBSOCKET);
         this.heartbeatInterval = options.heartbeatInterval ?? 45000;
         this.maxRetries = options.maxRetries ?? 10;
         this.reconnectDelay = options.reconnectDelay ?? 1000;
+        this.socketFactory = options.socketFactory;
+        this.agent = options.agent;
+        this.autoReconnect = options.autoReconnect ?? true;
     }
 
     public validate(): boolean {
@@ -49,6 +59,7 @@ interface WebSocketHandler {
  * WebSocket接收器实现
  */
 export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
+    private connectionEpoch = 0;
     private config: WebSocketReceiverConfig;
     private session: Session<ReceiverMode.WEBSOCKET> | null = null;
 
@@ -80,6 +91,7 @@ export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
      * 启动WebSocket连接
      */
     public async start(session: Session<ReceiverMode.WEBSOCKET>): Promise<void> {
+        this.connectionEpoch += 1;
         this.session = session;
         this._isStarted = true;
         await this.connect();
@@ -122,9 +134,13 @@ export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
             throw new Error('Session manager not initialized');
         }
 
+        const epoch = this.connectionEpoch;
         try {
             const url = await this.session.getWsUrl();
-            const ws = this.handler.ws = new WebSocket(url);
+            if (this.session.userClose || !this._isStarted || epoch !== this.connectionEpoch) return;
+            const ws = this.handler.ws = this.config.socketFactory
+                ? this.config.socketFactory(url)
+                : new WebSocket(url, { agent: this.config.agent });
 
             this.setupWebSocketConnection(ws);
 
@@ -447,6 +463,10 @@ export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
             return;
         }
 
+        if (!this.config.autoReconnect) {
+            this.emitClose(code, reason.toString());
+            return;
+        }
         const reasonInfo = WebsocketCloseReason.find((v) => v.code === code);
         if (reasonInfo) {
             this.session.getBot().logger.info(`[WebSocketReceiver] 连接关闭：${reasonInfo.reason}`);
@@ -473,7 +493,8 @@ export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
      * 重连逻辑
      */
     private async reconnect(resume: boolean = true): Promise<void> {
-        if (!this.session) return;
+        const epoch = this.connectionEpoch;
+        if (!this.session || this.session.userClose || !this._isStarted) return;
 
         this.retryCount++;
         this.session.getBot().logger.error(`[WebSocketReceiver] 连接断开，第${this.retryCount}次重连...`);
@@ -484,6 +505,7 @@ export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
         this.session.getBot().logger.debug(`[WebSocketReceiver] 等待 ${delay}ms 后重连`);
 
         await new Promise(resolve => setTimeout(resolve, delay));
+        if (this.session.userClose || !this._isStarted || epoch !== this.connectionEpoch) return;
 
         this.isReconnect = resume;
         try {
@@ -503,6 +525,7 @@ export class WebSocketReceiver extends BaseReceiver<WebSocketHandler> {
      * 断开连接
      */
     private disconnect(): void {
+        this.connectionEpoch += 1;
         this.isClosed = true;
         this.clearTimers();
         this.handler.ws?.close();

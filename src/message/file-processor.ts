@@ -238,11 +238,23 @@ export class FileProcessor {
       retry_timeout: toNumber(prepared.upload_config?.retry_timeout, 300),
       retry_delay: toNumber(prepared.upload_config?.retry_delay, 1),
     };
-    const blockSize = toNumber(prepared.block_size, 5 * 1024 * 1024);
-
-    await runWithConcurrency(prepared.parts ?? [], uploadConfig.concurrency, async (part) => {
-      const partSize = toNumber(part.block_size, blockSize);
-      const start = part.index * blockSize;
+    const blockSize = Number(prepared.block_size);
+    const parts = prepared.parts;
+    const count = Math.ceil(buffer.length / blockSize);
+    if (!Number.isSafeInteger(blockSize) || blockSize <= 0 || !buffer.length || !Array.isArray(parts) || parts.length !== count || !parts.length || parts.some(part => !part || typeof part !== 'object')) {
+      throw new Error('QQ upload protocol invalid: incomplete parts');
+    }
+    const indices = parts.map(part => part.index);
+    const base = indices.reduce((minimum, index) => Math.min(minimum, index), Infinity);
+    if (![0, 1].includes(base) || indices.some(index => !Number.isSafeInteger(index)) || new Set(indices).size !== count || indices.some(index => index < base || index >= base + count)) {
+      throw new Error('QQ upload protocol invalid: inconsistent indices');
+    }
+    if (parts.some(part => Number(part.block_size) !== Math.min(blockSize, buffer.length - (part.index - base) * blockSize))) {
+      throw new Error('QQ upload protocol invalid: inconsistent part sizes');
+    }
+    await runWithConcurrency(parts, uploadConfig.concurrency, async (part) => {
+      const partSize = Number(part.block_size);
+      const start = (part.index - base) * blockSize;
       const chunk = buffer.subarray(start, start + partSize);
       await withRetry(async () => {
         await PUT_CLIENT.put(part.presigned_url, chunk, {
