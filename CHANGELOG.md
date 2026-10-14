@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/zhinjs/qq-official-bot/compare/v1.3.1...v1.3.2) (2026-10-14)
+
+
+### Features
+
+* add missing property definition to GroupMessageEvent ([4a46552](https://github.com/zhinjs/qq-official-bot/commit/4a465524190fdbc670b4ab4f277cc4d2f7073481))
+
 ## [1.3.1](https://github.com/zhinjs/qq-official-bot/compare/v1.3.0...v1.3.1) (2026-10-09)
 
 
