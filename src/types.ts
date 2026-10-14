@@ -170,3 +170,13 @@ export interface GatewayInfo {
         max_concurrency: number;
     };
 }
+
+export interface MentionedGroupMember {
+    id: string;
+    username: string;
+    bot: boolean;
+    member_openid: string;
+    member_role: 'member' | 'owner' | 'admin';
+    is_you: boolean;
+    scope: 'group';
+}

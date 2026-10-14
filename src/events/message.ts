@@ -1,6 +1,6 @@
 import type { Bot } from "@/bot";
 import type { Sendable } from "@/elements";
-import type { Announce, EmojiType, PinsMessage } from "@/types";
+import type { Announce, EmojiType, PinsMessage, MentionedGroupMember } from "@/types";
 import {Message} from "@/message/parser"
 import type { EventParser } from "@/events"
 import type { CreatePrivateStreamOptions } from "@/message/stream"
@@ -60,6 +60,7 @@ export namespace MessageAuditEvent{
 export class GroupMessageEvent extends Message implements MessageEvent {
     group_id: string
     group_name: string
+    mentions: MentionedGroupMember[]
 
     constructor(bot: Bot, payload: Partial<Message>) {
         super(bot, payload);
