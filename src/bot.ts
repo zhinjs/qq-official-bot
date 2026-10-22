@@ -34,7 +34,8 @@ import {
     AudioService,
     BotService,
     GroupService,
-    MenuPanelService
+    MenuPanelService,
+    MaterialService
 } from "@/services";
 
 
@@ -68,6 +69,7 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
         appid: this.config.appid,
     });
     public readonly menuPanelService: MenuPanelService = new MenuPanelService(this.request);
+    public readonly materialService: MaterialService = new MaterialService(this.request);
 
     constructor(config: Bot.Config<T, M>) {
         super(config)
@@ -181,6 +183,21 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      */
     async generateUrlLink(...args: Parameters<BotService['generateUrlLink']>) {
         return this.botService.generateUrlLink(...args)
+    }
+
+    /** 上传 Markdown 图片素材并返回 qqbot-media:// 引用。 */
+    async uploadMaterialImage(...args: Parameters<MaterialService['uploadImage']>) {
+        return this.materialService.uploadImage(...args)
+    }
+
+    /** 查询全部有效 Markdown 图片素材。 */
+    async getMaterialImages() {
+        return this.materialService.getImages()
+    }
+
+    /** 删除 Markdown 图片素材。 */
+    async deleteMaterialImage(imageId: string) {
+        return this.materialService.deleteImage(imageId)
     }
 
     /**

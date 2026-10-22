@@ -30,6 +30,7 @@ export default defineConfig({
                     { text: '群', link: '/api/group' },
                     { text: '好友', link: '/api/friend' },
                     { text: '菜单与面板', link: '/api/menu-panel' },
+                    { text: '素材管理', link: '/api/material' },
                 ]
             },
             {
@@ -79,6 +80,7 @@ export default defineConfig({
                     { text: '群', link: '/api/group' },
                     { text: '好友', link: '/api/friend' },
                     { text: '菜单与面板', link: '/api/menu-panel' },
+                    { text: '素材管理', link: '/api/material' },
                 ]
             }
         ],
