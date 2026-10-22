@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.3.2](https://github.com/zhinjs/qq-official-bot/compare/v1.3.1...v1.3.2) (2026-10-22)
+
+
+### Features
+
+* add markdown image material management ([d0cd242](https://github.com/zhinjs/qq-official-bot/commit/d0cd2422d1352b96e46a984bc7cf7645e4d4afe6))
+* add Markdown image material management ([4807769](https://github.com/zhinjs/qq-official-bot/commit/480776912081615b4a8ff344f12efc1bf447f7d0))
+* add missing property definition to GroupMessageEvent ([4a46552](https://github.com/zhinjs/qq-official-bot/commit/4a465524190fdbc670b4ab4f277cc4d2f7073481))
+
+
+### Bug Fixes
+
+* verify material uploads and escape markdown captions ([2dcf9a0](https://github.com/zhinjs/qq-official-bot/commit/2dcf9a09dea7f8b0683503f8acf5b56eb626ee40))
+
 ## [1.3.1](https://github.com/zhinjs/qq-official-bot/compare/v1.3.0...v1.3.1) (2026-10-09)
 
 
