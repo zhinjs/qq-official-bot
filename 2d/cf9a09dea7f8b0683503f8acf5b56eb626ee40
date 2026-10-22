@@ -1,0 +1,32 @@
+tests/material-service.test.ts
+  s_dea7fbe4cfa15a::t_20e405fe089307 3-5,10-11,13,22-27,53-165,191-208
+docs/src/api/material.md
+  s_dea7fbe4cfa15a::t_494217681a50f5 15-16,40
+  s_e6f5f09d5890ba::t_b0c25cacc4f5a3 41
+src/services/material.ts
+  s_dea7fbe4cfa15a::t_494217681a50f5 83-84,116-119,129,147-151,154,193-196,198
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2dcf9a09dea7f8b0683503f8acf5b56eb626ee40",
+  "prompts": {},
+  "sessions": {
+    "s_dea7fbe4cfa15a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ae8c-ae88-71a3-b6a7-a4341ad72c9f",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    },
+    "s_e6f5f09d5890ba": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ec5d-69a3-7ed0-aeed-e35b1591e19d",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    }
+  }
+}
