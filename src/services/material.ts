@@ -80,8 +80,8 @@ function inferContentType(fileName: string): MaterialImageContentType | undefine
 
 function normalizeEtag(etag: unknown): string | undefined {
     if (typeof etag !== 'string') return undefined
-    const normalized = etag.trim().replace(/^W\//, '').replace(/^"|"$/g, '').toLowerCase()
-    return /^[a-f0-9]{32}$/.test(normalized) ? normalized : undefined
+    const match = /^(?:"([a-f0-9]{32})"|([a-f0-9]{32}))$/i.exec(etag.trim())
+    return match ? (match[1] || match[2]).toLowerCase() : undefined
 }
 
 /**
@@ -113,7 +113,10 @@ export class MaterialService {
         file: string | Buffer,
         options: UploadMaterialImageOptions = {}
     ): Promise<MaterialImageUploadResult> {
-        const resolved = await getFileBuffer(file)
+        // 调用者可能在 prepare 等待期间复用 Buffer；上传始终使用调用时的快照。
+        const resolved = Buffer.isBuffer(file)
+            ? { buffer: Buffer.from(file), fileName: undefined }
+            : await getFileBuffer(file)
         const fileName = options.fileName || resolved.fileName
         if (!fileName) throw new Error('上传 Markdown 图片素材时必须提供 fileName')
 
@@ -123,6 +126,7 @@ export class MaterialService {
         if (inferredContentType !== contentType) {
             throw new Error('图片文件扩展名必须与 contentType 一致')
         }
+        if (!resolved.buffer.length) throw new Error('图片素材不能为空')
         if (resolved.buffer.length > 10 * 1024 * 1024) {
             throw new Error('图片素材不能超过 10MB')
         }
@@ -140,9 +144,14 @@ export class MaterialService {
             transformRequest: [(data) => data],
         })
 
+        const etag = normalizeEtag(uploaded.headers.etag)
+        if (!etag || etag !== digest) {
+            throw new Error(`图片上传 ETag 缺失、无效或与文件 MD5 不一致（upload_id: ${prepared.upload_id}）`)
+        }
+
         return this.completeImageUpload({
             upload_id: prepared.upload_id,
-            md5: normalizeEtag(uploaded.headers.etag) || digest,
+            md5: etag,
         })
     }
 
@@ -181,7 +190,11 @@ export class MaterialService {
         if ((width == null) !== (height == null)) {
             throw new Error('Markdown 图片宽度和高度必须同时提供')
         }
+        if (width != null && (!Number.isSafeInteger(width) || width <= 0 || !Number.isSafeInteger(height) || height <= 0)) {
+            throw new Error('Markdown 图片宽度和高度必须为正整数')
+        }
+        const caption = alt.replace(/\r\n?|\n/g, ' ').replace(/[\\\[\]]/g, '\\$&')
         const size = width == null ? '' : ` #${width}px #${height}px`
-        return `![${alt}${size}](${url})`
+        return `![${caption}${size}](${url})`
     }
 }

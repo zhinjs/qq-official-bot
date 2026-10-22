@@ -12,6 +12,8 @@ layout: doc
 
 `uploadImage` 会自动读取文件、计算 MD5/SHA1、申请预签名 URL、上传二进制并完成登记。
 
+SDK 会快照传入的 Buffer，并校验上传返回的 ETag 与本地 MD5 一致。ETag 缺失、无效或不一致时会报错并停止登记；上传失败也会直接返回错误，不自动重试整个流程。
+
 ```typescript
 const image = await bot.materialService.uploadImage('./kline.png')
 
@@ -34,6 +36,8 @@ const image = await bot.uploadMaterialImage(buffer, {
 ```
 
 支持 `png`、`jpeg`、`gif`、`webp`，单张不超过 10MB。Buffer 和 Base64 输入必须通过 `fileName` 提供带扩展名的文件名。
+
+`imageMarkdown` 会转义说明文字中的反斜线和方括号，并将换行转为空格。宽高可省略，提供时必须成对传入正整数。
 
 ## 分步上传
 
