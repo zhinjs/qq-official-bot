@@ -17,6 +17,7 @@ export { BotService } from './bot'
 export type { GenerateUrlLinkOptions, GenerateUrlLinkResponse } from './bot'
 export * from './group'
 export * from './menu-panel'
+export * from './material'
 
 // 定义通用API响应类型
 export type ApiResponse<T> = {
