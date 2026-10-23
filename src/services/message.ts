@@ -13,6 +13,8 @@ import { DMS, Dict } from '@/types'
 
 export interface SendOptions {
     timeout?: number;
+    /** 本次发送的 msg_seq；不传则随机生成。重试同一次发送时应复用原值。 */
+    msgSeq?: number;
 }
 
 export interface SendResult {
@@ -186,7 +188,7 @@ export class MessageService {
      */
     private async sendMessage(target: SendTarget, message: Sendable, source?: Quotable, options: SendOptions = {}): Promise<SendResult> {
         const endpointPath = sendPath(target)
-        const messageBuilder = new MessageBuilder(this.appid, isGuildSend(target), source);
+        const messageBuilder = new MessageBuilder(this.appid, isGuildSend(target), source, options.msgSeq);
         const buildResult = await messageBuilder.build(message);
 
         if (buildResult.isFile) {

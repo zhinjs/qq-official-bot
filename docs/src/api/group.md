@@ -12,7 +12,7 @@
 
 向指定群聊发送消息。
 
-**方法名**: `bot.group(groupId).send(message, source?)` / `bot.sendGroupMessage(groupId, message, source?)`
+**方法名**: `bot.group(groupId).send(message, source?, options?)` / `bot.sendGroupMessage(groupId, message, source?, options?)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
@@ -20,6 +20,7 @@
 | `groupId` | `string` | ✅ | 群 ID |
 | `message` | `Sendable` | ✅ | 消息内容 |
 | `source` | `Quotable` | ❌ | 引用消息 |
+| `options` | `SendOptions` | ❌ | `msgSeq` 指定消息序号，`timeout` 设置发送超时；详见[发送选项](./common.md#发送选项) |
 
 ```typescript
 await bot.group(group_id).send('Hello Group!')

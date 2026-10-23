@@ -141,7 +141,7 @@ if (result.success) {
 
 向指定子频道发送消息。
 
-**方法名**: `bot.channel(channelId).send(message, source?)` / `bot.sendGuildMessage(channelId, message, source?)`
+**方法名**: `bot.channel(channelId).send(message, source?, options?)` / `bot.sendGuildMessage(channelId, message, source?, options?)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
@@ -149,6 +149,7 @@ if (result.success) {
 | `channelId` | `string` | ✅ | 子频道 ID |
 | `message` | `Sendable` | ✅ | 消息内容 |
 | `source` | `Quotable` | ❌ | 引用消息 |
+| `options` | `SendOptions` | ❌ | `msgSeq` 指定消息序号，`timeout` 设置发送超时；详见[发送选项](./common.md#发送选项) |
 
 ```typescript
 await bot.channel(channel_id).send('Hello World!')

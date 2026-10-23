@@ -20,6 +20,7 @@ import { GuildMessageEvent } from "./events";
 import { ApplicationPlatform, Middleware, ReceiverMode } from "@/receivers";
 import { ResolveReceiver } from "@/receivers";
 import { FileProcessor } from "@/message";
+import type { SendOptions } from "@/services/message";
 
 // 导入服务模块
 import {
@@ -609,8 +610,8 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param message
      * @param source
      */
-    async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable) {
-        return this.user(user_id).send(message, source);
+    async sendPrivateMessage(user_id: string, message: Sendable, source?: Quotable, options?: SendOptions) {
+        return this.user(user_id).send(message, source, options);
     }
     /**
      * 发送一截单聊流式消息
@@ -647,8 +648,8 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param message
      * @param source
      */
-    async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable) {
-        return this.group(group_id).send(message, source);
+    async sendGroupMessage(group_id: string, message: Sendable, source?: Quotable, options?: SendOptions) {
+        return this.group(group_id).send(message, source, options);
     }
     /**
      * 上传群聊/单聊富媒体。本地文件走官方分片上传，公网 URL 走平台转存。
@@ -701,8 +702,8 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param message
      * @param source
      */
-    async sendDirectMessage(guild_id: string, message: Sendable, source?: Quotable) {
-        return this.direct(guild_id).send(message, source);
+    async sendDirectMessage(guild_id: string, message: Sendable, source?: Quotable, options?: SendOptions) {
+        return this.direct(guild_id).send(message, source, options);
     }
 
     /**
@@ -729,8 +730,8 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param message
      * @param source
      */
-    async sendGuildMessage(channel_id: string, message: Sendable, source?: Quotable) {
-        return this.channel(channel_id).send(message, source);
+    async sendGuildMessage(channel_id: string, message: Sendable, source?: Quotable, options?: SendOptions) {
+        return this.channel(channel_id).send(message, source, options);
     }
 
     /**

@@ -46,7 +46,7 @@ interface DMS {
 
 向指定用户发送频道私信。
 
-**方法名**: `bot.direct(guildId).send(message, source?)` / `bot.sendDirectMessage(guildId, message, source?)`
+**方法名**: `bot.direct(guildId).send(message, source?, options?)` / `bot.sendDirectMessage(guildId, message, source?, options?)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
@@ -54,6 +54,7 @@ interface DMS {
 | `guildId` | `string` | ✅ | 频道 ID |
 | `message` | `Sendable` | ✅ | 消息内容 |
 | `source` | `Quotable` | ❌ | 引用消息 |
+| `options` | `SendOptions` | ❌ | `msgSeq` 指定消息序号，`timeout` 设置发送超时；详见[发送选项](./common.md#发送选项) |
 
 ```typescript
 await bot.direct(guild_id).send('Hello, 这是一条私信!')
