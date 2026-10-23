@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3](https://github.com/zhinjs/qq-official-bot/compare/v1.3.2...v1.3.3) (2026-10-23)
+
+
+### Features
+
+* allow callers to set message sequence numbers ([bee6814](https://github.com/zhinjs/qq-official-bot/commit/bee681422d52c5c6bbe846fa987c02580da58219))
+* allow callers to set msg_seq when sending ([dd60a1a](https://github.com/zhinjs/qq-official-bot/commit/dd60a1a5df2f614c3a0deab534c9dcb85044db46))
+
 ## [1.3.2](https://github.com/zhinjs/qq-official-bot/compare/v1.3.1...v1.3.2) (2026-10-22)
 
 
