@@ -1,0 +1,37 @@
+tests/message-service.test.ts
+  s_dea7fbe4cfa15a::t_093aac52bd2955 23-24,46,51-96
+docs/src/api/common.md
+  s_dea7fbe4cfa15a::t_8c8aecffa2e749 71-91
+src/services/message.ts
+  s_dea7fbe4cfa15a::t_093aac52bd2955 16-17,191
+src/bot.ts
+  s_dea7fbe4cfa15a::t_093aac52bd2955 23,613-614,651-652,705-706,733-734
+docs/src/api/friend.md
+  s_dea7fbe4cfa15a::t_8c8aecffa2e749 15,23
+tests/bot-send-options.test.ts
+  s_dea7fbe4cfa15a::t_093aac52bd2955 1-51
+docs/src/api/channel.md
+  s_dea7fbe4cfa15a::t_8c8aecffa2e749 144,152
+src/message/builder.ts
+  s_dea7fbe4cfa15a::t_093aac52bd2955 62-63,66
+docs/src/api/group.md
+  s_dea7fbe4cfa15a::t_8c8aecffa2e749 15,23
+docs/src/api/direct.md
+  s_dea7fbe4cfa15a::t_8c8aecffa2e749 49,57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bee681422d52c5c6bbe846fa987c02580da58219",
+  "prompts": {},
+  "sessions": {
+    "s_dea7fbe4cfa15a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ae8c-ae88-71a3-b6a7-a4341ad72c9f",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    }
+  }
+}
