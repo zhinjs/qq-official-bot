@@ -12,7 +12,7 @@
 
 向指定用户发送私聊消息。
 
-**方法名**: `bot.user(userId).send(message, source?)` / `bot.sendPrivateMessage(userId, message, source?)`
+**方法名**: `bot.user(userId).send(message, source?, options?)` / `bot.sendPrivateMessage(userId, message, source?, options?)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
@@ -20,6 +20,7 @@
 | `userId` | `string` | ✅ | 用户 ID |
 | `message` | `Sendable` | ✅ | 消息内容 |
 | `source` | `Quotable` | ❌ | 引用消息 |
+| `options` | `SendOptions` | ❌ | `msgSeq` 指定消息序号，`timeout` 设置发送超时；详见[发送选项](./common.md#发送选项) |
 
 ```typescript
 await bot.user(user_id).send('Hello!')

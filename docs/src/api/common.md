@@ -68,6 +68,27 @@ interface GenerateUrlLinkResponse {
 
 官方文档：[生成分享链接](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_generate_url_link.post.html)
 
+## 发送选项
+
+`MessageService` 和 Bot 的 `sendPrivateMessage` / `sendGroupMessage` / `sendGuildMessage` / `sendDirectMessage` 均接受可选的第 4 个参数 `options`。实体的 `send(message, source?, options?)` 使用相同选项；WebSocket、Webhook 模式均适用。
+
+```typescript
+import type { SendOptions } from 'qq-official-bot'
+
+const options: SendOptions = { msgSeq: 1, timeout: 10000 }
+await bot.sendGroupMessage(group_id, '第一次回复', { id: original_message_id }, options)
+await bot.sendGroupMessage(group_id, '第二次回复', { id: original_message_id }, { msgSeq: 2 })
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `msgSeq` | `number` | 请求体中的 `msg_seq`；不传时保留随机生成的行为 |
+| `timeout` | `number` | 发送请求超时，单位毫秒；默认 10000 |
+
+同一 `msg_id` 的不同回复由调用方递增 `msgSeq`；同一次发送超时后若决定重试，应复用原来的 `source`、消息内容和 `msgSeq`。SDK 仅透传指定序号，不自动计数或重试。未提供序号时仍使用随机值。
+
+官方规则：[消息收发概述](https://bot.q.qq.com/wiki/develop/api-v2/server-inter/message/overview.html#消息去重)。
+
 ## 📁 文件上传
 
 群聊、单聊的图片/视频/语音/文件需先上传拿到 `file_info`，再以 `msg_type=7` 发送。官方推荐**分片上传**；公网可访问的地址仍可用 URL 转存。频道消息不受此流程影响。

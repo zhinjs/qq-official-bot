@@ -59,10 +59,11 @@ export class MessageBuilder {
   constructor(
     private appid: string,
     private isGuild?: boolean,
-    private source?: { id?: string; event_id?: string }
+    private source?: { id?: string; event_id?: string },
+    msgSeq?: number
   ) {
     this.messagePayload = {
-      msg_seq: randomInt(1, 1000000),
+      msg_seq: msgSeq ?? randomInt(1, 1000000),
       content: ''
     };
 
