@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/zhinjs/qq-official-bot/compare/v1.3.3...v1.3.4) (2026-10-30)
+
+
+### Bug Fixes
+
+* 修复 @群成员 时消息类型可能不正确，导致QQ侧未解析的问题 ([de0c331](https://github.com/zhinjs/qq-official-bot/commit/de0c3312e5cea243ac413f0dc4cd3537447dcfd7))
+
 ## [1.3.3](https://github.com/zhinjs/qq-official-bot/compare/v1.3.2...v1.3.3) (2026-10-23)
 
 
