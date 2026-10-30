@@ -5,3 +5,6 @@
 /node_modules/
 /.idea/
 /.vscode/
+
+# the shit of macOS
+.DS_Store

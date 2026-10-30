@@ -187,6 +187,8 @@ export class MessageBuilder {
       this.messagePayload.content += `<qqbot-at-everyone />`;
       this.brief += `<at,user=everyone>`;
     } else {
+      // @群成员 需要 Markdown 消息格式才能生效
+      this.messagePayload.msg_type = 2;
       this.messagePayload.content += `<qqbot-at-user id="${elem.data.user_id}" />`;
       this.brief += `<at,user=${elem.data.user_id}>`;
     }
