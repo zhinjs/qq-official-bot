@@ -353,13 +353,17 @@ bot.on('message.group', async (event) => {
     await event.reply('收到群消息了!')
 })
 
-// 监听群消息中的@机器人
+// 监听官方 GROUP_AT_MESSAGE_CREATE 事件
 bot.on('message.group.at', async (event) => {
     await event.reply('有人@我了!')
 })
 ```
 
-> 注意：事件名采用前缀传播，监听 `message.group` 也会收到 `message.group.at` 事件；如需忽略 @ 机器人消息，请在 `message.group` 回调中自行过滤 `event.sub_type === 'at'`。
+事件名采用前缀传播：`GROUP_AT_MESSAGE_CREATE` 对应 `message.group.at`，`sub_type` 为 `'at'`；它同时冒泡到 `message.group`，两个回调收到同一个事件对象。可用 `event.sub_type === 'at'` 过滤这一网关事件。
+
+`GROUP_MESSAGE_CREATE` 对应 `message.group`，`sub_type` 为 `'normal'`。按[官方全量群消息文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/event/group_message_create.html)，开启接收全部消息后，包含 @ 机器人的消息也可通过此事件接收；SDK 不根据消息内容或 `mentions` 额外合成 `message.group.at`。
+
+`mentions` 为可选字段，SDK 原样保留网关提供的列表，缺失时为 `undefined`。[群 @ 消息文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/event/group_at_message_create.html)说明其列表不包含机器人自身，因此不能用它作为所有模式下判断是否 @ 机器人的统一依据。
 
 ### 监听群成员变更事件
 
@@ -424,6 +428,8 @@ bot.on('message.group', async (event) => {
 // 群消息事件接口
 interface GroupMessageEvent extends Message {
     message_type: 'group'
+    sub_type: 'normal' | 'at'
+    mentions?: MentionedGroupMember[]
     group_id: string
     group_name?: string
     sender: {

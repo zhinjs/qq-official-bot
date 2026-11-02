@@ -75,6 +75,32 @@ test('message events expose picture ark data', () => {
     assert.equal(arkType, 'picture')
 })
 
+for (const gateway of ['GROUP_MESSAGE_CREATE', 'GROUP_AT_MESSAGE_CREATE'] as const) {
+    for (const mentions of [undefined, [], [{ id: 'bot-1', bot: true, is_you: true }]]) {
+        test(`${gateway} preserves its subtype and mentions (${JSON.stringify(mentions)})`, () => {
+            const client = createClient()
+            const groups: GroupMessageEvent[] = []
+            const ats: GroupMessageEvent[] = []
+            client.on('message.group', event => groups.push(event))
+            client.on('message.group.at', event => ats.push(event))
+            client.dispatchEvent(gateway, {
+                op: 0, s: 1, t: gateway, id: 'evt-group',
+                d: {
+                    id: 'mid-group', group_id: 'group-openid', content: 'hello',
+                    timestamp: '2026-11-02T00:00:00Z',
+                    author: { id: 'user-1', username: 'alice' },
+                    ...(mentions === undefined ? {} : { mentions }),
+                },
+            })
+            assert.equal(groups.length, 1)
+            assert.equal(groups[0].sub_type, gateway === 'GROUP_AT_MESSAGE_CREATE' ? 'at' : 'normal')
+            assert.equal(groups[0].mentions, mentions)
+            assert.equal(ats.length, gateway === 'GROUP_AT_MESSAGE_CREATE' ? 1 : 0)
+            if (ats.length) assert.equal(ats[0], groups[0])
+        })
+    }
+}
+
 test('INTERACTION_CREATE in a group emits notice.group.action once via em bubbling', async () => {
     const client = createClient()
     const names: string[] = []
