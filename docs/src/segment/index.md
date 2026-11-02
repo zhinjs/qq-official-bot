@@ -114,6 +114,12 @@ export type Sendable =
 - [图文卡片 (CardElem)](./card.md)
 - [Embed 嵌入 (EmbedElem)](./embed.md)
 
+群聊和单聊的正文槽位只能选择一个：`markdown`、`ark`、`image` / `video` / `audio`（共享媒体槽位）、`card`。混用这些片段或重复传入同一个正文类型，SDK 会在文件处理、上传和消息请求之前抛出 `TypeError`，错误中包含冲突的片段类型。模板字符串展开后也遵循同一规则，不会自动拆成多条消息。
+
+例如 `[segment.markdown('md'), segment.video(url)]` 及相反顺序都会报错；两张图片也需要分别发送。引用、文本、@、键盘和按钮不占用上述正文槽位，附属片段的排列不会覆盖已选正文的 `msg_type`。没有正文时，单独键盘或 @成员沿用现有的 Markdown 类型选择。
+
+频道和频道私信使用另一套字段契约，保留现有组合行为，例如文字加图片、文字加 ARK。群聊/单聊的预检仅检查上述正文冲突，不保证所有附属字段组合均被服务端接受；消息权限、各字段的有效性和内容限制仍以[官方群消息接口](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_groups_group_openid_messages.post.html)、[单聊接口](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_messages.post.html)和[频道接口](https://bot.q.qq.com/wiki/develop/api-v2/server-inter/channel/message/send.html)为准。
+
 ### 3. 特殊消息段
 - [回复 (ReplyElem)](./reply.md) - 只能与其他消息段组合使用
 
