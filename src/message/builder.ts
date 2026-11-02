@@ -2,7 +2,7 @@
  * 消息构建器 - 专门负责构建消息内容
  */
 
-import { Sendable, MessageElem, ImageElem, VideoElem, AudioElem, ReplyElem, AtElem, LinkElem, TextElem, FaceElem, MDElem, KeyboardElem, ButtonElem, EmbedElem, ArkElem } from "@/elements";
+import { Sendable, MessageElem, ImageElem, VideoElem, AudioElem, ReplyElem, AtElem, LinkElem, TextElem, FaceElem, MDElem, KeyboardElem, ButtonElem, EmbedElem, ArkElem, CardElem, MessageCard } from "@/elements";
 import { md5 } from "@/utils";
 import { randomInt } from "crypto";
 
@@ -24,6 +24,7 @@ export interface MessagePayload {
   keyboard?: any;
   bot_appid?: string;
   ark?: any;
+  card?: MessageCard;
   embed?: any;
 }
 
@@ -156,6 +157,9 @@ export class MessageBuilder {
         break;
       case 'ark':
         this.handleArk(elem as any);
+        break;
+      case 'card':
+        this.handleCard(elem as CardElem);
         break;
       default:
         console.warn(`未知的消息元素类型: ${elem.type}`);
@@ -301,6 +305,14 @@ export class MessageBuilder {
     this.brief += `<ark>`;
   }
 
+  /** 图文卡片使用群聊/单聊的 card 字段，不走富媒体上传。 */
+  private handleCard(elem: CardElem): void {
+    if (this.isGuild) throw new Error('图文卡片仅支持群聊和单聊');
+    this.messagePayload.msg_type = 8;
+    this.messagePayload.card = elem.data;
+    this.brief += `<card,type=${elem.data.type}>`;
+  }
+
   /**
    * 处理按钮组
    */
@@ -386,6 +398,11 @@ export class MessageBuilder {
 
       const match = template.slice(tagStart, tagEnd + 1);
       cursor = tagEnd + 1;
+
+      if (/^<qqbot-at-everyone\s*\/>$/.test(match)) {
+        result.push({ type: 'at', data: { user_id: 'all' } });
+        continue;
+      }
 
       const [type, ...attrArr] = match.slice(1, -1).split(',');
       const attrs = Object.fromEntries(attrArr.map((attr: string) => {

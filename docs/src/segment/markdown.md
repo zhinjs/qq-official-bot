@@ -65,6 +65,18 @@ segment.markdown(template_id, params, {
 })
 ```
 
+### 群聊 @全体成员
+
+把官方标记直接写入 Markdown 内容。机器人需为群管理员，每群每天仅可发送 1 次。
+
+```typescript
+await bot.sendGroupMessage(group_id, segment.markdown(
+  '<qqbot-at-everyone />\n## 公告\n请查看最新通知',
+))
+```
+
+详见 [@消息段](./at.md#全体成员)。
+
 ## 支持的 Markdown 语法
 
 ### 标题

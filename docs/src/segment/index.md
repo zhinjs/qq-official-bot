@@ -62,6 +62,7 @@ type IndependentElem =
     | AudioElem     // 音频消息段
     | MDElem        // Markdown 消息段
     | ArkElem       // Ark 卡片消息段
+    | CardElem      // 群聊/单聊图文卡片
     | EmbedElem     // Embed 嵌入消息段
 ```
 
@@ -110,6 +111,7 @@ export type Sendable =
 - [音频 (AudioElem)](./audio.md)
 - [Markdown (MDElem)](./markdown.md)
 - [Ark 卡片 (ArkElem)](./ark.md)
+- [图文卡片 (CardElem)](./card.md)
 - [Embed 嵌入 (EmbedElem)](./embed.md)
 
 ### 3. 特殊消息段
@@ -188,6 +190,7 @@ await bot.sendGuildMessage(channelId, [
 | audio | 音频消息 | ❌ | 全部 | [文档](./audio.md) |
 | markdown | Markdown | ❌ | 频道 | [文档](./markdown.md) |
 | ark | Ark 卡片 | ❌ | 频道 | [文档](./ark.md) |
+| card | 图文卡片 | ❌ | 群聊、单聊 | [文档](./card.md) |
 | embed | 嵌入消息 | ❌ | 频道 | [文档](./embed.md) |
 | reply | 回复引用 | 特殊 | 全部 | [文档](./reply.md) |
 

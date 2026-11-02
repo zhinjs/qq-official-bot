@@ -68,6 +68,7 @@ export default defineConfig({
                     { text: 'Markdown', link: '/segment/markdown' },
                     { text: '按钮', link: '/segment/button' },
                     { text: 'Ark', link: '/segment/ark' },
+                    { text: '图文卡片', link: '/segment/card' },
                     { text: 'Embed', link: '/segment/embed' },
                 ]
             },

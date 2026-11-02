@@ -40,6 +40,10 @@ await bot.messageService.sendPrivateMessage(user_id, '这是回复', {
 })
 ```
 
+### 图文卡片
+
+单聊可用 `segment.card({ title, description, url, pic_url })` 发送图文卡片，详见[图文卡片](../segment/card.md)。
+
 ### 撤回私聊消息
 
 撤回指定的私聊消息。

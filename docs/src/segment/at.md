@@ -26,7 +26,7 @@ interface AtElement {
 
 | 用户 ID | 说明 | 转换后格式 |
 |---------|------|----------|
-| `all` | @全体成员（需要权限） | `<@everyone>` |
+| `all` | @全体成员（群聊需管理员权限，每群每天 1 次） | `<qqbot-at-everyone />` |
 | 具体用户ID | @特定用户 | `<@用户ID>` |
 
 ## 底层实现
@@ -46,7 +46,7 @@ segment.at('123456789')
 segment.at('all')
 // 转换为
 {
-  "content": "<@everyone>hello world"
+  "content": "<qqbot-at-everyone />hello world"
 }
 ```
 
@@ -69,18 +69,30 @@ await bot.client.sendMessage(channelId, [
 
 ### @全体成员
 
+群聊的文本、Markdown 均支持原生标记 `<qqbot-at-everyone />`。机器人必须为该群管理员，每个群每天仅可发送 1 次；权限和配额由 QQ 平台校验，SDK 不自动重试。参见[官方变更记录](https://bot.q.qq.com/wiki/develop/api-v2/changelog.html#_20261026)。
+
 ```typescript
 import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-// @全体成员（需要管理员权限）
-await bot.client.sendMessage(channelId, [
+// 文本中 @全体成员
+await bot.sendGroupMessage(group_id, [
   segment.at('all'),
   segment.text(' 重要通知：明天休息！')
 ])
-// 实际发送: { "content": "<@everyone> 重要通知：明天休息！" }
+// 实际发送: { "content": "<qqbot-at-everyone /> 重要通知：明天休息！" }
+
+// 也可在原始文本中使用官方标记
+await bot.sendGroupMessage(group_id, '<qqbot-at-everyone /> 请查看公告')
+
+// Markdown 中把标记直接写入 markdown.content
+await bot.sendGroupMessage(group_id, segment.markdown(
+  '<qqbot-at-everyone />\n## 重要通知\n请查看公告',
+))
 ```
+
+以上为不同发送方式示例，不表示同一天可以在同一群发送多次。
 
 ### @多个用户
 
@@ -294,7 +306,7 @@ async function timeBasedMention(channelId: string, message: string) {
       segment.at('all'),
       segment.text(` ${message}`)
     ])
-    // 实际发送: { "content": "<@everyone> 消息内容" }
+    // 实际发送: { "content": "<qqbot-at-everyone /> 消息内容" }
   } else {
     await bot.client.sendMessage(channelId, [
       segment.text(`🔔 ${message} (非工作时间，未@全体)`)
