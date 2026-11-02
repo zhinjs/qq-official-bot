@@ -1,0 +1,44 @@
+docs/src/segment/index.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 65,114,193
+docs/src/segment/segment-api.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 155-170
+docs/src/api/friend.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 43-46
+docs/src/segment/at.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 29,49,72-73,79-80,84-92,95-96,309
+tests/cards-everyone.test.ts
+  s_dea7fbe4cfa15a::t_aa440b1c587254 1,4-10,85-108
+  s_dea7fbe4cfa15a::t_9ca7a7f2b086f1 2-3,11-84
+src/message/builder.ts
+  s_dea7fbe4cfa15a::t_c361953d116045 5,27,161-163,308-315,402-405
+  s_dea7fbe4cfa15a::t_bb07ce5b41b195 406
+docs/.vitepress/config.mts
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 71
+docs/src/api/group.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 49-52
+src/segment.ts
+  s_dea7fbe4cfa15a::t_9ca7a7f2b086f1 17-18,163-167
+  s_dea7fbe4cfa15a::t_d741f905cfb535 168-170
+docs/src/segment/card.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 1-46
+docs/src/segment/markdown.md
+  s_dea7fbe4cfa15a::t_9be8fa850bebac 68-79
+src/elements.ts
+  s_dea7fbe4cfa15a::t_9ca7a7f2b086f1 18-32,89,113,145
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "07200497205a59a13684b71a5073d69a4e14934d",
+  "prompts": {},
+  "sessions": {
+    "s_dea7fbe4cfa15a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ae8c-ae88-71a3-b6a7-a4341ad72c9f",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    }
+  }
+}
