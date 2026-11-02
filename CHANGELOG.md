@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.4](https://github.com/zhinjs/qq-official-bot/compare/v1.3.3...v1.3.4) (2026-11-02)
+
+
+### Features
+
+* support image-text cards and group everyone mentions ([d190284](https://github.com/zhinjs/qq-official-bot/commit/d190284ee9c395bdcaa98b9d6641ad770a8a75b8))
+* support image-text cards and group everyone mentions ([0720049](https://github.com/zhinjs/qq-official-bot/commit/07200497205a59a13684b71a5073d69a4e14934d))
+
+
+### Bug Fixes
+
+* preserve group gateway event subtype ([72ad26f](https://github.com/zhinjs/qq-official-bot/commit/72ad26f3ae2c843d407bc29c364df2b80f18adb7))
+* preserve group gateway event subtype ([946eede](https://github.com/zhinjs/qq-official-bot/commit/946eede1dd39a485eac890328d202ea1e16994f9))
+* validate v2 message body combinations before upload ([a1eb447](https://github.com/zhinjs/qq-official-bot/commit/a1eb447b8bc564bcb950ed73d82050b19b6f1429))
+* validate v2 message body combinations before upload ([0f6b4f4](https://github.com/zhinjs/qq-official-bot/commit/0f6b4f4557f284ee03bdbddece1b30fe3b44102c))
+* 修复 @群成员 时消息类型可能不正确，导致QQ侧未解析的问题 ([de0c331](https://github.com/zhinjs/qq-official-bot/commit/de0c3312e5cea243ac413f0dc4cd3537447dcfd7))
+
 ## [1.3.3](https://github.com/zhinjs/qq-official-bot/compare/v1.3.2...v1.3.3) (2026-10-23)
 
 
