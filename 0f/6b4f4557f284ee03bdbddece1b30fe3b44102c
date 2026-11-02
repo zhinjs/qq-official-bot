@@ -1,0 +1,25 @@
+src/message/builder.ts
+  s_dea7fbe4cfa15a::t_51ae653bdfdbb7 132,218
+  s_dea7fbe4cfa15a::t_297c5282423cc4 102-104,107-115,117-131,133,135-140,142,219,289,298,326
+tests/message-combinations.test.cjs
+  s_dea7fbe4cfa15a::t_56840c971c95bf 1-26,31-74,79-80,96-113
+  s_dea7fbe4cfa15a::t_3852b117bccdef 27-30,75-78,81-95
+docs/src/segment/index.md
+  s_dea7fbe4cfa15a::t_51ae653bdfdbb7 117-122
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0f6b4f4557f284ee03bdbddece1b30fe3b44102c",
+  "prompts": {},
+  "sessions": {
+    "s_dea7fbe4cfa15a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0ae8c-ae88-71a3-b6a7-a4341ad72c9f",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Class Liu <chunlang.liu@rdc-west.com>"
+    }
+  }
+}
