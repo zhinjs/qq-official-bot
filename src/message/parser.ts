@@ -97,7 +97,7 @@ export namespace Message {
         raw_url?: string
     }
     export type Type = 'private' | 'group' | 'guild'
-    export type SubType = 'direct' | 'friend' | 'temp' | 'normal'
+    export type SubType = 'direct' | 'friend' | 'temp' | 'normal' | 'at'
 
     export function parse(this: Bot<ReceiverMode>, payload: Dict) {
         let template = (payload.content || '').trimStart();

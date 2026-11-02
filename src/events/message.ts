@@ -58,12 +58,14 @@ export namespace MessageAuditEvent{
     }
 }
 export class GroupMessageEvent extends Message implements MessageEvent {
+    sub_type: 'normal' | 'at'
     group_id: string
     group_name: string
-    mentions: MentionedGroupMember[]
+    mentions?: MentionedGroupMember[]
 
-    constructor(bot: Bot, payload: Partial<Message>) {
+    constructor(bot: Bot, payload: Partial<Message>, sub_type: 'normal' | 'at' = 'normal') {
         super(bot, payload);
+        this.sub_type = sub_type
         this.group_id = payload.group_id
         this.message_type = 'group'
     }
@@ -183,7 +185,7 @@ export namespace MessageEvent {
                 break;
             case 'message.group':
             case 'message.group.at':
-                messageEvent = new GroupMessageEvent(this, payload)
+                messageEvent = new GroupMessageEvent(this, payload, event === 'message.group.at' ? 'at' : 'normal')
                 this.logger.info(`recv from Group(${payload.group_id}): ${payload.raw_message}`)
                 break;
             case 'message.guild':

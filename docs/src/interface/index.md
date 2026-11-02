@@ -155,6 +155,8 @@ class PrivateMessageEvent extends Message implements MessageEvent {
 // 群聊消息事件
 class GroupMessageEvent extends Message implements MessageEvent {
     message_type: 'group'
+    sub_type: 'normal' | 'at'
+    mentions?: MentionedGroupMember[]
     group_id: string
     
     async reply(message: Sendable): Promise<any>
