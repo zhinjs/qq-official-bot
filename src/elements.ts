@@ -15,6 +15,21 @@ export interface MarkdownOptions {
     force_verify_image_resource?: boolean;
 }
 
+/** 群聊/单聊图文卡片（msg_type=8）。 */
+export interface MessageCard {
+    type: 'tuwen';
+    content: {
+        /** 标题，1–50 字符。 */
+        title: string;
+        /** 描述，1–200 字符。 */
+        description: string;
+        /** 跳转链接，必须为 HTTPS，最长 1024 字符。 */
+        url: string;
+        /** 图片链接，必须为 HTTPS，最长 1024 字符。 */
+        pic_url: string;
+    };
+}
+
 export interface MessageElemMap {
     text: {
         text: string;
@@ -71,6 +86,7 @@ export interface MessageElemMap {
         channel_id: string
     };
     button: Dict;
+    card: MessageCard;
     ark: {
         template_id: number
         kv: Dict<string, 'key' | 'value'>[]
@@ -94,6 +110,7 @@ export type TextElem = MessageElem<"text">;
 export type AtElem = MessageElem<"at">;
 export type FaceElem = MessageElem<"face">;
 export type ArkElem = MessageElem<'ark'>
+export type CardElem = MessageElem<'card'>
 export type EmbedElem = MessageElem<'embed'>
 export type ImageElem = MessageElem<"image">;
 export type VideoElem = MessageElem<"video">;
@@ -125,6 +142,7 @@ export type Sendable =
         | KeyboardElem // 按钮组，供按钮模板使用
         | MDElem // markdown元素
         | ArkElem // Ark 元素
+        | CardElem // 群聊/单聊图文卡片
         | EmbedElem // Embed元素 仅频道和频道私信支持
         | VideoElem // 视频消息元素
         | AudioElem // 语音消息元素

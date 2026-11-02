@@ -2,7 +2,7 @@
  * 消息构建器 - 专门负责构建消息内容
  */
 
-import { Sendable, MessageElem, ImageElem, VideoElem, AudioElem, ReplyElem, AtElem, LinkElem, TextElem, FaceElem, MDElem, KeyboardElem, ButtonElem, EmbedElem, ArkElem } from "@/elements";
+import { Sendable, MessageElem, ImageElem, VideoElem, AudioElem, ReplyElem, AtElem, LinkElem, TextElem, FaceElem, MDElem, KeyboardElem, ButtonElem, EmbedElem, ArkElem, CardElem, MessageCard } from "@/elements";
 import { md5 } from "@/utils";
 import { randomInt } from "crypto";
 
@@ -24,6 +24,7 @@ export interface MessagePayload {
   keyboard?: any;
   bot_appid?: string;
   ark?: any;
+  card?: MessageCard;
   embed?: any;
 }
 
@@ -98,23 +99,47 @@ export class MessageBuilder {
    * 处理消息内容
    */
   private async processMessage(message: Sendable): Promise<void> {
-    if (!Array.isArray(message)) {
-      message = [message as any];
+    const elements: MessageElem[] = [];
+    for (const elem of Array.isArray(message) ? message : [message]) {
+      elements.push(...(typeof elem === 'string' ? this.parseFromTemplate(elem) : [elem]));
     }
 
-    const messageQueue = [...message];
-
-    while (messageQueue.length) {
-      const elem = messageQueue.shift();
-
-      if (typeof elem === 'string') {
-        const parsedElems = this.parseFromTemplate(elem);
-        messageQueue.unshift(...(parsedElems as any));
-        continue;
-      }
-
+    // v2 正文只有一个槽位。在任何文件处理前检查，并一次确定类型。
+    // 频道使用独立字段，保留其现有的组合规则。
+    if (!this.isGuild) {
+      this.messagePayload.msg_type = this.resolveV2MessageType(elements);
+    }
+    for (const elem of elements) {
       await this.processElement(elem);
     }
+  }
+
+  private resolveV2MessageType(elements: MessageElem[]): number | undefined {
+    let body: MessageElem | undefined;
+    let msgType: number | undefined;
+    let markdownModifier = false;
+    for (const elem of elements) {
+      let type: number | undefined;
+      switch (elem.type) {
+        case 'markdown': type = 2; break;
+        case 'ark': type = 3; break;
+        case 'image':
+        case 'video':
+        case 'audio': type = 7; break;
+        case 'card': type = 8; break;
+        case 'keyboard': markdownModifier = true; break;
+        case 'at':
+          if ((elem as AtElem).data.user_id !== 'all') markdownModifier = true;
+          break;
+      }
+      if (type === undefined) continue;
+      if (body) {
+        throw new TypeError(`消息正文片段冲突: ${body.type} 与 ${elem.type}，请分别发送`);
+      }
+      body = elem;
+      msgType = type;
+    }
+    return msgType ?? (markdownModifier ? 2 : undefined);
   }
 
   /**
@@ -157,6 +182,9 @@ export class MessageBuilder {
       case 'ark':
         this.handleArk(elem as any);
         break;
+      case 'card':
+        this.handleCard(elem as CardElem);
+        break;
       default:
         console.warn(`未知的消息元素类型: ${elem.type}`);
         break;
@@ -187,8 +215,8 @@ export class MessageBuilder {
       this.messagePayload.content += `<qqbot-at-everyone />`;
       this.brief += `<at,user=everyone>`;
     } else {
-      // @群成员 需要 Markdown 消息格式才能生效
-      this.messagePayload.msg_type = 2;
+      // v2 类型在预检时选择；单独 @成员仍沿用 Markdown 类型。
+      if (this.isGuild) this.messagePayload.msg_type = 2;
       this.messagePayload.content += `<qqbot-at-user id="${elem.data.user_id}" />`;
       this.brief += `<at,user=${elem.data.user_id}>`;
     }
@@ -238,7 +266,6 @@ export class MessageBuilder {
       return;
     }
 
-    this.messagePayload.msg_type = 7;
     this.isFile = true;
     this.filePayload.file_type = mediaType;
     this.filePayload.file_name = elem.data.name;
@@ -259,7 +286,7 @@ export class MessageBuilder {
   private handleMarkdown(elem: MDElem): void {
     const { force_verify_image_resource: _, ...guildMarkdown } = elem.data;
     this.messagePayload.markdown = this.isGuild ? guildMarkdown : elem.data;
-    this.messagePayload.msg_type = 2;
+    if (this.isGuild) this.messagePayload.msg_type = 2;
     const content = elem.data.content ? `content=${elem.data.content}` : `template_id=${elem.data.custom_template_id}`;
     this.brief += `<markdown,${content}>`;
   }
@@ -268,7 +295,7 @@ export class MessageBuilder {
    * 处理键盘元素
    */
   private handleKeyboard(elem: KeyboardElem): void {
-    this.messagePayload.msg_type = 2;
+    if (this.isGuild) this.messagePayload.msg_type = 2;
     this.messagePayload.keyboard = elem.data;
     this.messagePayload.bot_appid = this.appid;
     this.brief += `<keyboard>`;
@@ -296,9 +323,16 @@ export class MessageBuilder {
    * 处理ARK元素
    */
   private handleArk(elem: ArkElem): void {
-    this.messagePayload.msg_type = 3;
+    if (this.isGuild) this.messagePayload.msg_type = 3;
     this.messagePayload.ark = elem.data;
     this.brief += `<ark>`;
+  }
+
+  /** 图文卡片使用群聊/单聊的 card 字段，不走富媒体上传。 */
+  private handleCard(elem: CardElem): void {
+    if (this.isGuild) throw new Error('图文卡片仅支持群聊和单聊');
+    this.messagePayload.card = elem.data;
+    this.brief += `<card,type=${elem.data.type}>`;
   }
 
   /**
@@ -386,6 +420,11 @@ export class MessageBuilder {
 
       const match = template.slice(tagStart, tagEnd + 1);
       cursor = tagEnd + 1;
+
+      if (/^<qqbot-at-everyone\s*\/>$/.test(match)) {
+        result.push({ type: 'at', data: { user_id: 'all' } });
+        continue;
+      }
 
       const [type, ...attrArr] = match.slice(1, -1).split(',');
       const attrs = Object.fromEntries(attrArr.map((attr: string) => {

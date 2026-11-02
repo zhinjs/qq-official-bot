@@ -14,6 +14,8 @@ import type {
     AudioElem,
     MDElem,
     ArkElem,
+    CardElem,
+    MessageCard,
     EmbedElem,
     ButtonElem,
     LinkElem,
@@ -155,6 +157,14 @@ export const segment = {
                     ...paramsOrOptions
                 }
             }
+        }
+    },
+
+    /** 创建群聊/单聊图文卡片，链接必须为 HTTPS。 */
+    card(content: MessageCard['content']): CardElem {
+        return {
+            type: 'card',
+            data: { type: 'tuwen', content }
         }
     },
 

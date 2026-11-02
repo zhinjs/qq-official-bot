@@ -152,6 +152,22 @@ const markdownTemplate = segment.markdown('template_id', [
 ])
 ```
 
+#### `segment.card(content: MessageCard['content'])`
+
+创建群聊/单聊图文卡片，发送时使用 `msg_type=8`。
+
+```typescript
+const card = segment.card({
+  title: '最新公告',
+  description: '点击查看详情',
+  url: 'https://example.com/news',
+  pic_url: 'https://example.com/cover.png',
+})
+await bot.sendGroupMessage(group_id, card)
+```
+
+字段长度和 HTTPS 要求见[图文卡片](./card.md)。
+
 #### `segment.ark(templateId: number, kv: Array)`
 
 创建ARK消息段。

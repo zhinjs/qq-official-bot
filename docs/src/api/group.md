@@ -46,6 +46,10 @@ await bot.messageService.sendGroupMessage(group_id, [
 ])
 ```
 
+### 图文卡片与 @全体成员
+
+群聊可用 `segment.card({ title, description, url, pic_url })` 发送图文卡片，详见[图文卡片](../segment/card.md)。文本可用 `segment.at('all')` 或原生 `<qqbot-at-everyone />`；Markdown 应把标记写入 `segment.markdown()` 的内容中。@全体成员需机器人为群管理员，每群每天限 1 次，详见 [@消息段](../segment/at.md#全体成员)。
+
 ### 撤回群消息
 
 撤回指定的群消息。
