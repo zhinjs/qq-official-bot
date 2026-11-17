@@ -28,6 +28,11 @@ interface ButtonElement {
 | render_data | ButtonRenderData | ✅ | 按钮渲染数据 |
 | action | ButtonAction | ✅ | 按钮点击行为 |
 
+::: tip 自定义按钮与按钮模板
+带 `render_data` / `action` 的按钮会组装成自定义键盘（`keyboard.content.rows`），其中 `id` 是按钮自身的 ID。
+只传 `{ id }`（没有 `render_data` / `action`）时，`id` 会被视为平台申请的**按钮模板 ID**，等价于 `segment.keyboard(id)`。
+:::
+
 ### ButtonRenderData 参数
 
 | 参数名 | 类型 | 必选 | 说明 |

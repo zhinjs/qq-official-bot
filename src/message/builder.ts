@@ -284,8 +284,12 @@ export class MessageBuilder {
    * 处理Markdown元素
    */
   private handleMarkdown(elem: MDElem): void {
-    const { force_verify_image_resource: _, ...guildMarkdown } = elem.data;
-    this.messagePayload.markdown = this.isGuild ? guildMarkdown : elem.data;
+    // 平台会校验字段，原生 markdown 中携带 null 的 custom_template_id/params 会被判为参数错误。
+    const markdown = Object.fromEntries(
+      Object.entries(elem.data).filter(([, value]) => value !== null && value !== undefined)
+    ) as MDElem['data'];
+    const { force_verify_image_resource: _, ...guildMarkdown } = markdown;
+    this.messagePayload.markdown = this.isGuild ? guildMarkdown : markdown;
     if (this.isGuild) this.messagePayload.msg_type = 2;
     const content = elem.data.content ? `content=${elem.data.content}` : `template_id=${elem.data.custom_template_id}`;
     this.brief += `<markdown,${content}>`;
@@ -349,8 +353,9 @@ export class MessageBuilder {
         rows.push(row);
         row = [];
       }
-      // 支持按钮模板发送
-      if (this.buttons[i].id) {
+      // 支持按钮模板发送：仅当只给出 id 而没有按钮定义时视为模板 id，
+      // 普通按钮自身也有 id 字段（按钮 ID），不能据此判断。
+      if (isKeyboardTemplateButton(this.buttons[i])) {
         this.messagePayload.keyboard = {
           id: this.buttons[i].id,
           bot_appid: this.appid
@@ -526,4 +531,11 @@ export class MessageBuilder {
       return 'unknown';
     }
   }
+}
+
+function isKeyboardTemplateButton(button: any): boolean {
+  return Boolean(button?.id)
+    && button.render_data === undefined
+    && button.action === undefined
+    && !Array.isArray(button.buttons);
 }

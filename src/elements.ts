@@ -69,12 +69,12 @@ export interface MessageElemMap {
     };
     markdown: {
         content: string
-        custom_template_id: never
-        params: never
+        custom_template_id?: never
+        params?: never
         force_verify_image_resource?: boolean
     } | {
         custom_template_id: string
-        content: never
+        content?: never
         params: { key: string, values: string }[]
         force_verify_image_resource?: boolean
     }

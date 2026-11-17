@@ -140,7 +140,6 @@ export const segment = {
             return {
                 type: 'markdown',
                 data: {
-                    content: null as never,
                     custom_template_id: contentOrTemplateId,
                     params: paramsOrOptions,
                     ...options
@@ -152,8 +151,6 @@ export const segment = {
                 type: 'markdown',
                 data: {
                     content: contentOrTemplateId,
-                    custom_template_id: null as never,
-                    params: null as never,
                     ...paramsOrOptions
                 }
             }
