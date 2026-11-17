@@ -25,14 +25,13 @@ layout: doc
 ### 基础用法
 
 ```typescript
+import { segment } from 'qq-official-bot'
+
 // 直接发送字符串（推荐）
-await bot.sendMessage(channelId, "这是一条文本消息")
+await bot.sendGuildMessage(channelId, "这是一条文本消息")
 
 // 使用消息段格式
-await bot.sendMessage(channelId, {
-    type: "text",
-    text: "这是一条文本消息"
-})
+await bot.sendGuildMessage(channelId, segment.text("这是一条文本消息"))
 ```
 
 ### 服务模块用法
@@ -52,10 +51,10 @@ await bot.sendGuildMessage(channelId, "传统方法发送文本")
 
 ```typescript
 // 与其他消息段组合
-await bot.sendMessage(channelId, [
-    { type: "text", text: "你好，" },
-    { type: "at", user_id: "123456" },
-    { type: "text", text: "！欢迎加入频道！" }
+await bot.sendGuildMessage(channelId, [
+    segment.text("你好，"),
+    segment.at("123456"),
+    segment.text("！欢迎加入频道！")
 ])
 ```
 
@@ -63,23 +62,14 @@ await bot.sendMessage(channelId, [
 
 ```typescript
 // 包含换行的文本
-await bot.sendMessage(channelId, {
-    type: "text",
-    text: "第一行\n第二行\n第三行"
-})
+await bot.sendGuildMessage(channelId, segment.text("第一行\n第二行\n第三行"))
 
 // 包含特殊字符的文本
-await bot.sendMessage(channelId, {
-    type: "text", 
-    text: "特殊字符：@ # $ % & *"
-})
+await bot.sendGuildMessage(channelId, segment.text("特殊字符：@ # $ % & *"))
 
 // 长文本消息
 const longText = "这是一条很长的文本消息...".repeat(10)
-await bot.sendMessage(channelId, {
-    type: "text",
-    text: longText
-})
+await bot.sendGuildMessage(channelId, segment.text(longText))
 ```
 
 ## 🔗 与其他消息段组合
@@ -87,29 +77,29 @@ await bot.sendMessage(channelId, {
 ### 文本 + @提及
 
 ```typescript
-await bot.sendMessage(channelId, [
-    { type: "text", text: "欢迎新成员 " },
-    { type: "at", user_id: "123456" },
-    { type: "text", text: " 加入我们！" }
+await bot.sendGuildMessage(channelId, [
+    segment.text("欢迎新成员 "),
+    segment.at("123456"),
+    segment.text(" 加入我们！")
 ])
 ```
 
 ### 文本 + 表情
 
 ```typescript
-await bot.sendMessage(channelId, [
-    { type: "text", text: "今天心情不错 " },
-    { type: "face", id: "1" },
-    { type: "text", text: " 大家好！" }
+await bot.sendGuildMessage(channelId, [
+    segment.text("今天心情不错 "),
+    segment.face(1),
+    segment.text(" 大家好！")
 ])
 ```
 
-### 文本 + 链接（仅频道）
+### 文本 + 子频道链接（仅频道）
 
 ```typescript
-await bot.sendMessage(channelId, [
-    { type: "text", text: "查看更多信息：" },
-    { type: "link", url: "https://example.com", text: "点击这里" }
+await bot.sendGuildMessage(channelId, [
+    segment.text("查看更多信息："),
+    segment.link("target_channel_id") // 发送为 <#target_channel_id>
 ])
 ```
 
@@ -121,20 +111,17 @@ await bot.sendMessage(channelId, [
 
 ```typescript
 // ✅ 推荐
-await bot.sendMessage(channelId, "简单的文本消息")
+await bot.sendGuildMessage(channelId, "简单的文本消息")
 
 // ❌ 不推荐（过度复杂）
-await bot.sendMessage(channelId, {
-    type: "text",
-    text: "简单的文本消息"
-})
+await bot.sendGuildMessage(channelId, segment.text("简单的文本消息"))
 ```
 
 ### 2. 合理使用换行
 
 ```typescript
 // ✅ 良好的格式
-await bot.sendMessage(channelId, 
+await bot.sendGuildMessage(channelId, 
     "欢迎使用 QQ 机器人！\n" +
     "使用 /help 查看帮助\n" +
     "祝您使用愉快！"
@@ -153,9 +140,7 @@ function sanitizeUserInput(input: string): string {
 }
 
 const userMessage = sanitizeUserInput(userInput)
-await bot.sendMessage(channelId, {
-    type: "text",
-    text: `用户说：${userMessage}`
+await bot.sendGuildMessage(channelId, segment.text(`用户说：${userMessage)`
 })
 ```
 
@@ -210,7 +195,7 @@ async function sendTextSafely(channelId: string, text: string) {
             text = text.slice(0, 4000) + '...'
         }
         
-        await bot.sendMessage(channelId, { type: "text", text })
+        await bot.sendGuildMessage(channelId, segment.text(text))
     } catch (error) {
         console.error('发送文本消息失败:', error)
     }

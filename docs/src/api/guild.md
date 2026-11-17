@@ -138,10 +138,12 @@ await bot.guild(guild_id).unmuteMember(user_id)
 
 ```typescript
 // 移除成员
-await bot.memberService.kickGuildMember(guild_id, user_id)
+await bot.memberService.kickMember(guild_id, user_id)
 
-// 移除成员并加入黑名单，删除7天内消息
-await bot.memberService.kickGuildMember(guild_id, user_id, true, 7)
+// 移除成员并加入黑名单，删除7天内消息（参数顺序：删除消息天数, 是否拉黑）
+await bot.memberService.kickMember(guild_id, user_id, 7, true)
+// 等价的 Bot 快捷方法
+await bot.kickGuildMember(guild_id, user_id, 7, true)
 ```
 
 ## 🔧 频道设置

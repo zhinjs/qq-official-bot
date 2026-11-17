@@ -186,6 +186,14 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
         return this.botService.generateUrlLink(...args)
     }
 
+    /**
+     * 获取用户基本信息（昵称、头像、是否接收主动推送）。
+     * @param user_id 单聊场景的 user_openid
+     */
+    async getUserInfo(user_id: string) {
+        return this.user(user_id).info()
+    }
+
     /** 上传 Markdown 图片素材并返回 qqbot-media:// 引用。 */
     async uploadMaterialImage(...args: Parameters<MaterialService['uploadImage']>) {
         return this.materialService.uploadImage(...args)
@@ -280,7 +288,7 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param guild_id
      * @param channelInfo
      */
-    async createChannel(guild_id: string, channelInfo: Omit<Channel.Info, 'id'>) {
+    async createChannel(guild_id: string, channelInfo: Channel.CreateParam) {
         return this.guild(guild_id).createChannel(channelInfo)
     }
 
@@ -314,8 +322,13 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param guild_id
      * @param role
      */
-    async creatGuildRole(guild_id: string, role: RoleCreateParam) {
+    async createGuildRole(guild_id: string, role: RoleCreateParam) {
         return this.guild(guild_id).createRole(role)
+    }
+
+    /** @deprecated 拼写错误，请使用 createGuildRole */
+    async creatGuildRole(guild_id: string, role: RoleCreateParam) {
+        return this.createGuildRole(guild_id, role)
     }
 
     /**
@@ -904,6 +917,12 @@ export namespace Bot {
         id: string
         username: string
         avatar: string
+        /** 是否为机器人 */
+        bot?: boolean
+        /** 机器人分享链接 */
+        share_url?: string
+        /** 机器人欢迎语 */
+        welcome_msg?: string
         union_openid?: string
         union_user_account?: string
     }

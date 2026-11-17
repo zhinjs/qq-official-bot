@@ -38,6 +38,31 @@ interface Bot.Info {
 }
 ```
 
+### 获取用户基本信息
+
+获取单聊用户的昵称、头像，以及是否允许机器人主动推送（2026-11-16 新增，10 QPS）。用户与机器人无好友关系时返回错误码 `40184001`。
+
+**方法名**: `bot.botService.getUserInfo(user_openid)` / `bot.getUserInfo(user_openid)` / `bot.user(user_openid).info()`
+
+```typescript
+const info = await bot.getUserInfo(user_openid)
+if (info.allow_proactive_msg) {
+    await bot.sendPrivateMessage(user_openid, `你好，${info.username}`)
+}
+```
+
+**返回数据结构**:
+```typescript
+interface UserBasicInfo {
+    username: string              // 用户名
+    avatar: string                // 头像原图 URL
+    allow_proactive_msg: boolean  // 是否接收主动推送
+    union_openid?: string         // 跨应用关联 openid，绑定第三方应用时有效
+}
+```
+
+官方文档：[获取用户基本信息](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_info.get.html)
+
 ### 生成分享链接
 
 生成邀请用户添加机器人为好友的分享链接。`callback_data` 会在用户通过链接添加机器人时透传给机器人后台，最长 32 字符。
@@ -84,6 +109,11 @@ await bot.sendGroupMessage(group_id, '第二次回复', { id: original_message_i
 |------|------|------|
 | `msgSeq` | `number` | 请求体中的 `msg_seq`；不传时保留随机生成的行为 |
 | `timeout` | `number` | 发送请求超时，单位毫秒；默认 10000 |
+| `isWakeup` | `boolean` | 作为互动召回消息发送（仅单聊），与被动回复互斥 |
+
+单聊/群聊的 `msg_id` 与 `event_id` 二选一：`source` 同时带有 `id` 和 `event_id` 时，SDK 只发送 `msg_id`（频道接口保持原行为）。
+
+发送结果 `SendResult` 包含：`id`、`timestamp`（平台返回的发送时间，Unix 秒）、`ref_idx`（单聊/群聊引用索引，可用于引用机器人自己的消息）。
 
 同一 `msg_id` 的不同回复由调用方递增 `msgSeq`；同一次发送超时后若决定重试，应复用原来的 `source`、消息内容和 `msgSeq`。SDK 仅透传指定序号，不自动计数或重试。未提供序号时仍使用随机值。
 

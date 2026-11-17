@@ -42,7 +42,7 @@ export class ChannelService {
     /**
      * 创建子频道
      */
-    async create(guildId: string, channelInfo: Omit<Channel.Info, 'id'>): Promise<Channel.Info> {
+    async create(guildId: string, channelInfo: Channel.CreateParam): Promise<Channel.Info> {
         const { data: result } = await this.request.post(`/guilds/${guildId}/channels`, channelInfo)
         return result
     }

@@ -47,9 +47,17 @@ export class Client<T extends ReceiverMode, M extends ApplicationPlatform = Appl
     removeAt(payload: Dict): void {
         if (this.config.removeAt === false) return;
 
+        if (typeof payload.content !== 'string') return;
+
         let content = payload.content;
         payload.mentions?.forEach((mention: Dict) => {
-            if (mention?.id) content = content.replace(new RegExp(`<@!?${mention.id}>\\s*`, 'g'), '');
+            // 只移除 @机器人自身，保留对其他成员的 @
+            const isSelf = mention?.is_you === true
+                || (!!this.self_id && mention?.id === this.self_id)
+                || (mention?.is_you === undefined && mention?.bot === true && !this.self_id);
+            if (mention?.id && isSelf) {
+                content = content.replace(new RegExp(`<@!?${escapeRegExp(mention.id)}>\\s*`, 'g'), '');
+            }
         });
         payload.content = content.trimStart();
     }
@@ -223,4 +231,8 @@ export namespace Client {
         logLevel?: LogLevel;
         mode: T;
     } & ReceiveModeConfig<M>[T];
+}
+
+function escapeRegExp(value: string): string {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }

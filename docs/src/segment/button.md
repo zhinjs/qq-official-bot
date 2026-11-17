@@ -28,39 +28,56 @@ interface ButtonElement {
 | render_data | ButtonRenderData | ✅ | 按钮渲染数据 |
 | action | ButtonAction | ✅ | 按钮点击行为 |
 
+::: tip 自定义按钮与按钮模板
+带 `render_data` / `action` 的按钮会组装成自定义键盘（`keyboard.content.rows`），其中 `id` 是按钮自身的 ID。
+只传 `{ id }`（没有 `render_data` / `action`）时，`id` 会被视为平台申请的**按钮模板 ID**，等价于 `segment.keyboard(id)`。
+:::
+
 ### ButtonRenderData 参数
 
 | 参数名 | 类型 | 必选 | 说明 |
 |--------|------|------|------|
 | label | string | ✅ | 按钮显示文字 |
 | visited_label | string | ❌ | 点击后显示文字 |
-| style | number | ❌ | 按钮样式（0=灰色，1=蓝色，2=红色，3=绿色，4=紫色） |
+| style | number | ❌ | 按钮样式（0=灰色线框，1=蓝色线框，3=白底红字，4=蓝底白字） |
 
 ### ButtonAction 参数
 
 | 参数名 | 类型 | 必选 | 说明 |
 |--------|------|------|------|
-| type | number | ✅ | 操作类型（0=回调，1=跳转链接，2=指令） |
+| type | number | ✅ | 操作类型（0=跳转：http 链接或小程序，1=回调：data 传给机器人后台，2=指令：在输入框插入 @bot data） |
 | permission | ButtonPermission | ❌ | 权限设置 |
-| data | string | ❌ | 操作数据 |
+| data | string | ❌ | 操作数据；跳转按钮为链接，type=1/2 时必填 |
 | enter | boolean | ❌ | 是否直接发送 |
 | reply | boolean | ❌ | 是否回复 |
-| anchor | string | ❌ | 指令锚点 |
+| anchor | number | ❌ | 仅指令按钮有效，设为 1 时点击唤起手 Q 选图器（仅手机端 8983+ 单聊） |
 | unsupport_tips | string | ❌ | 不支持时的提示 |
+| modal | ButtonModal | ❌ | 点击后的二次确认（content ≤40 字且不能含 URL，confirm_text / cancel_text ≤4 字） |
+
+### ButtonPermission 参数
+
+| 参数名 | 类型 | 必选 | 说明 |
+|--------|------|------|------|
+| type | number | ✅ | 0=指定用户，1=仅管理员，2=所有人，3=指定身份组（仅频道） |
+| specify_user_ids | string[] | ❌ | 有权限的用户 ID 列表（type=0） |
+| specify_role_ids | string[] | ❌ | 有权限的身份组 ID 列表（type=3，仅频道） |
 
 ## 按钮样式
 
-| 样式值 | 颜色 | 用途建议 |
+| 样式值 | 外观 | 用途建议 |
 |-------|------|----------|
-| 0 | 灰色 | 次要操作、取消操作 |
-| 1 | 蓝色 | 主要操作、确认操作 |
-| 2 | 红色 | 危险操作、删除操作 |
-| 3 | 绿色 | 成功操作、确认操作 |
-| 4 | 紫色 | 特殊操作、高级功能 |
+| 0 | 灰色线框 | 次要操作、取消操作 |
+| 1 | 蓝色线框 | 常规操作 |
+| 3 | 白色背景 + 红色字体 | 危险操作、删除操作 |
+| 4 | 蓝色背景 + 白色字体 | 主要操作、确认操作 |
+
+::: warning 取值以官方文档为准
+官方[发送消息文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_messages.post.html)中 `action.type` 为 **0=跳转、1=回调、2=指令**，`style` 没有 2。旧版本文档写反过，请按本页取值。
+:::
 
 ## 按钮类型
 
-### 回调按钮 (type: 0)
+### 回调按钮 (type: 1)
 
 点击后触发回调事件，不跳转页面。
 
@@ -73,16 +90,16 @@ const callbackButton = segment.button({
   render_data: {
     label: '点击我',
     visited_label: '已点击',
-    style: 1 // 蓝色
+    style: 1 // 蓝色线框
   },
   action: {
-    type: 0, // 回调类型
+    type: 1, // 回调类型
     data: 'callback_data_1'
   }
 })
 ```
 
-### 链接按钮 (type: 1)
+### 跳转按钮 (type: 0)
 
 点击后跳转到指定链接。
 
@@ -97,7 +114,7 @@ const linkButton = segment.button({
     style: 1
   },
   action: {
-    type: 1, // 链接类型
+    type: 0, // 跳转类型（http 链接或小程序）
     data: 'https://example.com'
   }
 })
@@ -115,7 +132,7 @@ const commandButton = segment.button({
   id: 'cmd_btn_1',
   render_data: {
     label: '帮助',
-    style: 3 // 绿色
+    style: 4 // 蓝底白字
   },
   action: {
     type: 2, // 指令类型
@@ -136,7 +153,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 必须与 markdown 一起发送
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('请选择操作：'),
   segment.button({
     id: 'confirm_btn',
@@ -146,7 +163,7 @@ await bot.client.sendMessage(channelId, [
       style: 1
     },
     action: {
-      type: 0,
+      type: 1,
       data: 'confirm_action'
     }
   })
@@ -164,22 +181,22 @@ const bot = new Bot(config)
 const buttons = [
   {
     id: 'yes_btn',
-    render_data: { label: '是', style: 3 },
-    action: { type: 0, data: 'yes' }
+    render_data: { label: '是', style: 4 },
+    action: { type: 1, data: 'yes' }
   },
   {
     id: 'no_btn', 
-    render_data: { label: '否', style: 2 },
-    action: { type: 0, data: 'no' }
+    render_data: { label: '否', style: 3 },
+    action: { type: 1, data: 'no' }
   },
   {
     id: 'cancel_btn',
     render_data: { label: '取消', style: 0 },
-    action: { type: 0, data: 'cancel' }
+    action: { type: 1, data: 'cancel' }
   }
 ]
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('你确定要执行此操作吗？'),
   segment.button({ buttons })
 ])
@@ -197,12 +214,12 @@ const firstRow = [
   {
     id: 'option1',
     render_data: { label: '选项1', style: 1 },
-    action: { type: 0, data: 'option1' }
+    action: { type: 1, data: 'option1' }
   },
   {
     id: 'option2',
     render_data: { label: '选项2', style: 1 },
-    action: { type: 0, data: 'option2' }
+    action: { type: 1, data: 'option2' }
   }
 ]
 
@@ -211,16 +228,16 @@ const secondRow = [
   {
     id: 'back',
     render_data: { label: '返回', style: 0 },
-    action: { type: 0, data: 'back' }
+    action: { type: 1, data: 'back' }
   },
   {
     id: 'exit',
-    render_data: { label: '退出', style: 2 },
-    action: { type: 0, data: 'exit' }
+    render_data: { label: '退出', style: 3 },
+    action: { type: 1, data: 'exit' }
   }
 ]
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('请选择操作：'),
   segment.button({ buttons: firstRow }),
   segment.button({ buttons: secondRow })
@@ -241,19 +258,19 @@ const adminButton = segment.button({
   id: 'admin_btn',
   render_data: {
     label: '管理操作',
-    style: 4 // 紫色
+    style: 1 // 蓝色线框
   },
   action: {
-    type: 0,
+    type: 1,
     data: 'admin_action',
     permission: {
-      type: 2, // 指定用户
+      type: 0, // 指定用户
       specify_user_ids: ['admin_user_id_1', 'admin_user_id_2']
     }
   }
 })
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('管理面板'),
   adminButton
 ])
@@ -271,13 +288,13 @@ const roleButton = segment.button({
   id: 'role_btn',
   render_data: {
     label: '角色专用',
-    style: 4
+    style: 1
   },
   action: {
-    type: 0,
+    type: 1,
     data: 'role_action',
     permission: {
-      type: 1, // 指定角色
+      type: 3, // 指定身份组（仅频道）
       specify_role_ids: ['role_id_1', 'role_id_2']
     }
   }
@@ -293,28 +310,30 @@ import { Bot } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-// 监听按钮点击事件
-bot.on('interaction.button', async (event) => {
-  const { data } = event
-  
-  switch (data) {
+// 回调按钮（action.type = 1）被点击时触发 INTERACTION_CREATE：
+// 单聊 notice.friend.action，群聊 notice.group.action，频道 notice.guild.action
+bot.on('notice.group.action', async (event) => {
+  const { button_id, button_data } = event.data.resolved
+
+  // 先回应互动，避免客户端显示加载中（0 = 成功）
+  await event.reply(0)
+
+  switch (button_data) {
     case 'confirm_action':
-      await bot.client.sendMessage(event.channel_id, [
-        segment.text('操作已确认！')
-      ])
+      await bot.sendGroupMessage(event.group_id, '操作已确认！', { event_id: event.notice_id })
       break
-      
     case 'cancel_action':
-      await bot.client.sendMessage(event.channel_id, [
-        segment.text('操作已取消。')
-      ])
+      await bot.sendGroupMessage(event.group_id, '操作已取消。', { event_id: event.notice_id })
       break
-      
     default:
-      console.log('未知按钮点击:', data)
+      console.log('未知按钮点击:', button_id, button_data)
   }
 })
 ```
+
+::: tip 互动事件字段
+`event.interaction_type` 为互动类型（11 按钮、12 快捷菜单、13 消息反馈 …），`event.operator_id` 为点击者，`event.notice_id` 为事件 ID，可作为 `event_id` 被动回复。
+:::
 
 ### 复杂交互处理
 
@@ -333,33 +352,34 @@ async function sendGameInterface(channelId: string, userId: string) {
   const buttons = [
     {
       id: 'game_start',
-      render_data: { label: '开始游戏', style: 3 },
-      action: { type: 0, data: 'start_game' }
+      render_data: { label: '开始游戏', style: 4 },
+      action: { type: 1, data: 'start_game' }
     },
     {
       id: 'game_score',
       render_data: { label: '查看分数', style: 1 },
-      action: { type: 0, data: 'view_score' }
+      action: { type: 1, data: 'view_score' }
     },
     {
       id: 'game_reset',
-      render_data: { label: '重置游戏', style: 2 },
-      action: { type: 0, data: 'reset_game' }
+      render_data: { label: '重置游戏', style: 3 },
+      action: { type: 1, data: 'reset_game' }
     }
   ]
   
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.markdown(`## 🎮 游戏中心\n当前等级: ${gameState.level}\n分数: ${gameState.score}`),
     segment.button({ buttons })
   ])
 }
 
-// 处理游戏按钮
-bot.on('interaction.button', async (event) => {
-  const userId = event.user_id
+// 处理游戏按钮（频道场景）
+bot.on('notice.guild.action', async (event) => {
+  await event.reply(0)
+  const userId = event.operator_id
   const channelId = event.channel_id
   
-  switch (event.data) {
+  switch (event.data.resolved.button_data) {
     case 'start_game':
       const gameState = gameStates.get(userId) || { score: 0, level: 1 }
       gameState.score += 10
@@ -370,7 +390,7 @@ bot.on('interaction.button', async (event) => {
       
     case 'view_score':
       const currentState = gameStates.get(userId) || { score: 0, level: 1 }
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.text(`你的当前分数：${currentState.score}`)
       ])
       break
@@ -392,13 +412,13 @@ bot.on('interaction.button', async (event) => {
 const confirmCancelButtons = [
   {
     id: 'confirm',
-    render_data: { label: '确认', style: 3 }, // 绿色
-    action: { type: 0, data: 'confirm' }
+    render_data: { label: '确认', style: 4 }, // 蓝底白字
+    action: { type: 1, data: 'confirm' }
   },
   {
     id: 'cancel', 
-    render_data: { label: '取消', style: 0 }, // 灰色
-    action: { type: 0, data: 'cancel' }
+    render_data: { label: '取消', style: 0 }, // 灰色线框
+    action: { type: 1, data: 'cancel' }
   }
 ]
 
@@ -406,13 +426,13 @@ const confirmCancelButtons = [
 const yesNoButtons = [
   {
     id: 'yes',
-    render_data: { label: '是', style: 1 }, // 蓝色
-    action: { type: 0, data: 'yes' }
+    render_data: { label: '是', style: 1 }, // 蓝色线框
+    action: { type: 1, data: 'yes' }
   },
   {
     id: 'no',
-    render_data: { label: '否', style: 2 }, // 红色
-    action: { type: 0, data: 'no' }
+    render_data: { label: '否', style: 3 }, // 白底红字
+    action: { type: 1, data: 'no' }
   }
 ]
 
@@ -420,7 +440,7 @@ const yesNoButtons = [
 const numberButtons = Array.from({ length: 5 }, (_, i) => ({
   id: `num_${i + 1}`,
   render_data: { label: (i + 1).toString(), style: 1 },
-  action: { type: 0, data: `number_${i + 1}` }
+  action: { type: 1, data: `number_${i + 1}` }
 }))
 ```
 
@@ -434,13 +454,13 @@ function getStatusButtons(status: string) {
       return [
         {
           id: 'approve',
-          render_data: { label: '批准', style: 3 },
-          action: { type: 0, data: 'approve' }
+          render_data: { label: '批准', style: 4 },
+          action: { type: 1, data: 'approve' }
         },
         {
           id: 'reject',
-          render_data: { label: '拒绝', style: 2 },
-          action: { type: 0, data: 'reject' }
+          render_data: { label: '拒绝', style: 3 },
+          action: { type: 1, data: 'reject' }
         }
       ]
       
@@ -449,7 +469,7 @@ function getStatusButtons(status: string) {
         {
           id: 'view_details',
           render_data: { label: '查看详情', style: 1 },
-          action: { type: 0, data: 'view_details' }
+          action: { type: 1, data: 'view_details' }
         }
       ]
       
@@ -457,8 +477,8 @@ function getStatusButtons(status: string) {
       return [
         {
           id: 'resubmit',
-          render_data: { label: '重新提交', style: 4 },
-          action: { type: 0, data: 'resubmit' }
+          render_data: { label: '重新提交', style: 1 },
+          action: { type: 1, data: 'resubmit' }
         }
       ]
       
@@ -475,7 +495,7 @@ function getStatusButtons(status: string) {
 ```typescript
 // ✅ 好的做法 - 清晰明确的按钮文字
 const goodButtons = [
-  { label: '确认删除', style: 2 },
+  { label: '确认删除', style: 3 },
   { label: '取消操作', style: 0 },
   { label: '查看详情', style: 1 }
 ]
@@ -508,7 +528,7 @@ const tooManyButtons = Array.from({ length: 10 }, (_, i) => ({
 ### 错误处理
 
 ```typescript
-bot.on('interaction.button', async (event) => {
+bot.on('notice.guild.action', async (event) => {
   try {
     // 处理按钮点击逻辑
     await handleButtonClick(event)
@@ -516,7 +536,7 @@ bot.on('interaction.button', async (event) => {
     console.error('按钮处理错误:', error)
     
     // 发送错误提示
-    await bot.client.sendMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.text('操作失败，请稍后重试。')
     ])
   }

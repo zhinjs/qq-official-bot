@@ -30,8 +30,8 @@ for (const method of ['sendGroupMessage', 'sendPrivateMessage'] as const) {
             msg_seq: 3,
             content: '',
             msg_type: 8,
+            // v2 的引用展示需要 REFIDX 引用索引，普通消息 ID 只作为被动回复 msg_id
             msg_id: 'source',
-            message_reference: { message_id: 'source' },
             card: { type: 'tuwen', content: cardContent },
         })
     })

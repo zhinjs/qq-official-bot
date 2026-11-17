@@ -8,8 +8,18 @@ import type { CommandPanel, PageOptions } from "@/services"
 export class User {
     constructor(private bot: Bot, public readonly id: string) {}
 
+    /** 获取用户基本信息（昵称、头像、是否接收主动推送）。 */
+    info() {
+        return this.bot.botService.getUserInfo(this.id)
+    }
+
     send(message: Sendable, source?: Quotable, options?: SendOptions) {
         return this.bot.messageService.sendPrivateMessage(this.id, message, source, options)
+    }
+
+    /** 发送「输入中」状态（1-60 秒）。 */
+    sendInputNotify(seconds?: number, source?: Quotable, options?: SendOptions) {
+        return this.bot.messageService.sendPrivateInputNotify(this.id, seconds, source, options)
     }
 
     recall(messageId: string) {

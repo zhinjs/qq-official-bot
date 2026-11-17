@@ -140,7 +140,6 @@ export const segment = {
             return {
                 type: 'markdown',
                 data: {
-                    content: null as never,
                     custom_template_id: contentOrTemplateId,
                     params: paramsOrOptions,
                     ...options
@@ -152,8 +151,6 @@ export const segment = {
                 type: 'markdown',
                 data: {
                     content: contentOrTemplateId,
-                    custom_template_id: null as never,
-                    params: null as never,
                     ...paramsOrOptions
                 }
             }
@@ -248,7 +245,9 @@ export const segment = {
                 type: 'reply',
                 data: {
                     id: idOrQuotable.id,
-                    event_id: idOrQuotable.event_id
+                    event_id: idOrQuotable.event_id,
+                    // 单聊/群聊的引用回复使用 REFIDX 引用索引
+                    ref_idx: idOrQuotable.ref_idx ?? idOrQuotable.msg_idx,
                 }
             }
         }

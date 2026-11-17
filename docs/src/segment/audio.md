@@ -85,12 +85,12 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 发送本地语音
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.audio('./voice.mp3')
 ])
 
 // 发送网络音频
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.audio('https://example.com/audio.mp3')
 ])
 ```
@@ -102,7 +102,7 @@ import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('听听这个语音消息：'),
   segment.audio('./voice.mp3')
 ])
@@ -116,7 +116,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 回复消息并发送语音
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply(originalMessageId),
   segment.audio('./response_voice.mp3')
 ])
@@ -129,7 +129,7 @@ import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('分享一段音乐：'),
   segment.audio('./music_clip.mp3', {
     duration: 60,
@@ -148,7 +148,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 群聊中发送语音
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.audio('./group_voice.mp3')
 ])
 ```
@@ -161,7 +161,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 私聊中发送语音
-await bot.friendService.sendMessage(userId, [
+await bot.sendPrivateMessage(userId, [
   segment.audio('./private_voice.mp3')
 ])
 ```
@@ -174,7 +174,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 频道中发送音频
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('语音播报：'),
   segment.audio('./announcement.mp3')
 ])
@@ -215,7 +215,7 @@ async function checkAudioLimits(filePath: string): Promise<boolean> {
 
 // 使用示例
 if (await checkAudioLimits('./audio.mp3')) {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.audio('./audio.mp3')
   ])
 }
@@ -244,7 +244,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 try {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.audio('./voice.mp3')
   ])
 } catch (error) {
@@ -285,7 +285,7 @@ async function compressAudio(inputPath: string, outputPath: string): Promise<voi
 
 // 使用示例
 await compressAudio('./original.wav', './compressed.mp3')
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.audio('./compressed.mp3')
 ])
 ```
@@ -311,7 +311,7 @@ async function prepareVoiceMessage(recordingPath: string): Promise<string> {
 
 // 使用示例
 const voicePath = await prepareVoiceMessage('./recording.wav')
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.audio(voicePath)
 ])
 ```
@@ -343,7 +343,7 @@ async function getAudioInfo(filePath: string): Promise<{duration: number, format
 const { duration, format } = await getAudioInfo('./audio.mp3')
 console.log(`音频时长: ${duration}秒, 格式: ${format}`)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.audio('./audio.mp3', { duration, format })
 ])
 ```
@@ -371,7 +371,7 @@ async function recognizeVoice(audioPath: string): Promise<VoiceRecognitionResult
 // 发送语音消息并提供文字版本
 const voiceResult = await recognizeVoice('./voice.mp3')
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.audio('./voice.mp3'),
   segment.text(`\n[语音转文字]: ${voiceResult.text}`)
 ])

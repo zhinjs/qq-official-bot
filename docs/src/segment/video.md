@@ -84,12 +84,12 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 发送本地视频
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.video('./demo.mp4')
 ])
 
 // 发送网络视频
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.video('https://example.com/video.mp4')
 ])
 ```
@@ -101,7 +101,7 @@ import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('分享一个有趣的视频：'),
   segment.video('./funny.mp4'),
   segment.text('希望你喜欢！')
@@ -116,7 +116,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 回复消息并发送视频
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply(originalMessageId),
   segment.video('./response.mp4')
 ])
@@ -129,7 +129,7 @@ import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.video('./video.mp4', {
     thumb: './thumbnail.jpg',
     duration: 120,
@@ -149,7 +149,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 群聊中发送视频
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.text('群友们看看这个视频：'),
   segment.video('./group_video.mp4')
 ])
@@ -163,7 +163,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 私聊中发送视频
-await bot.friendService.sendMessage(userId, [
+await bot.sendPrivateMessage(userId, [
   segment.video('./private_video.mp4')
 ])
 ```
@@ -176,7 +176,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 频道中发送视频
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('新视频发布：'),
   segment.video('https://cdn.example.com/latest.mp4')
 ])
@@ -217,7 +217,7 @@ async function checkVideoLimits(filePath: string): Promise<boolean> {
 
 // 使用示例
 if (await checkVideoLimits('./video.mp4')) {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.video('./video.mp4')
   ])
 }
@@ -246,7 +246,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 try {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.video('./video.mp4')
   ])
 } catch (error) {
@@ -287,7 +287,7 @@ async function compressVideo(inputPath: string, outputPath: string): Promise<voi
 
 // 使用示例
 await compressVideo('./original.mp4', './compressed.mp4')
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.video('./compressed.mp4')
 ])
 ```
@@ -314,7 +314,7 @@ async function generateThumbnail(videoPath: string, thumbnailPath: string): Prom
 
 // 使用示例
 await generateThumbnail('./video.mp4', './thumbnail.jpg')
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.video('./video.mp4', { thumb: './thumbnail.jpg' })
 ])
 ```

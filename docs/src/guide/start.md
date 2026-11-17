@@ -170,7 +170,7 @@ await bot.user(user_id).send('Hello from C2C')
 await bot.memberService.muteGuildMember(guild_id, user_id, 600)
 
 // 使用权限管理服务
-const permissions = await bot.permissionService.getChannelUserPermissions(
+const permissions = await bot.permissionService.getChannelMemberPermission(
     channel_id, 
     user_id
 )

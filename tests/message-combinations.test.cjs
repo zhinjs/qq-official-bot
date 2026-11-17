@@ -111,3 +111,32 @@ for (const method of ['sendGuildMessage', 'sendDirectMessage']) {
         }
     })
 }
+
+for (const method of ['sendGroupMessage', 'sendPrivateMessage']) {
+    test(`${method} sends markdown with a custom button as an inline keyboard`, async () => {
+        const { messages, calls } = createService()
+        const button = {
+            id: 'game_start',
+            render_data: { label: '开始游戏', style: 3 },
+            action: { type: 0, data: 'start_game' },
+        }
+        await messages[method]('target', [segment.markdown('请选择操作：'), segment.button(button)])
+        const payload = calls.at(-1).data
+        assert.equal(payload.msg_type, 2)
+        // 原生 markdown 不能携带 null 的模板字段，否则平台返回 markdown 参数错误
+        assert.deepEqual(payload.markdown, { content: '请选择操作：' })
+        assert.deepEqual(payload.keyboard, {
+            content: { rows: [{ buttons: [button] }] },
+            bot_appid: 'app-id',
+        })
+    })
+
+    test(`${method} omits content for markdown templates`, async () => {
+        const { messages, calls } = createService()
+        await messages[method]('target', segment.markdown('tpl-id', [{ key: 'k', values: 'v' }]))
+        assert.deepEqual(calls.at(-1).data.markdown, {
+            custom_template_id: 'tpl-id',
+            params: [{ key: 'k', values: 'v' }],
+        })
+    })
+}

@@ -13,7 +13,7 @@ export class Guild {
         return this.bot.channelService.getList(this.id)
     }
 
-    createChannel(channelInfo: Omit<Channel.Info, 'id'>) {
+    createChannel(channelInfo: Channel.CreateParam) {
         return this.bot.channelService.create(this.id, channelInfo)
     }
 

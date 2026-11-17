@@ -20,7 +20,7 @@
 | `userId` | `string` | ✅ | 用户 ID |
 | `message` | `Sendable` | ✅ | 消息内容 |
 | `source` | `Quotable` | ❌ | 引用消息 |
-| `options` | `SendOptions` | ❌ | `msgSeq` 指定消息序号，`timeout` 设置发送超时；详见[发送选项](./common.md#发送选项) |
+| `options` | `SendOptions` | ❌ | `msgSeq` 指定消息序号，`timeout` 设置发送超时，`isWakeup` 发送互动召回消息；详见[发送选项](./common.md#发送选项) |
 
 ```typescript
 await bot.user(user_id).send('Hello!')
@@ -34,9 +34,33 @@ await bot.messageService.sendPrivateMessage(user_id, [
     segment.image('https://example.com/image.jpg')
 ])
 
-// 回复私聊消息
+// 被动回复私聊消息（source 为 Quotable：id 为 msg_id，或 event_id，二选一）
 await bot.messageService.sendPrivateMessage(user_id, '这是回复', {
-    message_id: original_message_id
+    id: original_message_id
+})
+
+// 发送结果包含平台时间与引用索引，可用于之后引用机器人自己的消息
+const result = await bot.sendPrivateMessage(user_id, 'Hello')
+console.log(result.timestamp, result.ref_idx)
+```
+
+### 互动召回消息
+
+用户与机器人互动后 30 天内，机器人可向该用户下发一条召回消息。`isWakeup` 与被动回复互斥，开启后 SDK 不会携带 `msg_id` / `event_id`；仅单聊可用。
+
+```typescript
+await bot.sendPrivateMessage(user_id, '好久不见，来看看新功能吧', undefined, { isWakeup: true })
+```
+
+### 输入中状态
+
+在被动回复窗口内展示「对方正在输入」（`msg_type=6`），持续 1-60 秒：
+
+```typescript
+bot.on('message.private.friend', async (event) => {
+    await event.inputNotify(15)        // 等价于 bot.user(event.user_id).sendInputNotify(15, event)
+    const answer = await generate(event.raw_message)
+    await event.reply(answer)
 })
 ```
 
@@ -208,6 +232,9 @@ bot.on('message.private', async (event) => {
     console.log('收到私聊:', event.raw_message)
     console.log('发送者:', event.sender.user_name)
     console.log('用户 ID:', event.user_id)
+    console.log('头像:', event.sender.avatar) // 2026-11-16 起单聊事件携带昵称与头像
+    console.log('消息类型:', event.content_type) // 0 文本，3 卡片，101 并行消息，102 聊天记录，103 引用
+    console.log('引用索引:', event.msg_idx)      // 用于引用回复与去重
     
     // 自动回复
     await event.reply('收到你的私聊了!')
@@ -217,6 +244,23 @@ bot.on('message.private', async (event) => {
 bot.on('message.private.friend', async (event) => {
     console.log('收到好友消息:', event.raw_message)
     await event.reply('Hello, my friend!')
+})
+```
+
+### 好友与订阅事件
+
+```typescript
+// 添加好友：scene 为加好友场景值，scene_param 为分享链接的 callback_data
+bot.on('notice.friend.increase', (event) => {
+    console.log(event.user_id, event.scene, event.scene_param, event.time)
+})
+
+// 订阅消息授权状态变更（SUBSCRIBE_MESSAGE_STATUS）
+bot.on('notice.friend.subscribe', (event) => {
+    for (const item of event.allowed) {
+        console.log('允许订阅', item.template_id, item.subscribe_id)
+    }
+    console.log('拒绝订阅', event.refused.map(item => item.template_id))
 })
 ```
 

@@ -13,6 +13,7 @@ interface ReplyElement {
   type: 'reply'
   id?: string
   event_id?: string
+  ref_idx?: string
 }
 ```
 
@@ -23,12 +24,33 @@ interface ReplyElement {
 | type | string | ✅ | 消息段类型，固定为 `reply` |
 | id | string | ❌ | 被回复消息的 ID |
 | event_id | string | ❌ | 被回复事件的 ID |
+| ref_idx | string | ❌ | 单聊/群聊引用索引（`REFIDX_…`），用于以引用形式展示 |
 
 ::: tip 参数说明
-- 使用 `id` 来回复具体的消息
-- 使用 `event_id` 来回复特定的事件
-- 两个参数都是可选的，但通常至少需要提供其中一个
+- 使用 `id` 来被动回复具体的消息（`msg_id`）
+- 使用 `event_id` 来被动回复特定的事件
+- 单聊/群聊中 `msg_id` 与 `event_id` 二选一，同时提供时 SDK 只发送 `msg_id`
 :::
+
+## 单聊 / 群聊的引用回复
+
+按[官方文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_messages.post.html)，单聊/群聊的引用展示（`message_reference`）需要使用 **REFIDX 引用索引**，而不是 `ROBOT1.0_` 开头的消息 ID：
+
+- 用户发的消息：取消息事件的 `event.msg_idx`（来自 `message_scene.ext` 中的 `msg_idx`）
+- 机器人自己发的消息：取发送结果的 `result.ref_idx`（来自响应 `ext_info.ref_idx`）
+
+```typescript
+bot.on('message.private.friend', async (event) => {
+  // 传入事件对象：SDK 同时设置被动回复 msg_id 与引用索引 event.msg_idx
+  await event.reply([segment.reply(event), '收到！'])
+})
+
+// 引用机器人自己的消息
+const sent = await bot.sendPrivateMessage(user_openid, '第一条')
+await bot.sendPrivateMessage(user_openid, [segment.reply(sent.ref_idx!), '补充说明'])
+```
+
+收到的引用消息（`event.content_type === 103`）会在 `event.ref_msg_idx` 与 `event.source.id` 中给出被引用消息的索引，被引用内容见 `event.msg_elements`。
 
 ## 使用示例
 
@@ -40,28 +62,29 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 回复特定消息
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply('message_id_123'),
   segment.text('收到了，谢谢！')
 ])
 ```
 
-### 带详细信息的回复
+### 传入 Quotable 对象回复
 
 ```typescript
 import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-// 包含更多回复信息
-await bot.client.sendMessage(channelId, [
-  segment.reply('message_id_123', {
-    user_id: 'user_456',
-    content: '原消息内容预览',
-    timestamp: Date.now()
-  }),
+// segment.reply 接收消息 ID 字符串或 Quotable 对象（id / event_id / ref_idx）
+await bot.sendGuildMessage(channelId, [
+  segment.reply({ id: 'message_id_123' }),
   segment.text('这是我的回复内容')
 ])
+
+// 在事件回调中可直接传入事件对象
+bot.on('message.guild', async (event) => {
+  await event.reply([segment.reply(event), segment.text('收到')])
+})
 ```
 
 ### 回复与@组合
@@ -72,7 +95,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 回复消息并@发送者
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply('message_id_123'),
   segment.at('user_456'),
   segment.text(' 你说得对！')
@@ -87,7 +110,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 回复消息并发送图片
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply('message_id_123'),
   segment.text('看看这个：'),
   segment.image('./photo.jpg')
@@ -108,7 +131,7 @@ bot.on('message.guild', async (event) => {
   const content = event.content?.toLowerCase()
   
   if (content?.includes('你好')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text('你好！很高兴见到你 '),
       segment.face(14) // 微笑表情
@@ -135,7 +158,7 @@ bot.on('message.guild', async (event) => {
   const content = event.content?.trim()
   
   if (content && qaDatabase[content]) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text(qaDatabase[content])
     ])
@@ -173,7 +196,7 @@ bot.on('message.guild', async (event) => {
   if (content.includes('之前说什么')) {
     const previousMessage = history[history.length - 2]
     
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text(`你之前说的是: "${previousMessage || '暂无历史记录'}"`)
     ])
@@ -191,7 +214,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 群聊中回复消息
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.reply('message_id_123'),
   segment.text('群友说得对！')
 ])
@@ -199,7 +222,7 @@ await bot.groupService.sendMessage(groupId, [
 // 群聊管理回复
 bot.on('message.group', async (event) => {
   if (event.content?.includes('违规')) {
-    await bot.groupService.sendMessage(event.group_id, [
+    await bot.sendGroupMessage(event.group_id, [
       segment.reply(event.id),
       segment.text('请注意群规，文明交流')
     ])
@@ -215,7 +238,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 私聊中回复消息
-await bot.friendService.sendMessage(userId, [
+await bot.sendPrivateMessage(userId, [
   segment.reply('message_id_123'),
   segment.text('明白了，我会处理的')
 ])
@@ -223,7 +246,7 @@ await bot.friendService.sendMessage(userId, [
 // 私聊客服回复
 bot.on('message.private', async (event) => {
   if (event.content?.includes('咨询')) {
-    await bot.friendService.sendMessage(event.user_id, [
+    await bot.sendPrivateMessage(event.user_id, [
       segment.reply(event.id),
       segment.text('请问有什么可以帮您的吗？')
     ])
@@ -239,7 +262,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 频道中回复消息
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply('message_id_123'),
   segment.text('感谢分享！')
 ])
@@ -247,7 +270,7 @@ await bot.guildService.sendChannelMessage(channelId, [
 // 频道互动回复
 bot.on('message.guild', async (event) => {
   if (event.content?.includes('签到')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text('签到成功！'),
       segment.face(76) // 点赞
@@ -267,15 +290,16 @@ const bot = new Bot(config)
 
 // 根据用户权限回复
 async function conditionalReply(event: any, message: string) {
-  const userRole = await bot.guildService.getMemberRole(event.guild_id, event.author.id)
+  // sender.permissions 含成员身份组 ID：2 管理员，4 频道主，5 子频道管理员
+  const isAdmin = event.sender.permissions.some((role: unknown) => ['2', '4', '5'].includes(String(role)))
   
-  if (userRole === 'admin') {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+  if (isAdmin) {
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text(`管理员您好！${message}`)
     ])
   } else {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text(message)
     ])
@@ -293,7 +317,7 @@ const bot = new Bot(config)
 // 延迟几秒后回复
 async function delayedReply(channelId: string, messageId: string, content: string, delay: number) {
   setTimeout(async () => {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.reply(messageId),
       segment.text(content)
     ])
@@ -318,7 +342,7 @@ const bot = new Bot(config)
 // 分多条消息回复
 async function multiPartReply(channelId: string, messageId: string, parts: string[]) {
   for (let i = 0; i < parts.length; i++) {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       i === 0 ? segment.reply(messageId) : null,
       segment.text(`${i + 1}. ${parts[i]}`)
     ].filter(Boolean))
@@ -394,16 +418,16 @@ const bot = new Bot(config)
 async function safeReply(channelId: string, replyToId: string, content: string) {
   try {
     // 尝试获取被回复的消息
-    const originalMessage = await bot.client.getMessage(channelId, replyToId)
+    const originalMessage = await bot.getGuildMessage(channelId, replyToId)
     
     if (originalMessage) {
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.reply(replyToId),
         segment.text(content)
       ])
     } else {
       // 消息不存在，发送普通消息
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.text(content)
       ])
     }
@@ -411,7 +435,7 @@ async function safeReply(channelId: string, replyToId: string, content: string) 
     console.error('回复消息失败:', error)
     
     // 回退到普通消息
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.text(content)
     ])
   }
@@ -423,8 +447,9 @@ async function safeReply(channelId: string, replyToId: string, content: string) 
 ```typescript
 async function checkReplyPermission(userId: string, channelId: string): Promise<boolean> {
   try {
-    const permissions = await bot.guildService.getMemberPermissions(channelId, userId)
-    return permissions.includes('SEND_MESSAGES')
+    const { permissions } = await bot.getChannelMemberPermission(channelId, userId)
+    // 子频道权限位：1 可查看，2 可管理，4 可发言
+    return (Number(permissions) & 4) !== 0
   } catch (error) {
     return false
   }
@@ -434,7 +459,7 @@ bot.on('message.guild', async (event) => {
   const canReply = await checkReplyPermission(bot.config.app_id, event.channel_id)
   
   if (canReply && event.content?.includes('求助')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text('我来帮您！请详细描述问题。')
     ])
@@ -450,7 +475,7 @@ bot.on('message.guild', async (event) => {
 // ✅ 好的做法 - 回复内容与原消息相关
 bot.on('message.guild', async (event) => {
   if (event.content?.includes('天气')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text('今天天气很好，适合外出活动')
     ])
@@ -459,7 +484,7 @@ bot.on('message.guild', async (event) => {
 
 // ❌ 避免的做法 - 回复内容与原消息无关
 bot.on('message.guild', async (event) => {
-  await bot.guildService.sendChannelMessage(event.channel_id, [
+  await bot.sendGuildMessage(event.channel_id, [
     segment.reply(event.id),
     segment.text('随机回复内容') // 与原消息无关
   ])
@@ -483,7 +508,7 @@ bot.on('message.guild', async (event) => {
   setTimeout(() => recentReplies.delete(key), 30000) // 30秒后允许再次回复
   
   if (event.content?.includes('帮助')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.reply(event.id),
       segment.text('有什么可以帮助您的吗？')
     ])

@@ -326,7 +326,12 @@ export class FileProcessor {
   private withFileType(options: UploadOptions): UploadOptions & { fileType: MediaFileType } {
     return {
       ...options,
-      fileType: options.fileType ?? inferMediaFileType(options.fileName) ?? 1,
+      // 有文件名但扩展名无法识别时按普通文件(4)上传，避免把 pdf 等当作图片；无文件名时沿用图片(1)
+      fileType: options.fileType ?? inferMediaFileType(options.fileName) ?? (hasExtension(options.fileName) ? 4 : 1),
     };
   }
+}
+
+function hasExtension(fileName?: string): boolean {
+  return typeof fileName === 'string' && /\.[a-z0-9]+$/i.test(fileName);
 }

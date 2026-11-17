@@ -83,14 +83,19 @@ export class PrivateMessageStream {
 
         const inputMode = this.options.inputMode ?? 'append'
         const contentRaw = inputMode === 'replace' ? `${this.sentContent}${chunk}` : chunk
+        // is_wakeup（互动召回）与 msg_id / event_id 互斥
+        const wakeup = this.options.isWakeup === true
+        const msgId = wakeup ? undefined : this.options.msgId ?? this.options.source?.id
+        const eventId = wakeup || msgId ? undefined : this.options.eventId ?? this.options.source?.event_id
         const result = await this.sendChunk(compactPayload({
             input_mode: inputMode,
             input_state: inputState,
             index: this.index,
             content_type: this.options.contentType ?? 'text',
             content_raw: contentRaw,
-            msg_id: this.options.msgId ?? this.options.source?.id,
-            event_id: this.options.eventId ?? this.options.source?.event_id,
+            // msg_id 与 event_id 二选一，优先使用消息 ID
+            msg_id: msgId,
+            event_id: eventId,
             stream_msg_id: this.streamMsgId,
             msg_seq: this.options.msgSeq,
             is_wakeup: this.options.isWakeup,

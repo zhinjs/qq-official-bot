@@ -36,10 +36,12 @@ for (const mode of [ReceiverMode.WEBSOCKET, ReceiverMode.WEBHOOK]) {
             '/channels/channel/messages', '/dms/guild/messages',
         ])
         for (const call of fake.calls) {
-            const payload = call.data as { msg_seq: number; msg_id: string; event_id: string }
+            const payload = call.data as { msg_seq: number; msg_id: string; event_id?: string }
             assert.equal(payload.msg_seq, 23)
             assert.equal(payload.msg_id, 'source-id')
-            assert.equal(payload.event_id, 'source-event')
+            // 单聊/群聊的 msg_id 与 event_id 二选一；频道接口保持同时携带
+            const isV2 = call.url.startsWith('/v2/')
+            assert.equal(payload.event_id, isV2 ? undefined : 'source-event')
         }
         assert.deepEqual(timeouts, [3456, 3456, 3456, 3456])
 
