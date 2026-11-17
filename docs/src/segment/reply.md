@@ -13,6 +13,7 @@ interface ReplyElement {
   type: 'reply'
   id?: string
   event_id?: string
+  ref_idx?: string
 }
 ```
 
@@ -23,12 +24,33 @@ interface ReplyElement {
 | type | string | ✅ | 消息段类型，固定为 `reply` |
 | id | string | ❌ | 被回复消息的 ID |
 | event_id | string | ❌ | 被回复事件的 ID |
+| ref_idx | string | ❌ | 单聊/群聊引用索引（`REFIDX_…`），用于以引用形式展示 |
 
 ::: tip 参数说明
-- 使用 `id` 来回复具体的消息
-- 使用 `event_id` 来回复特定的事件
-- 两个参数都是可选的，但通常至少需要提供其中一个
+- 使用 `id` 来被动回复具体的消息（`msg_id`）
+- 使用 `event_id` 来被动回复特定的事件
+- 单聊/群聊中 `msg_id` 与 `event_id` 二选一，同时提供时 SDK 只发送 `msg_id`
 :::
+
+## 单聊 / 群聊的引用回复
+
+按[官方文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_messages.post.html)，单聊/群聊的引用展示（`message_reference`）需要使用 **REFIDX 引用索引**，而不是 `ROBOT1.0_` 开头的消息 ID：
+
+- 用户发的消息：取消息事件的 `event.msg_idx`（来自 `message_scene.ext` 中的 `msg_idx`）
+- 机器人自己发的消息：取发送结果的 `result.ref_idx`（来自响应 `ext_info.ref_idx`）
+
+```typescript
+bot.on('message.private.friend', async (event) => {
+  // 传入事件对象：SDK 同时设置被动回复 msg_id 与引用索引 event.msg_idx
+  await event.reply([segment.reply(event), '收到！'])
+})
+
+// 引用机器人自己的消息
+const sent = await bot.sendPrivateMessage(user_openid, '第一条')
+await bot.sendPrivateMessage(user_openid, [segment.reply(sent.ref_idx!), '补充说明'])
+```
+
+收到的引用消息（`event.content_type === 103`）会在 `event.ref_msg_idx` 与 `event.source.id` 中给出被引用消息的索引，被引用内容见 `event.msg_elements`。
 
 ## 使用示例
 

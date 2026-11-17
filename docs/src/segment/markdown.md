@@ -447,18 +447,18 @@ const gameButtons = segment.button({
   buttons: [
     {
       id: 'start_game',
-      render_data: { label: '开始游戏', style: 3 },
-      action: { type: 0, data: 'start' }
+      render_data: { label: '开始游戏', style: 4 },
+      action: { type: 1, data: 'start' }
     },
     {
       id: 'leaderboard',
       render_data: { label: '排行榜', style: 1 },
-      action: { type: 0, data: 'leaderboard' }
+      action: { type: 1, data: 'leaderboard' }
     },
     {
       id: 'stats',
-      render_data: { label: '个人统计', style: 4 },
-      action: { type: 0, data: 'stats' }
+      render_data: { label: '个人统计', style: 1 },
+      action: { type: 1, data: 'stats' }
     }
   ]
 })
@@ -488,23 +488,23 @@ const ratingButtons = segment.button({
   buttons: [
     {
       id: 'very_satisfied',
-      render_data: { label: '非常满意', style: 3 },
-      action: { type: 0, data: 'rating_5' }
+      render_data: { label: '非常满意', style: 4 },
+      action: { type: 1, data: 'rating_5' }
     },
     {
       id: 'satisfied',
       render_data: { label: '满意', style: 1 },
-      action: { type: 0, data: 'rating_4' }
+      action: { type: 1, data: 'rating_4' }
     },
     {
       id: 'neutral',
       render_data: { label: '一般', style: 0 },
-      action: { type: 0, data: 'rating_3' }
+      action: { type: 1, data: 'rating_3' }
     },
     {
       id: 'dissatisfied',
-      render_data: { label: '不满意', style: 2 },
-      action: { type: 0, data: 'rating_2' }
+      render_data: { label: '不满意', style: 3 },
+      action: { type: 1, data: 'rating_2' }
     }
   ]
 })

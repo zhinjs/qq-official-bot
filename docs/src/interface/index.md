@@ -55,6 +55,7 @@ type Intent =
     | 'DIRECT_MESSAGE'
     // 群成员变更事件
     | 'GROUP_MEMBER'
+    | 'GROUP_MEMBER_EVENT'   // 同 GROUP_MEMBER
     // 私聊与群聊消息事件
     | 'GROUP_AND_C2C_EVENT'
     // 互动事件

@@ -26,7 +26,7 @@ interface Config<T extends ReceiverMode, M extends ApplicationPlatform> {
     guildMemberCache?: boolean | GuildMemberCacheOptions // 频道成员缓存，默认 false
     guildCache?: boolean | GuildCacheOptions             // 频道列表缓存，默认 false
     logLevel?: LogLevel                     // 日志级别，默认 'info'
-    removeAt?: boolean                      // 是否移除消息中的 @机器人，默认 false
+    removeAt?: boolean                      // 是否移除消息中的 @机器人，默认开启；只移除 @机器人自身
     maxRetry?: number                       // 最大重连次数，默认 10
     timeout?: number                        // 请求超时时间(ms)，默认 5000
 
@@ -62,7 +62,7 @@ interface Config<T extends ReceiverMode, M extends ApplicationPlatform> {
 | `guildMemberCache` | `boolean \| GuildMemberCacheOptions` | ❌ | 频道成员列表缓存；`true` 使用内存缓存 | `false` |
 | `guildCache` | `boolean \| GuildCacheOptions` | ❌ | 频道列表缓存；`true` 使用内存缓存 | `false` |
 | `logLevel` | `LogLevel` | ❌ | 日志输出级别 | `'info'` |
-| `removeAt` | `boolean` | ❌ | 自动移除消息中的@机器人 | `false` |
+| `removeAt` | `boolean` | ❌ | 自动移除消息中的 @机器人（不会移除对其他成员的 @），设为 `false` 关闭 | `true` |
 | `maxRetry` | `number` | ❌ | 最大重连次数 | `10` |
 | `timeout` | `number` | ❌ | 请求超时时间(毫秒) | `5000` |
 
@@ -280,8 +280,8 @@ const publicBotIntents = [
 
 // 群机器人配置
 const groupBotIntents = [
-    'GROUP_AND_C2C_EVENT',  // 群@消息与私聊消息
-    'GROUP_MEMBER',         // 群成员进退
+    'GROUP_AND_C2C_EVENT',  // 群@消息、单聊消息、订阅消息授权状态等
+    'GROUP_MEMBER',         // 群成员进退、入群申请（官方文档名称 GROUP_MEMBER_EVENT，两者等价）
 ]
 ```
 

@@ -369,11 +369,17 @@ bot.on('message.group.at', async (event) => {
 
 2026-11-16 起群消息事件额外携带发送者头像 `event.sender.avatar`、群内昵称 `event.sender.member_nickname`，以及跨应用群标识 `event.union_group_openid`（绑定第三方应用时有效）；机器人进退群、群成员增减通知同样提供 `union_group_openid`。
 
+群消息事件的其它字段与能力：
+
+- `event.content_type`：0 文本，3 卡片，101 并行消息，102 聊天记录，103 引用消息；`event.msg_idx` / `event.ref_msg_idx` 为引用索引
+- 消息中的 `<@member_openid>`、`<@all>` 会解析为 `at` 消息段；`removeAt` 只移除 @机器人自身
+- `event.recall()`：机器人为群管理员时可撤回该成员消息
+
 `mentions` 为可选字段，SDK 原样保留网关提供的列表，缺失时为 `undefined`。[群 @ 消息文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/event/group_at_message_create.html)说明其列表不包含机器人自身，因此不能用它作为所有模式下判断是否 @ 机器人的统一依据。
 
 ### 监听群成员变更事件
 
-当群内有成员加入或退出时，会触发 `notice.group.member` 事件（对应官方 `GROUP_MEMBER_ADD` / `GROUP_MEMBER_REMOVE`）。需在 `intents` 中订阅 `GROUP_MEMBER`（`1 << 24`）。
+当群内有成员加入或退出时，会触发 `notice.group.member` 事件（对应官方 `GROUP_MEMBER_ADD` / `GROUP_MEMBER_REMOVE`）。需在 `intents` 中订阅 `GROUP_MEMBER`（`1 << 24`，官方文档中名为 `GROUP_MEMBER_EVENT`，两者均可）。退群事件的 `event.user_openid` 为成员的用户 OpenID（可能为空）。
 
 ```typescript
 const bot = new Bot({
@@ -482,3 +488,13 @@ interface GroupBotState {
 - [QQ 机器人群管理变更记录](https://bot.q.qq.com/wiki/develop/api-v2/changelog.html)
 - [消息格式参考](../interface/index.md#消息类型)
 - [权限配置指南](../config.md#intent-配置)
+
+## 订阅消息授权状态
+
+群维度的订阅模板授权变化会触发 `notice.group.subscribe`（官方 `SUBSCRIBE_MESSAGE_STATUS`，`GROUP_AND_C2C_EVENT` 意图）：
+
+```typescript
+bot.on('notice.group.subscribe', (event) => {
+    console.log(event.group_id, event.allowed.map(item => item.subscribe_id))
+})
+```

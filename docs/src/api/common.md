@@ -109,6 +109,11 @@ await bot.sendGroupMessage(group_id, '第二次回复', { id: original_message_i
 |------|------|------|
 | `msgSeq` | `number` | 请求体中的 `msg_seq`；不传时保留随机生成的行为 |
 | `timeout` | `number` | 发送请求超时，单位毫秒；默认 10000 |
+| `isWakeup` | `boolean` | 作为互动召回消息发送（仅单聊），与被动回复互斥 |
+
+单聊/群聊的 `msg_id` 与 `event_id` 二选一：`source` 同时带有 `id` 和 `event_id` 时，SDK 只发送 `msg_id`（频道接口保持原行为）。
+
+发送结果 `SendResult` 包含：`id`、`timestamp`（平台返回的发送时间，Unix 秒）、`ref_idx`（单聊/群聊引用索引，可用于引用机器人自己的消息）。
 
 同一 `msg_id` 的不同回复由调用方递增 `msgSeq`；同一次发送超时后若决定重试，应复用原来的 `source`、消息内容和 `msgSeq`。SDK 仅透传指定序号，不自动计数或重试。未提供序号时仍使用随机值。
 
