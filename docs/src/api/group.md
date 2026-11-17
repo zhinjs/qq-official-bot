@@ -141,11 +141,9 @@ await bot.group(group_openid).clearMemberCache()
 ```typescript
 const result = await bot.group(group_openid).removeMembers({
     member_openids: ['member-openid-1', 'member-openid-2'],
-    add_to_member_blacklist: true,
 })
 
-console.log(result.remove_members_result)
-console.log(result.add_to_member_blacklist_fail_openids)
+console.log(result.remove_members_result) // 'success'
 
 // 等价的 Bot 快捷方法
 await bot.removeGroupMembers(group_openid, {
@@ -153,7 +151,7 @@ await bot.removeGroupMembers(group_openid, {
 })
 ```
 
-单次最多移除 20 名成员。开启 `add_to_member_blacklist` 后，应检查返回的 `add_to_member_blacklist_fail_openids`。
+单次最多移除 20 名成员。官方文档当前未列出 `add_to_member_blacklist` 参数，如需移除后拉黑，请再调用下方的群黑名单接口。
 
 ### 群黑名单
 

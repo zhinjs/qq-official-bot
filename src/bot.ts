@@ -912,6 +912,12 @@ export namespace Bot {
         id: string
         username: string
         avatar: string
+        /** 是否为机器人 */
+        bot?: boolean
+        /** 机器人分享链接 */
+        share_url?: string
+        /** 机器人欢迎语 */
+        welcome_msg?: string
         union_openid?: string
         union_user_account?: string
     }

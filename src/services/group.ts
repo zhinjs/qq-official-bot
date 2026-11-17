@@ -63,13 +63,20 @@ export interface GroupMemberList {
 }
 
 export interface RemoveGroupMembersOptions {
+    /** 需要移除的成员 member_openid 列表，单次最多 20 个。 */
     member_openids: string[];
+    /**
+     * 移除时同时拉黑。官方文档当前未列出该字段，平台可能忽略；
+     * 稳定的拉黑方式请使用 updateMemberBlacklist / 入群审批的 add_to_member_blacklist。
+     */
     add_to_member_blacklist?: boolean;
 }
 
 export interface RemoveGroupMembersResult {
+    /** 成功时返回 success。 */
     remove_members_result: 'success' | string;
-    add_to_member_blacklist_fail_openids: string[];
+    /** 拉黑失败的成员，仅在传入 add_to_member_blacklist 且平台返回时存在。 */
+    add_to_member_blacklist_fail_openids?: string[];
 }
 
 export interface GroupBlacklistUser {
@@ -195,7 +202,8 @@ export interface JoinApprovalStrategyList {
 
 export interface CreateJoinApprovalStrategyOptions {
     group_openids?: string[];
-    group_ids?: string[];
+    /** QQ 群号列表（官方类型为 uint64），与 group_openids 互斥。 */
+    group_ids?: Array<number | string>;
     is_enable?: JoinApprovalStrategyState;
     expire_at?: string;
     remark?: string;
@@ -215,7 +223,8 @@ export interface UpdateJoinApprovalStrategyResult {
 export interface JoinApprovalGroupAction {
     op: 'add' | 'del';
     group_openids?: string[];
-    group_ids?: string[];
+    /** QQ 群号列表（官方类型为 uint64），与 group_openids 互斥。 */
+    group_ids?: Array<number | string>;
 }
 
 export interface UpdateJoinApprovalStrategyOptions {
