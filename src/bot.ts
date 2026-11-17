@@ -322,8 +322,13 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param guild_id
      * @param role
      */
-    async creatGuildRole(guild_id: string, role: RoleCreateParam) {
+    async createGuildRole(guild_id: string, role: RoleCreateParam) {
         return this.guild(guild_id).createRole(role)
+    }
+
+    /** @deprecated 拼写错误，请使用 createGuildRole */
+    async creatGuildRole(guild_id: string, role: RoleCreateParam) {
+        return this.createGuildRole(guild_id, role)
     }
 
     /**
