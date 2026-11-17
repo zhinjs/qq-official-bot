@@ -21,13 +21,14 @@ import {
     NoticeEvent,
     PostChangeNoticeEvent,
     ReplyChangeNoticeEvent,
+    SubscribeStatusNoticeEvent,
     ThreadChangeNoticeEvent
 } from "@/events/notice";
 import {ReceiverMode} from "@/receivers";
 import {ApplicationPlatform} from "@/receivers/middleware";
 
 export * from "./message"
-export { GroupJoinRequestNoticeEvent } from './notice'
+export { GroupJoinRequestNoticeEvent, SubscribeStatusNoticeEvent } from './notice'
 
 export type EventParser<T extends keyof EventMap = keyof EventMap> = (this: Bot<ReceiverMode, ApplicationPlatform>, event: T, payload: Dict) => Parameters<EventMap[T]>[0]
 
@@ -40,7 +41,7 @@ export type EventRegistration = {
 }
 
 function interactionName(payload: Dict): string {
-    switch (payload.scene) {
+    switch (ActionNoticeEvent.resolveScene(payload)) {
         case 'c2c': return 'notice.friend.action'
         case 'group': return 'notice.group.action'
         case 'guild': return 'notice.guild.action'
@@ -64,6 +65,13 @@ export const EVENT_REGISTRY = [
         parser: ActionNoticeEvent.parse,
         resolve: interactionName,
         also: ['notice.friend.action', 'notice.group.action', 'notice.guild.action'] as const,
+    },
+    {
+        gateway: 'SUBSCRIBE_MESSAGE_STATUS',
+        name: 'notice',
+        parser: SubscribeStatusNoticeEvent.parse,
+        resolve: (payload: Dict) => payload.group_openid ? 'notice.group.subscribe' : 'notice.friend.subscribe',
+        also: ['notice.friend.subscribe', 'notice.group.subscribe'] as const,
     },
     { gateway: 'FRIEND_ADD', name: 'notice.friend.increase', parser: FriendChangeNoticeEvent.parse },
     { gateway: 'FRIEND_DEL', name: 'notice.friend.decrease', parser: FriendChangeNoticeEvent.parse },
@@ -151,7 +159,9 @@ export interface EventMap {
 
     'notice'(e: NoticeEvent): void
 
-    'notice.friend'(e: FriendActionNoticeEvent | FriendChangeNoticeEvent | FriendReceiveNoticeEvent): void
+    'notice.friend'(e: FriendActionNoticeEvent | FriendChangeNoticeEvent | FriendReceiveNoticeEvent | SubscribeStatusNoticeEvent): void
+
+    'notice.friend.subscribe'(e: SubscribeStatusNoticeEvent): void
 
     'notice.friend.action'(e: FriendActionNoticeEvent): void
 
@@ -165,7 +175,9 @@ export interface EventMap {
     'notice.reaction.add'(e:MessageReactionNoticeEvent):void
     'notice.reaction.remove'(e: MessageReactionNoticeEvent): void
 
-    'notice.group'(e: ActionNoticeEvent | GroupChangeNoticeEvent | GroupMemberChangeNoticeEvent | GroupReceiveNoticeEvent | GroupJoinRequestNoticeEvent): void
+    'notice.group'(e: ActionNoticeEvent | GroupChangeNoticeEvent | GroupMemberChangeNoticeEvent | GroupReceiveNoticeEvent | GroupJoinRequestNoticeEvent | SubscribeStatusNoticeEvent): void
+
+    'notice.group.subscribe'(e: SubscribeStatusNoticeEvent): void
 
     'notice.group.increase'(e: GroupChangeNoticeEvent): void
 

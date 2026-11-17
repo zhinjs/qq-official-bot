@@ -162,6 +162,14 @@ export namespace Channel {
         permissions?: string
     }
 
+    /** 创建子频道的请求参数（POST /guilds/{guild_id}/channels），字段均可选。 */
+    export type CreateParam = Partial<Pick<Info,
+        'name' | 'type' | 'sub_type' | 'position' | 'parent_id' | 'private_type' | 'speak_permission' | 'application_id'
+    >> & {
+        /** 子频道私密类型为指定成员时的成员 ID 列表 */
+        private_user_ids?: string[]
+    }
+
     export type ApiInfo = Omit<Info, 'id' | 'name'> & {
         channel_id: string
         channel_name: string

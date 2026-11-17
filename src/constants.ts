@@ -89,6 +89,7 @@ export enum Intends {
     GUILD_MESSAGE_REACTIONS = 1 << 10, // 频道消息表态事件
     DIRECT_MESSAGE = 1 << 12, // 频道私信事件
     GROUP_MEMBER = 1 << 24, // 群成员变更事件
+    GROUP_MEMBER_EVENT = 1 << 24, // 同 GROUP_MEMBER，官方文档中的名称
     GROUP_AND_C2C_EVENT = 1 << 25, // 私聊与群聊消息事件
     INTERACTION = 1 << 26, // 互动事件
     MESSAGE_AUDIT = 1 << 27, // 消息审核事件
@@ -110,6 +111,7 @@ export type Intent =
     | 'DIRECT_MESSAGE'
     // 群成员变更事件
     | 'GROUP_MEMBER'
+    | 'GROUP_MEMBER_EVENT'
     // 私聊与群聊消息事件
     | 'GROUP_AND_C2C_EVENT'
     // 互动事件
@@ -146,6 +148,7 @@ export enum PrivateType {
 }
 
 export enum SpeakPermission {
+    Invalid = 0,// 无效
     All = 1,// 所有人
     Some = 2,// 频道主、管理员以及指定成员
 }
