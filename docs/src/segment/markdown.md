@@ -232,7 +232,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 发送基础 Markdown
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown(`
 # 欢迎使用 QQ 机器人
 
@@ -266,7 +266,7 @@ ${content}
 **发布时间：** ${new Date().toLocaleString()}
   `)
   
-  await bot.client.sendMessage(channelId, [markdown])
+  await bot.sendGuildMessage(channelId, [markdown])
 }
 
 // 使用示例
@@ -305,7 +305,7 @@ async function sendDataReport(channelId: string, data: any) {
 > 数据更新时间：${new Date().toLocaleString()}
   `)
   
-  await bot.client.sendMessage(channelId, [markdown])
+  await bot.sendGuildMessage(channelId, [markdown])
 }
 ```
 
@@ -352,7 +352,7 @@ const helpMarkdown = segment.markdown(`
 如有问题，请联系管理员。
 `)
 
-await bot.client.sendMessage(channelId, [helpMarkdown])
+await bot.sendGuildMessage(channelId, [helpMarkdown])
 ```
 
 ## 模板系统
@@ -375,7 +375,7 @@ const templateMarkdown = segment.markdown({
   ]
 })
 
-await bot.client.sendMessage(channelId, [templateMarkdown])
+await bot.sendGuildMessage(channelId, [templateMarkdown])
 ```
 
 ### 动态模板生成
@@ -418,7 +418,7 @@ const userData = {
   recentActivities: ['发布了新帖子', '回答了问题', '获得了点赞']
 }
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown(generateUserCard(userData))
 ])
 ```
@@ -463,7 +463,7 @@ const gameButtons = segment.button({
   ]
 })
 
-await bot.client.sendMessage(channelId, [contentMarkdown, gameButtons])
+await bot.sendGuildMessage(channelId, [contentMarkdown, gameButtons])
 ```
 
 ### 交互式问卷
@@ -509,7 +509,7 @@ const ratingButtons = segment.button({
   ]
 })
 
-await bot.client.sendMessage(channelId, [surveyMarkdown, ratingButtons])
+await bot.sendGuildMessage(channelId, [surveyMarkdown, ratingButtons])
 ```
 
 ## 高级功能
@@ -558,7 +558,7 @@ setInterval(async () => {
   serverStatus.disk = Math.floor(Math.random() * 100)
   serverStatus.lastUpdate = new Date()
   
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.markdown(generateStatusMarkdown())
   ])
 }, 30000)
@@ -618,7 +618,7 @@ ${MarkdownProcessor.createTable(
 )}
 `
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown(processedMarkdown)
 ])
 ```
@@ -674,14 +674,14 @@ const badStyle = segment.markdown(`
 
 ```typescript
 try {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.markdown(markdownContent)
   ])
 } catch (error) {
   console.error('发送 Markdown 失败:', error)
   
   // 发送纯文本备用方案
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.text('消息发送失败，以下是纯文本版本：\n' + 
                  markdownContent.replace(/[*_`~#]/g, ''))
   ])

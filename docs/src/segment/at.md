@@ -60,7 +60,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // @单个用户
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.text(' 你好！')
 ])
@@ -102,7 +102,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // @多个用户
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.text(' '),
   segment.at('987654321'),
@@ -114,7 +114,7 @@ await bot.client.sendMessage(channelId, [
 const userIds = ['123456789', '987654321', '111222333']
 const atElements = userIds.map(id => segment.at(id))
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   ...atElements,
   segment.text(' 大家一起讨论这个问题')
 ])
@@ -131,13 +131,13 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 群聊中@用户
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.at('123456789'),
   segment.text(' 群友你好！')
 ])
 
 // @群管理员
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.at('admin_user_id'),
   segment.text(' 管理员请处理举报')
 ])
@@ -151,7 +151,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 私聊中一般不使用@，但在某些情况下可能有用
-await bot.friendService.sendMessage(userId, [
+await bot.sendPrivateMessage(userId, [
   segment.text('转发消息：'),
   segment.at('original_sender_id'),
   segment.text(' 说了这句话')
@@ -166,13 +166,13 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 频道中@用户
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('user_id'),
   segment.text(' 欢迎加入频道！')
 ])
 
 // 频道公告@全体
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('all'),
   segment.text(' 频道规则更新，请查看置顶消息')
 ])
@@ -190,7 +190,7 @@ const bot = new Bot(config)
 // 监听消息事件并@发送者
 bot.on('message.guild', async (event) => {
   if (event.content === 'ping') {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.at(event.author.id),
       segment.text(' pong!')
     ])
@@ -207,22 +207,14 @@ const bot = new Bot(config)
 
 async function sendAtAllMessage(channelId: string, message: string) {
   try {
-    // 检查是否有@全体权限
-    const permissions = await bot.guildService.getChannelPermissions(channelId)
-    
-    if (permissions.mention_everyone) {
-      await bot.guildService.sendChannelMessage(channelId, [
-        segment.at('all'),
-        segment.text(` ${message}`)
-      ])
-    } else {
-      console.log('没有@全体成员的权限')
-      await bot.guildService.sendChannelMessage(channelId, [
-        segment.text(message)
-      ])
-    }
+    await bot.sendGuildMessage(channelId, [
+      segment.at('all'),
+      segment.text(` ${message}`)
+    ])
   } catch (error) {
-    console.error('发送@全体消息失败:', error)
+    // 没有 @全体成员 权限时平台会返回错误，降级为普通消息
+    console.error('发送@全体消息失败，改为普通消息:', error)
+    await bot.sendGuildMessage(channelId, segment.text(message))
   }
 }
 ```
@@ -245,7 +237,7 @@ async function mentionMultipleUsers(channelId: string, userIds: string[], messag
   
   mentions.push(segment.text(message))
   
-  await bot.client.sendMessage(channelId, mentions)
+  await bot.sendGuildMessage(channelId, mentions)
 }
 
 // 使用示例
@@ -263,25 +255,25 @@ const bot = new Bot(config)
 async function smartMention(channelId: string, userId: string, message: string) {
   try {
     // 检查用户是否在当前频道/群组中
-    const memberInfo = await bot.client.getChannelMember(channelId, userId)
+    const memberInfo = await bot.getChannelMemberPermission(channelId, userId)
     
     if (memberInfo) {
       // 用户在频道中，可以@
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.at(userId),
         segment.text(` ${message}`)
       ])
       // 实际发送: { "content": "<@用户ID> 消息内容" }
     } else {
       // 用户不在频道中，发送普通消息
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.text(`消息给 ${userId}: ${message}（用户不在当前频道）`)
       ])
     }
   } catch (error) {
     // 获取用户信息失败，仍然尝试@
     console.warn('获取用户信息失败，尝试直接@:', error)
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at(userId),
       segment.text(` ${message}`)
     ])
@@ -302,13 +294,13 @@ async function timeBasedMention(channelId: string, message: string) {
   
   // 工作时间(9-18点)才@全体，避免打扰
   if (hour >= 9 && hour <= 18) {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at('all'),
       segment.text(` ${message}`)
     ])
     // 实际发送: { "content": "<qqbot-at-everyone /> 消息内容" }
   } else {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.text(`🔔 ${message} (非工作时间，未@全体)`)
     ])
   }
@@ -332,7 +324,7 @@ async function priorityBasedMention(channelId: string, message: string, priority
   }
   
   elements.push(segment.text(message))
-  await bot.client.sendMessage(channelId, elements)
+  await bot.sendGuildMessage(channelId, elements)
 }
 
 ### @消息的防滥用
@@ -356,7 +348,7 @@ async function rateLimitedMention(channelId: string, userId: string, message: st
     return
   }
   
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.at(userId),
     segment.text(` ${message}`)
   ])
@@ -384,7 +376,7 @@ bot.on('message.guild', async (event) => {
     console.log('机器人被@了')
     
     // 回复@消息
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.at(event.author.id),
       segment.text(' 我收到了你的@消息！')
     ])
@@ -499,20 +491,20 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // ✅ 好的做法：礼貌@用户
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at(userId),
   segment.text(' 你好，请问有时间讨论一下项目进展吗？')
 ])
 // 实际发送: { "content": "<@用户ID> 你好，请问有时间讨论一下项目进展吗？" }
 
 // ✅ 好的做法：@时提供上下文
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at(userId),
   segment.text(' 关于昨天提到的API设计问题，我有一些想法想和你交流')
 ])
 
 // ❌ 避免的做法：重复@骚扰
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at(userId),
   segment.at(userId),
   segment.at(userId),
@@ -520,7 +512,7 @@ await bot.client.sendMessage(channelId, [
 ])
 
 // ❌ 避免的做法：无意义@
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at(userId),
   segment.text(' .')
 ])
@@ -537,7 +529,7 @@ const bot = new Bot(config)
 const appropriateScenarios = {
   // 重要系统通知
   systemNotice: async (channelId: string, message: string) => {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at('all'),
       segment.text(` 🚨 系统通知: ${message}`)
     ])
@@ -545,7 +537,7 @@ const appropriateScenarios = {
   
   // 紧急事件
   emergency: async (channelId: string, message: string) => {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at('all'),
       segment.text(` ⚠️ 紧急通知: ${message}`)
     ])
@@ -553,7 +545,7 @@ const appropriateScenarios = {
   
   // 重要投票或决策
   voting: async (channelId: string, message: string) => {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at('all'),
       segment.text(` 📊 重要投票: ${message}`)
     ])
@@ -579,13 +571,13 @@ async function smartAtAll(channelId: string, message: string, priority: 'low' | 
   const shouldAtAll = priority === 'urgent' || (priority === 'high' && isWorkingHours)
   
   if (shouldAtAll) {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at('all'),
       segment.text(` ${message}`)
     ])
   } else {
     // 使用其他方式通知
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.text(`📢 ${message}`)
     ])
   }
@@ -603,7 +595,7 @@ const bot = new Bot(config)
 async function sendMentionWithRetry(channelId: string, userId: string, message: string, maxRetries = 3): Promise<boolean> {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.at(userId),
         segment.text(` ${message}`)
       ])
@@ -698,7 +690,7 @@ class MentionManager {
     if (respectCooldown && urgency !== 'high' && !this.shouldMentionUser(userId)) {
       if (fallbackToNormal) {
         // 发送普通消息而不是@
-        await bot.client.sendMessage(channelId, [
+        await bot.sendGuildMessage(channelId, [
           segment.text(`消息给用户 ${userId}: ${message}`)
         ])
         console.log('在冷却期内，发送普通消息替代@')
@@ -710,7 +702,7 @@ class MentionManager {
     }
     
     try {
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.at(userId),
         segment.text(` ${message}`)
       ])
@@ -723,7 +715,7 @@ class MentionManager {
       
       if (fallbackToNormal) {
         // 失败时发送普通消息
-        await bot.client.sendMessage(channelId, [
+        await bot.sendGuildMessage(channelId, [
           segment.text(`消息给用户 ${userId}: ${message}`)
         ])
       }
@@ -760,27 +752,27 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 与文本消息段组合
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.text(' 你好，请查看这个重要信息')
 ])
 
 // 与图片消息段组合
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.text(' 请看这张图片：'),
   segment.image('/path/to/image.jpg')
 ])
 
 // 与回复消息段组合
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply(originalMessageId),
   segment.at('123456789'),
   segment.text(' 关于你刚才的问题')
 ])
 
 // 与表情消息段组合
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.text(' '),
   segment.face(1), // 微笑表情
@@ -788,7 +780,7 @@ await bot.client.sendMessage(channelId, [
 ])
 
 // 与多个@消息段组合
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.text(' '),
   segment.at('987654321'),
@@ -800,7 +792,7 @@ await bot.client.sendMessage(channelId, [
 
 ```typescript
 // 与Markdown消息段组合（仅频道支持）
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.markdown({
     content: '# 重要通知\n请查看新的项目要求'
@@ -808,7 +800,7 @@ await bot.guildService.sendChannelMessage(channelId, [
 ])
 
 // 与ARK消息段组合（仅频道支持）
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.ark({
     template_id: 1,
@@ -822,12 +814,12 @@ await bot.guildService.sendChannelMessage(channelId, [
 ```typescript
 // 避免：单独发送@消息段（缺少内容）
 // 这样的消息可能被视为无意义
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789')
 ])
 
 // 避免：过多@消息段（可能被视为骚扰）
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.at('123456789'),
   segment.at('123456789'),
   segment.at('123456789'),
@@ -839,7 +831,7 @@ await bot.client.sendMessage(channelId, [
 
 ```typescript
 // 建议的消息段顺序
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   // 1. 回复段（如果有）
   segment.reply(messageId),
   
@@ -881,13 +873,13 @@ async function efficientBatchMention(channelId: string, userIds: string[], messa
   elements.push(segment.text(` ${message}`))
   
   // 一次性发送
-  await bot.client.sendMessage(channelId, elements)
+  await bot.sendGuildMessage(channelId, elements)
 }
 
 // ❌ 不推荐：多条消息分别发送
 async function inefficientBatchMention(channelId: string, userIds: string[], message: string) {
   for (const userId of userIds) {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at(userId),
       segment.text(` ${message}`)
     ])
@@ -916,7 +908,7 @@ class MentionCache {
     
     // 缓存过期或不存在，重新检查
     try {
-      const member = await bot.client.getChannelMember(channelId, userId)
+      const member = await bot.getChannelMemberPermission(channelId, userId)
       const isValid = !!member
       
       this.userCache.set(cacheKey, { isValid, lastCheck: now })
@@ -946,7 +938,7 @@ async function cachedMention(channelId: string, userId: string, message: string)
   const canMention = await mentionCache.canMentionUser(channelId, userId)
   
   if (canMention) {
-    await bot.client.sendMessage(channelId, [
+    await bot.sendGuildMessage(channelId, [
       segment.at(userId),
       segment.text(` ${message}`)
     ])
@@ -982,7 +974,7 @@ class MentionMonitor {
     const startTime = Date.now()
     
     try {
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.at(userId),
         segment.text(` ${message}`)
       ])

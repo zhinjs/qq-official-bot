@@ -129,24 +129,21 @@ export type Sendable =
 
 ```typescript
 // 发送纯文本
-await bot.sendMessage(channelId, "这是一条文本消息")
+await bot.sendGuildMessage(channelId, "这是一条文本消息")
 
 // 发送文本消息段
-await bot.sendMessage(channelId, {
-    type: "text",
-    text: "这是一条文本消息"
-})
+await bot.sendGuildMessage(channelId, segment.text("这是一条文本消息"))
 ```
 
 ### 组合消息
 
 ```typescript
 // 文本 + 表情 + @提及
-await bot.sendMessage(channelId, [
-    { type: "text", text: "你好 " },
-    { type: "at", user_id: "123456" },
-    { type: "text", text: " " },
-    { type: "face", id: "1" }
+await bot.sendGuildMessage(channelId, [
+    segment.text("你好 "),
+    segment.at("123456"),
+    segment.text(" "),
+    segment.face(1)
 ])
 ```
 
@@ -154,9 +151,9 @@ await bot.sendMessage(channelId, [
 
 ```typescript
 // 回复 + 图片
-await bot.sendMessage(channelId, [
-    { type: "reply", message_id: "原消息ID" },
-    { type: "image", file: "https://example.com/image.jpg" }
+await bot.sendGuildMessage(channelId, [
+    segment.reply("原消息ID"),
+    segment.image("https://example.com/image.jpg")
 ])
 ```
 
@@ -167,8 +164,8 @@ await bot.sendMessage(channelId, [
 const result = await bot.messageService.sendGuildMessage(
     channelId,
     [
-        { type: "text", text: "查看这张图片：" },
-        { type: "image", file: "local_image.jpg" }
+        segment.text("查看这张图片："),
+        segment.image("local_image.jpg")
     ]
 )
 
@@ -218,10 +215,10 @@ const bot = new Bot({
 
 ```typescript
 // 文本消息
-await bot.sendMessage(channelId, "Hello, World!")
+await bot.sendGuildMessage(channelId, "Hello, World!")
 
 // 图片消息
-await bot.sendMessage(channelId, {
+await bot.sendGuildMessage(channelId, {
     type: "image",
     file: "https://example.com/image.jpg"
 })
@@ -230,11 +227,11 @@ await bot.sendMessage(channelId, {
 ### 3. 发送复合消息
 
 ```typescript
-await bot.sendMessage(channelId, [
-    { type: "text", text: "欢迎新成员 " },
-    { type: "at", user_id: newMemberId },
-    { type: "text", text: "！" },
-    { type: "face", id: "1" }
+await bot.sendGuildMessage(channelId, [
+    segment.text("欢迎新成员 "),
+    segment.at(newMemberId),
+    segment.text("！"),
+    segment.face(1)
 ])
 ```
 
@@ -247,7 +244,7 @@ const message = new MessageBuilder()
     .reply(sourceMessage)
     .build()
 
-await bot.sendMessage(channelId, message)
+await bot.sendGuildMessage(channelId, message)
 ```
 
 ## 🔧 高级功能
@@ -258,25 +255,25 @@ await bot.sendMessage(channelId, message)
 // 创建消息模板
 function createWelcomeMessage(userId: string, userName: string) {
     return [
-        { type: "text", text: `欢迎 ` },
-        { type: "at", user_id: userId },
-        { type: "text", text: ` (${userName}) 加入频道！` },
-        { type: "face", id: "1" }
+        segment.text(`欢迎 `),
+        segment.at(userId),
+        segment.text(` (${userName}) 加入频道！`),
+        segment.face(1)
     ]
 }
 
 // 使用模板
-await bot.sendMessage(channelId, createWelcomeMessage("123", "张三"))
+await bot.sendGuildMessage(channelId, createWelcomeMessage("123", "张三"))
 ```
 
 ### 条件消息
 
 ```typescript
 function createConditionalMessage(hasImage: boolean, text: string, imageUrl?: string) {
-    const elements = [{ type: "text", text }]
+    const elements = [segment.text(text)]
     
     if (hasImage && imageUrl) {
-        elements.push({ type: "image", file: imageUrl })
+        elements.push(segment.image(imageUrl))
     }
     
     return elements

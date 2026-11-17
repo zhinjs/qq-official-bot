@@ -71,7 +71,7 @@ const bot = new Bot({
 })
 
 // 发送基础Embed消息
-await bot.message.send(channelId, [{
+await bot.sendGuildMessage(channelId, [{
   type: 'embed',
   title: '服务器状态',
   prompt: '当前系统状态',
@@ -86,23 +86,24 @@ await bot.message.send(channelId, [{
 }])
 ```
 
-### 使用服务模块
+### 使用 segment.embed
 
 ```typescript
-// 通过服务模块创建Embed消息
-const embedMessage = await bot.services.message.createEmbed({
-  title: '用户信息',
-  fields: [
-    { name: '用户名', value: 'John Doe' },
-    { name: '等级', value: 'VIP' },
-    { name: '积分', value: '1250' }
-  ],
-  thumbnail: {
-    url: 'https://example.com/avatar.jpg'
-  }
-})
+import { segment } from 'qq-official-bot'
 
-await bot.services.channel.sendMessage(channelId, [embedMessage])
+// segment.embed(title, prompt, thumbnail, fields)
+const embedMessage = segment.embed(
+  '用户信息',
+  '用户信息卡片',
+  { url: 'https://example.com/avatar.jpg' },
+  [
+    { name: '用户名：John Doe' },
+    { name: '等级：VIP' },
+    { name: '积分：1250' },
+  ],
+)
+
+await bot.sendGuildMessage(channelId, embedMessage)
 ```
 
 ## 高级功能
@@ -175,7 +176,7 @@ const statusEmbed = new EmbedBuilder()
   .addField('📊 总体状态', '系统运行正常')
   .build()
 
-await bot.message.send(channelId, [statusEmbed])
+await bot.sendGuildMessage(channelId, [statusEmbed])
 ```
 
 ### 动态内容Embed
@@ -265,11 +266,11 @@ const embedManager = new DynamicEmbedManager(bot)
 
 // 发送用户资料
 const userEmbed = await embedManager.createUserProfileEmbed(userId)
-await bot.message.send(channelId, [userEmbed])
+await bot.sendGuildMessage(channelId, [userEmbed])
 
 // 发送服务器状态
 const statsEmbed = await embedManager.createServerStatsEmbed()
-await bot.message.send(channelId, [statsEmbed])
+await bot.sendGuildMessage(channelId, [statsEmbed])
 ```
 
 ### 分页Embed
@@ -306,7 +307,7 @@ class PaginatedEmbedManager {
         embed.addField('📄 页面信息', `第 ${page + 1} 页，共 ${totalPages} 页`)
       }
       
-      await bot.message.send(channelId, [embed.build()])
+      await bot.sendGuildMessage(channelId, [embed.build()])
       
       // 分页间延迟，避免消息发送过快
       if (page < totalPages - 1) {
@@ -420,7 +421,7 @@ class EmbedValidationService {
       throw new Error(`Embed验证失败: ${errors.join(', ')}`)
     }
     
-    return this.bot.message.send(channelId, [embed])
+    return this.bot.sendGuildMessage(channelId, [embed])
   }
 }
 ```
@@ -505,7 +506,7 @@ const combinedMessage = [
   }
 ] as const
 
-await bot.message.send(channelId, combinedMessage)
+await bot.sendGuildMessage(channelId, combinedMessage)
 ```
 
 ## 最佳实践

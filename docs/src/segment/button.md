@@ -153,7 +153,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 必须与 markdown 一起发送
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('请选择操作：'),
   segment.button({
     id: 'confirm_btn',
@@ -196,7 +196,7 @@ const buttons = [
   }
 ]
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('你确定要执行此操作吗？'),
   segment.button({ buttons })
 ])
@@ -237,7 +237,7 @@ const secondRow = [
   }
 ]
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('请选择操作：'),
   segment.button({ buttons: firstRow }),
   segment.button({ buttons: secondRow })
@@ -270,7 +270,7 @@ const adminButton = segment.button({
   }
 })
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.markdown('管理面板'),
   adminButton
 ])
@@ -367,7 +367,7 @@ async function sendGameInterface(channelId: string, userId: string) {
     }
   ]
   
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.markdown(`## 🎮 游戏中心\n当前等级: ${gameState.level}\n分数: ${gameState.score}`),
     segment.button({ buttons })
   ])
@@ -390,7 +390,7 @@ bot.on('notice.guild.action', async (event) => {
       
     case 'view_score':
       const currentState = gameStates.get(userId) || { score: 0, level: 1 }
-      await bot.client.sendMessage(channelId, [
+      await bot.sendGuildMessage(channelId, [
         segment.text(`你的当前分数：${currentState.score}`)
       ])
       break
@@ -536,7 +536,7 @@ bot.on('notice.guild.action', async (event) => {
     console.error('按钮处理错误:', error)
     
     // 发送错误提示
-    await bot.client.sendMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.text('操作失败，请稍后重试。')
     ])
   }

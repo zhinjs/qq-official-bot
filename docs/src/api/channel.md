@@ -231,7 +231,7 @@ if (result.success) {
 
 将指定消息设为置顶。
 
-**方法名**: `bot.channelService.addPin(channelId, messageId)`
+**方法名**: `bot.channelService.pinMessage(channelId, messageId)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
@@ -240,14 +240,14 @@ if (result.success) {
 | `messageId` | `string` | ✅ | 消息 ID |
 
 ```typescript
-await bot.channelService.addPin(channel_id, message_id)
+await bot.channelService.pinMessage(channel_id, message_id)
 ```
 
 ### 取消置顶消息
 
 取消指定消息的置顶状态。
 
-**方法名**: `bot.channelService.removePin(channelId, messageId)`
+**方法名**: `bot.channelService.unpinMessage(channelId, messageId)`
 
 **参数**:
 | 参数名 | 类型 | 必填 | 描述 |
@@ -256,7 +256,7 @@ await bot.channelService.addPin(channel_id, message_id)
 | `messageId` | `string` | ✅ | 消息 ID |
 
 ```typescript
-await bot.channelService.removePin(channel_id, message_id)
+await bot.channelService.unpinMessage(channel_id, message_id)
 ```
 
 ## 🔔 公告管理
@@ -276,23 +276,6 @@ await bot.channelService.removePin(channel_id, message_id)
 
 ```typescript
 await bot.setChannelAnnounce(guild_id, channel_id, message_id)
-```
-
-### 取消子频道公告
-
-取消指定子频道的公告。
-
-**方法名**: `bot.deleteChannelAnnounce(guildId, channelId, messageId)`
-
-**参数**:
-| 参数名 | 类型 | 必填 | 描述 |
-|-------|------|------|------|
-| `guildId` | `string` | ✅ | 频道 ID |
-| `channelId` | `string` | ✅ | 子频道 ID |
-| `messageId` | `string` | ✅ | 消息 ID |
-
-```typescript
-await bot.deleteChannelAnnounce(guild_id, channel_id, message_id)
 ```
 
 ## 🎵 语音频道管理

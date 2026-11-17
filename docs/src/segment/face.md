@@ -90,12 +90,12 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 发送微笑表情
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.face(14)
 ])
 
 // 带名称的表情
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.face(14, '微笑')
 ])
 ```
@@ -108,14 +108,14 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 文字加表情
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('今天心情很好'),
   segment.face(14),
   segment.face(1)
 ])
 
 // 表情穿插在文字中
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('工作完成了'),
   segment.face(76),
   segment.text('可以休息了'),
@@ -131,7 +131,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 表情组合表达情感
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.face(70),  // 鼓掌
   segment.face(76),  // 点赞
   segment.face(66),  // 爱心
@@ -151,12 +151,12 @@ bot.on('message.guild', async (event) => {
   const content = event.content?.toLowerCase()
   
   if (content?.includes('好消息')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.face(70),  // 鼓掌
       segment.face(76)   // 点赞
     ])
   } else if (content?.includes('难过')) {
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.face(71),  // 祈祷
       segment.face(13)   // 安慰
     ])
@@ -174,13 +174,13 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 群聊中发送表情
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.text('群友们好'),
   segment.face(14)
 ])
 
 // 群聊互动表情
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.face(70),  // 鼓掌
   segment.text('欢迎新群友')
 ])
@@ -194,7 +194,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 私聊中发送表情
-await bot.friendService.sendMessage(userId, [
+await bot.sendPrivateMessage(userId, [
   segment.text('谢谢你的帮助'),
   segment.face(66)   // 爱心
 ])
@@ -208,7 +208,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 频道中发送表情
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.face(53),  // 蛋糕
   segment.text('生日快乐！')
 ])
@@ -260,7 +260,7 @@ bot.on('message.guild', async (event) => {
   if (event.content) {
     const emotionFace = getEmotionFace(event.content)
     
-    await bot.guildService.sendChannelMessage(event.channel_id, [
+    await bot.sendGuildMessage(event.channel_id, [
       segment.face(emotionFace)
     ])
   }
@@ -298,7 +298,7 @@ function getRandomFace(category: 'happy' | 'sad' | 'excited'): number {
 }
 
 // 使用示例
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('恭喜获胜！'),
   segment.face(getRandomFace('excited'))
 ])
@@ -315,7 +315,7 @@ const bot = new Bot(config)
 async function sendFaceCombo(channelId: string, faceId: number, count: number) {
   const faces = Array(count).fill(null).map(() => segment.face(faceId))
   
-  await bot.client.sendMessage(channelId, faces)
+  await bot.sendGuildMessage(channelId, faces)
 }
 
 // 使用示例
@@ -372,7 +372,7 @@ function convertEmojiToFace(text: string): any[] {
 
 // 使用示例
 const elements = convertEmojiToFace('今天很开心😀👍')
-await bot.client.sendMessage(channelId, elements)
+await bot.sendGuildMessage(channelId, elements)
 ```
 
 ## 表情管理
@@ -412,7 +412,7 @@ const faceTracker = new FaceUsageTracker()
 async function sendFaceWithTracking(channelId: string, faceId: number) {
   faceTracker.trackUsage(faceId)
   
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.face(faceId)
   ])
 }
@@ -424,14 +424,14 @@ async function sendFaceWithTracking(channelId: string, faceId: number) {
 
 ```typescript
 // ✅ 好的做法
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('恭喜通过考试'),
   segment.face(76),   // 适量使用表情
   segment.face(70)
 ])
 
 // ❌ 避免的做法
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.face(76),   // 过度使用表情
   segment.face(76),
   segment.face(76),
@@ -444,7 +444,7 @@ await bot.client.sendMessage(channelId, [
 
 ```typescript
 // 表情作为文字的补充，而非替代
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('项目完成了，大家辛苦了'),
   segment.face(70),   // 鼓掌
   segment.text('明天可以休息一天'),

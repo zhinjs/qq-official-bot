@@ -55,7 +55,7 @@ const bot = new Bot({
 })
 
 // 发送基础ARK消息
-await bot.message.send(channelId, [{
+await bot.sendGuildMessage(channelId, [{
   type: 'ark',
   template_id: 23,
   kv: [
@@ -67,21 +67,18 @@ await bot.message.send(channelId, [{
 }])
 ```
 
-### 使用服务模块
+### 使用 segment.ark
 
 ```typescript
-// 通过服务模块发送ARK消息
-const arkMessage = await bot.services.message.createArk({
-  templateId: 23,
-  fields: {
-    title: '新闻标题',
-    description: '新闻摘要内容',
-    image: 'https://example.com/news-image.jpg',
-    url: 'https://example.com/news/123'
-  }
-})
+import { segment } from 'qq-official-bot'
 
-await bot.services.channel.sendMessage(channelId, [arkMessage])
+// ARK 消息段：模板 ID + kv 列表（key 为模板定义的字段名）
+const arkMessage = segment.ark(23, [
+  { key: '#DESC#', value: '新闻摘要内容' },
+  { key: '#PROMPT#', value: '新闻标题' },
+])
+
+await bot.sendGuildMessage(channelId, arkMessage)
 ```
 
 ## 常用模板示例
@@ -196,7 +193,7 @@ class ArkTemplateManager {
       throw new Error(`ARK验证失败: ${errors.join(', ')}`)
     }
     
-    return this.bot.message.send(channelId, [arkData as ArkSegment])
+    return this.bot.sendGuildMessage(channelId, [arkData as ArkSegment])
   }
 }
 
@@ -267,7 +264,7 @@ const arkMessage = new ArkBuilder(23)
   .setLink('https://example.com/products/new')
   .build()
 
-await bot.message.send(channelId, [arkMessage])
+await bot.sendGuildMessage(channelId, [arkMessage])
 ```
 
 ## 错误处理
@@ -303,7 +300,7 @@ async function sendArkWithValidation(channelId: string, arkData: ArkSegment) {
     }
     
     // 发送消息
-    const result = await bot.message.send(channelId, [arkData])
+    const result = await bot.sendGuildMessage(channelId, [arkData])
     console.log('ARK消息发送成功:', result.id)
     return result
     
@@ -324,7 +321,7 @@ async function sendArkWithRetry(
 ) {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      return await bot.message.send(channelId, [arkData])
+      return await bot.sendGuildMessage(channelId, [arkData])
     } catch (error) {
       console.warn(`ARK消息发送失败 (尝试 ${attempt}/${maxRetries}):`, error.message)
       
@@ -362,7 +359,7 @@ const combinedMessage = [
   }
 ] as const
 
-await bot.message.send(channelId, combinedMessage)
+await bot.sendGuildMessage(channelId, combinedMessage)
 ```
 
 ## 最佳实践

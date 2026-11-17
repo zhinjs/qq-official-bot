@@ -104,12 +104,12 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 发送本地图片
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.image('./photo.jpg')
 ])
 
 // 发送网络图片
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.image('https://example.com/image.png')
 ])
 ```
@@ -121,7 +121,7 @@ import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('看看这张图片：'),
   segment.image('./photo.jpg'),
   segment.text('怎么样？')
@@ -135,7 +135,7 @@ import { Bot, segment } from 'qq-official-bot'
 
 const bot = new Bot(config)
 
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('这是一些图片：'),
   segment.image('./photo1.jpg'),
   segment.image('./photo2.png'),
@@ -151,7 +151,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 回复消息并发送图片
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply(originalMessageId),
   segment.image('./response.jpg')
 ])
@@ -167,7 +167,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 群聊中发送图片
-await bot.groupService.sendMessage(groupId, [
+await bot.sendGroupMessage(groupId, [
   segment.image('./group_photo.jpg')
 ])
 ```
@@ -180,7 +180,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 私聊中发送图片
-await bot.friendService.sendMessage(userId, [
+await bot.sendPrivateMessage(userId, [
   segment.image('./private_photo.png')
 ])
 ```
@@ -193,7 +193,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 频道中发送图片
-await bot.guildService.sendChannelMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.image('https://cdn.example.com/channel_image.webp')
 ])
 ```
@@ -213,7 +213,7 @@ function checkImageSize(filePath: string): boolean {
 }
 
 if (checkImageSize('./large_image.jpg')) {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.image('./large_image.jpg')
   ])
 } else {
@@ -240,7 +240,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 try {
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.image('./photo.jpg')
   ])
 } catch (error) {

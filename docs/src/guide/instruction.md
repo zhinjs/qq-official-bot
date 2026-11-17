@@ -91,7 +91,7 @@ class EnterpriseBot {
     const requests = await this.services.get('cache').get(key) || 0
     
     if (requests > 10) { // 每分钟最多10次请求
-      await this.bot.message.send(ctx.channel.id, [{
+      await this.bot.sendGuildMessage(ctx.channel.id, [{
         type: 'text',
         text: '操作过于频繁，请稍后再试'
       }])
@@ -211,7 +211,7 @@ class AutoReplyPlugin implements BotPlugin {
     const reply = this.replyRules.get(content)
     
     if (reply) {
-      await ctx.bot.message.send(ctx.channel.id, [{
+      await ctx.bot.sendGuildMessage(ctx.channel.id, [{
         type: 'text',
         text: reply
       }])
@@ -347,7 +347,7 @@ class MessageQueue {
   private async processChannelBatch(channelId: string, items: QueueItem[]): Promise<void> {
     for (const item of items) {
       try {
-        await this.bot.message.send(channelId, item.messages)
+        await this.bot.sendGuildMessage(channelId, item.messages)
         // 频道内消息间隔
         await new Promise(resolve => setTimeout(resolve, 100))
       } catch (error) {
@@ -537,7 +537,7 @@ class BotMonitor {
                    `描述: ${rule.description}`
     
     // 发送警告到管理频道
-    await this.bot.message.send(rule.alertChannel, [{
+    await this.bot.sendGuildMessage(rule.alertChannel, [{
       type: 'text',
       text: message
     }])

@@ -253,7 +253,7 @@ import { Bot, segment } from 'qq-official-bot'
 const bot = new Bot(config)
 
 // 发送组合消息
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('欢迎新成员 '),
   segment.at('123456789'),
   segment.text('！'),
@@ -265,14 +265,14 @@ await bot.client.sendMessage(channelId, [
 
 ```typescript
 // 图片配文字
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('分享一张图片：'),
   segment.image('./photo.jpg'),
   segment.text('拍摄于今天的活动现场')
 ])
 
 // 视频分享
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.text('精彩视频回顾 '),
   segment.face(76),
   segment.video('./highlight.mp4')
@@ -283,7 +283,7 @@ await bot.client.sendMessage(channelId, [
 
 ```typescript
 // 回复特定消息
-await bot.client.sendMessage(channelId, [
+await bot.sendGuildMessage(channelId, [
   segment.reply('original_message_id'),
   segment.text('好的，我知道了！'),
   segment.face(76)
@@ -311,7 +311,7 @@ const reportMarkdown = segment.markdown(`
 > 数据更新时间：${new Date().toLocaleString()}
 `)
 
-await bot.client.sendMessage(channelId, [reportMarkdown])
+await bot.sendGuildMessage(channelId, [reportMarkdown])
 ```
 
 ## 类型支持
@@ -383,12 +383,12 @@ try {
     segment.image('./image.jpg')
   ]
   
-  await bot.client.sendMessage(channelId, message)
+  await bot.sendGuildMessage(channelId, message)
 } catch (error) {
   console.error('消息发送失败:', error)
   
   // 降级为纯文本消息
-  await bot.client.sendMessage(channelId, [
+  await bot.sendGuildMessage(channelId, [
     segment.text('图片发送失败，请稍后重试')
   ])
 }
