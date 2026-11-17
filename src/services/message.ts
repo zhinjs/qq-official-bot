@@ -5,6 +5,7 @@ import { AxiosInstance } from 'axios'
 import { PrivateMessageEvent } from '@/events'
 import { Sendable, Quotable } from '@/elements'
 import { MessageBuilder, BuildResult, FileProcessor, PrivateMessageStream } from '@/message'
+import type { MessagePayload } from '@/message/builder'
 import type { FileUploadResult } from '@/message'
 import type { CreatePrivateStreamOptions, StreamMessagePayload, StreamMessageResult } from '@/message/stream'
 import { randomInt } from 'crypto'
@@ -15,11 +16,21 @@ export interface SendOptions {
     timeout?: number;
     /** 本次发送的 msg_seq；不传则随机生成。重试同一次发送时应复用原值。 */
     msgSeq?: number;
+    /**
+     * 作为互动召回消息发送（仅单聊）：用户与机器人互动后 30 天内可下发一条。
+     * 与被动回复互斥，开启后不会携带 msg_id / event_id。
+     */
+    isWakeup?: boolean;
 }
 
 export interface SendResult {
     id: string;
+    /** 发送时间（Unix 秒）；平台返回 timestamp 时以平台时间为准 */
     timestamp: number;
+    /** 本条消息的引用索引（REFIDX_…），可用于之后引用回复机器人自己的消息 */
+    ref_idx?: string;
+    /** 平台返回的扩展信息 */
+    ext_info?: { ref_idx?: string };
     [key: string]: any;
 }
 
@@ -190,6 +201,14 @@ export class MessageService {
         const endpointPath = sendPath(target)
         const messageBuilder = new MessageBuilder(this.appid, isGuildSend(target), source, options.msgSeq);
         const buildResult = await messageBuilder.build(message);
+        if (options.isWakeup) {
+            if (target.kind !== 'private') {
+                throw new TypeError('互动召回消息（isWakeup）仅支持单聊')
+            }
+            buildResult.messagePayload.is_wakeup = true
+            delete buildResult.messagePayload.msg_id
+            delete buildResult.messagePayload.event_id
+        }
 
         if (buildResult.isFile) {
             const uploaded = await this.uploadFile(target, buildResult);
@@ -236,11 +255,40 @@ export class MessageService {
                 brief: buildResult.brief,
             };
         }
+        const serverTime = typeof result.timestamp === 'string'
+            ? new Date(result.timestamp).getTime() / 1000
+            : typeof result.timestamp === 'number' ? result.timestamp : NaN
         return {
             id: result.id,
-            timestamp: Date.now() / 1000,
+            timestamp: Number.isFinite(serverTime) ? serverTime : Date.now() / 1000,
+            ...(result.ext_info ? { ext_info: result.ext_info, ref_idx: result.ext_info.ref_idx } : {}),
             brief: buildResult.brief,
         };
+    }
+
+    /**
+     * 发送单聊「输入中」状态（msg_type=6）。需在被动回复窗口内携带消息或事件来源。
+     * @param seconds 状态持续时间，1-60 秒
+     */
+    async sendPrivateInputNotify(userId: string, seconds: number = 10, source?: Quotable, options: SendOptions = {}): Promise<SendResult> {
+        if (!Number.isInteger(seconds) || seconds < 1 || seconds > 60) {
+            throw new RangeError('输入状态持续时间需为 1-60 的整数秒')
+        }
+        const messagePayload: MessagePayload = {
+            msg_seq: options.msgSeq ?? randomInt(1, 1_000_000),
+            content: '',
+            msg_type: 6,
+            input_notify: { input_type: 1, input_second: seconds },
+        }
+        if (source?.id) messagePayload.msg_id = source.id
+        else if (source?.event_id) messagePayload.event_id = source.event_id
+        return this.sendRegularMessage(`/v2/users/${userId}`, {
+            messagePayload,
+            filePayload: {},
+            isFile: false,
+            contentType: 'application/json',
+            brief: `<input_notify,seconds=${seconds}>`,
+        }, options)
     }
 
     /**

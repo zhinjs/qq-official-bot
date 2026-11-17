@@ -63,10 +63,12 @@ for (const method of ['sendPrivateMessage', 'sendGroupMessage', 'sendGuildMessag
 
         await messages[method]('target', 'hello', { id: 'source', event_id: 'event' }, options)
 
-        const payload = calls[0].data as { msg_seq: number; msg_id: string; event_id: string }
+        const payload = calls[0].data as { msg_seq: number; msg_id: string; event_id?: string }
         assert.equal(payload.msg_seq, 17)
         assert.equal(payload.msg_id, 'source')
-        assert.equal(payload.event_id, 'event')
+        // 单聊/群聊的 msg_id 与 event_id 二选一；频道接口保持同时携带
+        const isV2 = method === 'sendPrivateMessage' || method === 'sendGroupMessage'
+        assert.equal(payload.event_id, isV2 ? undefined : 'event')
         assert.deepEqual(options, { msgSeq: 17, timeout: 2345 })
     })
 }

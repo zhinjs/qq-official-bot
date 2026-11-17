@@ -288,7 +288,7 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
      * @param guild_id
      * @param channelInfo
      */
-    async createChannel(guild_id: string, channelInfo: Omit<Channel.Info, 'id'>) {
+    async createChannel(guild_id: string, channelInfo: Channel.CreateParam) {
         return this.guild(guild_id).createChannel(channelInfo)
     }
 

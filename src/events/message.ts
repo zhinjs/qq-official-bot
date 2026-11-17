@@ -1,7 +1,7 @@
 import type { Bot } from "@/bot";
 import type { Sendable } from "@/elements";
-import type { Announce, EmojiType, PinsMessage, MentionedGroupMember } from "@/types";
-import {Message} from "@/message/parser"
+import type { Announce, Dict, EmojiType, PinsMessage, MentionedGroupMember } from "@/types";
+import {Message, parseMessageSceneExt} from "@/message/parser"
 import type { EventParser } from "@/events"
 import type { CreatePrivateStreamOptions } from "@/message/stream"
 
@@ -28,6 +28,13 @@ export class PrivateMessageEvent extends Message implements MessageEvent {
         return this.sub_type === 'direct' ?
             this.direct.send(message, this) :
             this.user.send(message, this)
+    }
+    /** 发送「输入中」状态（1-60 秒），频道私信不可用 */
+    inputNotify(seconds?: number) {
+        if (this.sub_type === 'direct') {
+            throw new Error('频道私信不支持输入状态')
+        }
+        return this.user.sendInputNotify(seconds, this)
     }
     /** 单聊流式回复，频道私信不可用 */
     replyStream(options: CreatePrivateStreamOptions = {}) {
@@ -68,7 +75,8 @@ export class GroupMessageEvent extends Message implements MessageEvent {
     constructor(bot: Bot, payload: Partial<Message>, sub_type: 'normal' | 'at' = 'normal') {
         super(bot, payload);
         this.sub_type = sub_type
-        this.group_id = payload.group_id
+        // 官方事件字段为 group_openid，旧版本推送同时带 group_id
+        this.group_id = (payload as Dict).group_openid ?? payload.group_id
         this.union_group_openid = (payload as Partial<GroupMessageEvent>).union_group_openid || undefined
         this.message_type = 'group'
     }
@@ -79,6 +87,11 @@ export class GroupMessageEvent extends Message implements MessageEvent {
 
     async reply(message: Sendable) {
         return this.group.send(message, this)
+    }
+
+    /** 撤回该消息（机器人为群管理员时可撤回成员消息）。 */
+    async recall() {
+        return this.group.recall(this.message_id)
     }
 }
 
@@ -164,11 +177,20 @@ export class GuildMessageEvent extends Message implements MessageEvent {
 export namespace MessageEvent {
     export const parse: EventParser = function (this: Bot, event, payload) {
         this.removeAt(payload)
+        // 网关的数字 message_type（0/3/101/102/103）会被 SDK 的 'private' / 'group' 覆盖，先保存为 content_type
+        const contentType = typeof payload.message_type === 'number' ? payload.message_type : undefined
+        const sceneExt = parseMessageSceneExt(payload.message_scene)
         const [message, brief] = Message.parse.call(this, payload)
         payload.message = message as Sendable
         const member = payload.member
         const permissions = member?.roles || []
+        if (sceneExt.ref_msg_idx && !payload.message_reference) {
+            payload.source = { id: sceneExt.ref_msg_idx, message_id: sceneExt.ref_msg_idx, ref_idx: sceneExt.ref_msg_idx }
+        }
         Object.assign(payload, {
+            content_type: contentType,
+            msg_idx: sceneExt.msg_idx,
+            ref_msg_idx: sceneExt.ref_msg_idx,
             user_id: payload.author?.id,
             message_id: payload.id,
             raw_message: brief,

@@ -26,6 +26,13 @@ export interface MessagePayload {
   ark?: any;
   card?: MessageCard;
   embed?: any;
+  /** 互动召回消息（仅单聊），与 msg_id / event_id 互斥 */
+  is_wakeup?: boolean;
+  /** 输入中状态（仅单聊，msg_type=6） */
+  input_notify?: {
+    input_type: 1;
+    input_second: number;
+  };
 }
 
 export interface FilePayload {
@@ -73,8 +80,8 @@ export class MessageBuilder {
     if (source?.id) {
       this.messagePayload.msg_id = source.id;
     }
-
-    if (source?.event_id) {
+    // 单聊/群聊（v2）要求 msg_id 与 event_id 二选一，有消息 ID 时优先被动回复消息；频道保持原有行为
+    if (source?.event_id && (isGuild || !source.id)) {
       this.messagePayload.event_id = source.event_id;
     }
   }
@@ -195,15 +202,34 @@ export class MessageBuilder {
    * 处理回复元素
    */
   private handleReply(elem: ReplyElem): void {
-    if (elem.data.event_id) {
-      this.messagePayload.event_id = elem.data.event_id;
-      this.brief += `<reply,event_id=${elem.data.event_id}>`;
-    } else if (elem.data.id) {
-      this.messagePayload.msg_id = elem.data.id;
-      this.messagePayload.message_reference = {
-        message_id: elem.data.id
-      };
-      this.brief += `<reply,msg_id=${elem.data.id}>`;
+    const { id, event_id } = elem.data;
+    if (this.isGuild) {
+      if (event_id) {
+        this.messagePayload.event_id = event_id;
+        this.brief += `<reply,event_id=${event_id}>`;
+      } else if (id) {
+        this.messagePayload.msg_id = id;
+        this.messagePayload.message_reference = {
+          message_id: id
+        };
+        this.brief += `<reply,msg_id=${id}>`;
+      }
+      return;
+    }
+
+    // 单聊/群聊：引用展示用 REFIDX 引用索引（message_reference），被动回复用 msg_id 或 event_id（二选一）
+    const refIdx = elem.data.ref_idx ?? (isRefIdx(id) ? id : undefined);
+    if (refIdx) {
+      this.messagePayload.message_reference = { message_id: refIdx };
+      this.brief += `<reply,ref_idx=${refIdx}>`;
+    }
+    if (id && !isRefIdx(id)) {
+      this.messagePayload.msg_id = id;
+      delete this.messagePayload.event_id;
+      if (!refIdx) this.brief += `<reply,msg_id=${id}>`;
+    } else if (event_id && !this.messagePayload.msg_id) {
+      this.messagePayload.event_id = event_id;
+      if (!refIdx) this.brief += `<reply,event_id=${event_id}>`;
     }
   }
 
@@ -538,4 +564,9 @@ function isKeyboardTemplateButton(button: any): boolean {
     && button.render_data === undefined
     && button.action === undefined
     && !Array.isArray(button.buttons);
+}
+
+/** v2 引用索引形如 REFIDX_xxx，与 ROBOT1.0_ 开头的消息 ID 不同。 */
+function isRefIdx(id: unknown): id is string {
+  return typeof id === 'string' && id.startsWith('REFIDX_');
 }

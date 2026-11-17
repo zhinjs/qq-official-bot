@@ -245,7 +245,9 @@ export const segment = {
                 type: 'reply',
                 data: {
                     id: idOrQuotable.id,
-                    event_id: idOrQuotable.event_id
+                    event_id: idOrQuotable.event_id,
+                    // 单聊/群聊的引用回复使用 REFIDX 引用索引
+                    ref_idx: idOrQuotable.ref_idx ?? idOrQuotable.msg_idx,
                 }
             }
         }

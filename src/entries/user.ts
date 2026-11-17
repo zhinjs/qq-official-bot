@@ -17,6 +17,11 @@ export class User {
         return this.bot.messageService.sendPrivateMessage(this.id, message, source, options)
     }
 
+    /** 发送「输入中」状态（1-60 秒）。 */
+    sendInputNotify(seconds?: number, source?: Quotable, options?: SendOptions) {
+        return this.bot.messageService.sendPrivateInputNotify(this.id, seconds, source, options)
+    }
+
     recall(messageId: string) {
         return this.bot.messageService.recallPrivateMessage(this.id, messageId)
     }

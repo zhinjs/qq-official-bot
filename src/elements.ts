@@ -6,8 +6,23 @@ export enum MusicPlatform {
 }
 
 export interface Quotable {
+    /** 被动回复的消息 ID（msg_id） */
     id?: string
+    /** 被动回复的事件 ID（event_id），与 msg_id 二选一 */
     event_id?: string
+    /** 单聊/群聊引用回复的引用索引（REFIDX_…），来自消息事件的 msg_idx 或发送结果的 ref_idx */
+    ref_idx?: string
+    /** 消息事件中本条消息的引用索引，segment.reply(event) 会据此生成引用 */
+    msg_idx?: string
+}
+
+/** 接收到的媒体附件的附加信息（仅接收有效）。 */
+export interface ReceivedMediaInfo {
+    /** 仅接收有效 */
+    name?: string
+    width?: number
+    height?: number
+    size?: number
 }
 
 export interface MarkdownOptions {
@@ -52,21 +67,23 @@ export interface MessageElemMap {
          */
         file: string | Buffer
         url?: string
-        /** 仅接收有效 */
-        name?: string
-    };
+    } & ReceivedMediaInfo;
     video: {
         file: string
         url?: string
-        /** 仅接收有效 */
-        name?: string
-    };
+    } & ReceivedMediaInfo;
     audio: {
         file: string
         url?: string
-        /** 仅接收有效 */
-        name?: string
-    };
+        /** 语音转换后的 WAV 文件 URL（仅接收有效） */
+        voice_wav_url?: string
+        /** 语音 ASR 参考结果（仅接收有效） */
+        asr_refer_text?: string
+    } & ReceivedMediaInfo;
+    /** 群文件等文件附件（仅接收有效） */
+    file: {
+        url: string
+    } & ReceivedMediaInfo;
     markdown: {
         content: string
         custom_template_id?: never
@@ -120,6 +137,7 @@ export type MDElem = MessageElem<'markdown'>
 export type KeyboardElem = MessageElem<'keyboard'>
 export type ButtonElem = MessageElem<'button'>
 export type ReplyElem = MessageElem<"reply">;
+export type FileElem = MessageElem<"file">;
 
 // 重复组合的消息元素
 type RepeatableCombineElem = string | TextElem | FaceElem | LinkElem | AtElem | ButtonElem;
