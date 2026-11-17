@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.3.5](https://github.com/zhinjs/qq-official-bot/compare/v1.3.4...v1.3.5) (2026-11-17)
+
+
+### Features
+
+* support 2026-11-16 QQ open platform API update ([bd11e6c](https://github.com/zhinjs/qq-official-bot/commit/bd11e6c79e6ac8a8c85c0804e8111b558e8eae8e))
+* 适配 QQ 开放平台最新文档（2026-11-16 更新 + 全量差异对齐），修复 markdown + 按钮发送报错 ([b4871a5](https://github.com/zhinjs/qq-official-bot/commit/b4871a50c19345f29e42a5689482a188c99c4777))
+
+
+### Bug Fixes
+
+* add correctly spelled Bot.createGuildRole ([cd7a435](https://github.com/zhinjs/qq-official-bot/commit/cd7a435aa79df0a6454b37ca57600ef2b77536f1))
+* align group and bot info types with official docs ([28966a4](https://github.com/zhinjs/qq-official-bot/commit/28966a4aa12b13ccbccbb81ff227807635faf88b))
+* align notice events with official v2 docs ([93048cd](https://github.com/zhinjs/qq-official-bot/commit/93048cd9fc175dc97b597556243631ac80d220fd))
+* align v2 message send/receive with official docs ([7502a59](https://github.com/zhinjs/qq-official-bot/commit/7502a59dfbd9a27cbea42ec9987c63b08f850a5d))
+* send markdown with custom buttons correctly ([1b9dbf8](https://github.com/zhinjs/qq-official-bot/commit/1b9dbf8482b80dc6c65a99c795c1db8de858d0a1))
+
 ## [1.3.4](https://github.com/zhinjs/qq-official-bot/compare/v1.3.3...v1.3.4) (2026-11-02)
 
 
