@@ -78,6 +78,14 @@ export namespace Message {
         user_id: string
         user_name: string
         permissions: User.Permission[]
+        /** 单聊为 user_openid，群聊为 member_openid。 */
+        user_openid?: string
+        /** 发送者头像 URL（2026-11-16 起单聊/群聊事件下发）。 */
+        avatar?: string
+        /** 群内昵称，仅群聊事件携带。 */
+        member_nickname?: string
+        /** 跨应用关联用户 openid，绑定了第三方应用时有效。 */
+        union_openid?: string
     }
     export type Ret = MessageRet | FileInfo
     export type MessageRet = {

@@ -38,6 +38,31 @@ interface Bot.Info {
 }
 ```
 
+### 获取用户基本信息
+
+获取单聊用户的昵称、头像，以及是否允许机器人主动推送（2026-11-16 新增，10 QPS）。用户与机器人无好友关系时返回错误码 `40184001`。
+
+**方法名**: `bot.botService.getUserInfo(user_openid)` / `bot.getUserInfo(user_openid)` / `bot.user(user_openid).info()`
+
+```typescript
+const info = await bot.getUserInfo(user_openid)
+if (info.allow_proactive_msg) {
+    await bot.sendPrivateMessage(user_openid, `你好，${info.username}`)
+}
+```
+
+**返回数据结构**:
+```typescript
+interface UserBasicInfo {
+    username: string              // 用户名
+    avatar: string                // 头像原图 URL
+    allow_proactive_msg: boolean  // 是否接收主动推送
+    union_openid?: string         // 跨应用关联 openid，绑定第三方应用时有效
+}
+```
+
+官方文档：[获取用户基本信息](https://bot.q.qq.com/wiki/develop/api-v2/autogen/api/v2_users_user_openid_info.get.html)
+
 ### 生成分享链接
 
 生成邀请用户添加机器人为好友的分享链接。`callback_data` 会在用户通过链接添加机器人时透传给机器人后台，最长 32 字符。

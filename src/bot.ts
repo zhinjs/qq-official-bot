@@ -186,6 +186,14 @@ export class Bot<T extends ReceiverMode = ReceiverMode, M extends ApplicationPla
         return this.botService.generateUrlLink(...args)
     }
 
+    /**
+     * 获取用户基本信息（昵称、头像、是否接收主动推送）。
+     * @param user_id 单聊场景的 user_openid
+     */
+    async getUserInfo(user_id: string) {
+        return this.user(user_id).info()
+    }
+
     /** 上传 Markdown 图片素材并返回 qqbot-media:// 引用。 */
     async uploadMaterialImage(...args: Parameters<MaterialService['uploadImage']>) {
         return this.materialService.uploadImage(...args)

@@ -62,11 +62,14 @@ export class GroupMessageEvent extends Message implements MessageEvent {
     group_id: string
     group_name: string
     mentions?: MentionedGroupMember[]
+    /** 跨应用关联群 openid，绑定了第三方应用时有效。 */
+    union_group_openid?: string
 
     constructor(bot: Bot, payload: Partial<Message>, sub_type: 'normal' | 'at' = 'normal') {
         super(bot, payload);
         this.sub_type = sub_type
         this.group_id = payload.group_id
+        this.union_group_openid = (payload as Partial<GroupMessageEvent>).union_group_openid || undefined
         this.message_type = 'group'
     }
 
@@ -173,7 +176,10 @@ export namespace MessageEvent {
                 user_id: payload.author?.id,
                 user_name: payload.author?.username,
                 permissions: [payload.author?.member_role || 'normal'].concat(permissions),
-                user_openid: payload.author?.user_openid || payload.author?.member_openid
+                user_openid: payload.author?.user_openid || payload.author?.member_openid,
+                avatar: payload.author?.avatar,
+                member_nickname: payload.author?.member_nickname,
+                union_openid: payload.author?.union_openid || undefined,
             },
             timestamp: new Date(payload.timestamp).getTime() / 1000,
         })

@@ -187,6 +187,8 @@ export class GroupChangeNoticeEvent extends NoticeEvent {
     group_id: string
     operator_id: string
     time: number
+    /** 跨应用关联群 openid，绑定了第三方应用时有效。 */
+    union_group_openid?: string
     get actionText(){
         return this.sub_type===`increase`?'新增':'减少'
     }
@@ -195,6 +197,7 @@ export class GroupChangeNoticeEvent extends NoticeEvent {
         this.notice_type = 'group'
         this.sub_type = sub_type
         this.group_id = payload.group_openid
+        this.union_group_openid = payload.union_group_openid || undefined
         this.operator_id = payload.op_member_openid
         this.time = Math.floor(payload.timestamp / 1000)
         bot.logger.info(`群${this.actionText}：${this.group_id}. 操作人：${this.operator_id}`)
@@ -219,6 +222,8 @@ export class GroupMemberChangeNoticeEvent extends NoticeEvent {
     time: number
     notice_type: 'group' = 'group'
     sub_type: 'member.increase' | 'member.decrease'
+    /** 跨应用关联群 openid，绑定了第三方应用时有效。 */
+    union_group_openid?: string
 
     get actionText() {
         return this.sub_type === 'member.increase' ? '加入' : '退出'
@@ -228,6 +233,7 @@ export class GroupMemberChangeNoticeEvent extends NoticeEvent {
         super(bot, payload);
         this.sub_type = sub_type
         this.group_id = payload.group_openid ?? payload.group_id
+        this.union_group_openid = payload.union_group_openid || undefined
         this.user_id = payload.member_openid ?? payload.user_openid ?? payload.user_id
         this.operator_id = payload.op_member_openid ?? payload.operator_id
         this.time = parseNoticeTimestamp(payload.timestamp)

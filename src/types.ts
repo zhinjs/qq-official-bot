@@ -178,5 +178,8 @@ export interface MentionedGroupMember {
     member_openid: string;
     member_role: 'member' | 'owner' | 'admin';
     is_you: boolean;
-    scope: 'group';
+    /** all：@全体成员；single：指定 @ 对象。旧版本推送可能为 group。 */
+    scope: 'all' | 'single' | 'group';
+    /** 用户在群内的昵称。 */
+    member_nickname?: string;
 }

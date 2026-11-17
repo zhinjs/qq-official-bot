@@ -86,6 +86,8 @@ const success = await bot.recallGroupMessage(group_id, message_id)
 ```typescript
 const info = await bot.getGroupInfo(group_openid)
 console.log(info.group_name, info.group_member_num, info.group_tags)
+// 绑定了第三方应用时，可用 union_group_openid 跨应用关联同一个群
+console.log(info.union_group_openid)
 
 const state = await bot.getGroupBotState(group_openid)
 console.log(state.member_role, state.recv_msg_setting, state.allow_proactive_msg)
@@ -366,6 +368,8 @@ bot.on('message.group.at', async (event) => {
 事件名采用前缀传播：`GROUP_AT_MESSAGE_CREATE` 对应 `message.group.at`，`sub_type` 为 `'at'`；它同时冒泡到 `message.group`，两个回调收到同一个事件对象。可用 `event.sub_type === 'at'` 过滤这一网关事件。
 
 `GROUP_MESSAGE_CREATE` 对应 `message.group`，`sub_type` 为 `'normal'`。按[官方全量群消息文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/event/group_message_create.html)，开启接收全部消息后，包含 @ 机器人的消息也可通过此事件接收；SDK 不根据消息内容或 `mentions` 额外合成 `message.group.at`。
+
+2026-11-16 起群消息事件额外携带发送者头像 `event.sender.avatar`、群内昵称 `event.sender.member_nickname`，以及跨应用群标识 `event.union_group_openid`（绑定第三方应用时有效）；机器人进退群、群成员增减通知同样提供 `union_group_openid`。
 
 `mentions` 为可选字段，SDK 原样保留网关提供的列表，缺失时为 `undefined`。[群 @ 消息文档](https://bot.q.qq.com/wiki/develop/api-v2/autogen/event/group_at_message_create.html)说明其列表不包含机器人自身，因此不能用它作为所有模式下判断是否 @ 机器人的统一依据。
 

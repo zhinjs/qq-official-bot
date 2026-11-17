@@ -29,6 +29,8 @@ export interface GroupInfo {
     group_class_text: string;
     group_tags: string[];
     group_member_num: number;
+    /** 跨应用关联群 openid，绑定了第三方应用时有效。 */
+    union_group_openid?: string;
 }
 
 export type GroupMemberRole = 'member' | 'owner' | 'admin'

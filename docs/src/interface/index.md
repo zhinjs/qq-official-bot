@@ -441,6 +441,10 @@ namespace Message {
         user_id: string
         user_name: string
         permissions: User.Permission[]
+        user_openid?: string      // 单聊为 user_openid，群聊为 member_openid
+        avatar?: string           // 发送者头像（2026-11-16 起下发）
+        member_nickname?: string  // 群内昵称，仅群聊事件
+        union_openid?: string     // 跨应用关联用户 openid
     }
 
     type Ret = MessageRet | FileInfo

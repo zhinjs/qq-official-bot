@@ -208,6 +208,7 @@ bot.on('message.private', async (event) => {
     console.log('收到私聊:', event.raw_message)
     console.log('发送者:', event.sender.user_name)
     console.log('用户 ID:', event.user_id)
+    console.log('头像:', event.sender.avatar) // 2026-11-16 起单聊事件携带昵称与头像
     
     // 自动回复
     await event.reply('收到你的私聊了!')
